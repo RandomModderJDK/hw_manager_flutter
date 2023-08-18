@@ -46,7 +46,7 @@ fake_sign() {
 	cp -a "$_input" "$_output/"
 	find "$_output" -type d -path '*/Frameworks/*.framework' -exec ldid -S \{\} \;
 	echo "ldid -S${_fakeent} -I${_bundle_id} "${_output}/Applications/Runner.app/Runner""
-	ldid -S${_fakeent} -I${_bundle_id} "$_output/Applications/$_name.app/$_name"
+	ldid -S${_fakeent} -I${_bundle_id} "$_output/Applications/Runner.app/Runner"
 }
 
 create_fake_ipa() {
