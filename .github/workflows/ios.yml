@@ -5,7 +5,6 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-      # Checks-out our repository under $GITHUB_WORKSPACE, so our job can access it
       - name: Checkout repositoriy
         uses: actions/checkout@v3
 
@@ -15,4 +14,8 @@ jobs:
           channel: 'stable'
       - name: Build ios app
         run: flutter build ios --release --no-codesign
-      
+      - name: Push artifacts
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: Runner.app
+          path: /Users/runner/work/hw_manager_flutter/hw_manager_flutter/build/ios/iphoneos/Runner.app
