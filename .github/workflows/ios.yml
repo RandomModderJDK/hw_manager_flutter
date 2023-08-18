@@ -12,10 +12,15 @@ jobs:
         with:
           architecture: x64
           channel: 'stable'
-      - name: Build ios app
+      - name: Build ios xcarchive
         run: flutter build ipa --release --no-codesign
+      - name: Package xcarchive to ipa
+        run: |
+          brew install ldid
+          /usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier'
+          
       - name: Push artifacts
         uses: actions/upload-artifact@v3.1.2
         with:
-          name: Runner.app$GITHUB_ACTION_PATH
-          path: /Users/runner/work/hw_manager_flutter/hw_manager_flutter/build/ios/archive/Runner.xcarchive
+          name: Runner.xcarchive
+          path: $GITHUB_ACTION_PATH/build/ios/archive/Runner.xcarchive
