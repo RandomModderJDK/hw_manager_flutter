@@ -1,0 +1,25 @@
+name: "[DEV] Build and Publish iOS"
+on: workflow_dispatch
+    
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repositoriy
+        uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          architecture: x64
+          channel: 'stable'
+      - name: Build ios xcarchive
+        run: flutter build ipa --release --no-codesign
+      - name: Package xcarchive to ipa
+        run: |
+          brew install ldid
+          $GITHUB_ACTION_PATH/scripts/package.sh build/ios/archive/Runner.xcarchive ./
+      - name: Push artifacts
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: Runner.xcarchive
+          path: $GITHUB_ACTION_PATH/build/ios/archive/Runner.xcarchive
