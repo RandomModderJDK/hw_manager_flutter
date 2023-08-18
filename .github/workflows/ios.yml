@@ -17,8 +17,8 @@ jobs:
       - name: Package xcarchive to ipa
         run: |
           brew install ldid
-          echo $GITHUB_ACTION_PATH
-          $GITHUB_ACTION_PATH/scripts/package.sh build/ios/archive/Runner.xcarchive ./
+          echo ${PWD}
+          ${PWD}/scripts/package.sh build/ios/archive/Runner.xcarchive ./
       - name: Push artifacts 
         uses: actions/upload-artifact@v3.1.2
         with:
