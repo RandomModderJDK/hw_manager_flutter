@@ -1,5 +1,6 @@
 name: "[DEV] Build and Publish iOS"
-on: push
+on: [workflow_dispatch,push]
+  
     
 jobs:
   build:
@@ -18,7 +19,7 @@ jobs:
         run: |
           brew install ldid
           chmod +x ${PWD}/scripts/package.sh 
-          ${PWD}/scripts/package.sh build/ios/archive/Runner.xcarchive ./
+          ${PWD}/scripts/package.sh build/ios/archive/Runner.xcarchive .
       - name: Push artifacts 
         uses: actions/upload-artifact@v3.1.2
         with:
