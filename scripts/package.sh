@@ -65,6 +65,7 @@ create_fake_ipa() {
 	zip -r "$NAME.ipa" "Payload" -x "._*" -x ".DS_Store" -x "__MACOSX"
 	rm -r "Payload"
 	cd "$pwd"
+	echo "IPA at $OUTPUT/$NAME.ipa"
 }
 
 FAKEENT="/tmp/fakeent.$$.plist"
