@@ -45,7 +45,7 @@ fake_sign() {
 	mkdir -p "$_output"
 	cp -a "$_input" "$_output/"
 	find "$_output" -type d -path '*/Frameworks/*.framework' -exec ldid -S \{\} \;
-	echo "ldid -S${_fakeent} -I${_bundle_id} "${_output}/Applications/Runner.app/${_name}""
+	echo "ldid -S${_fakeent} -I${_bundle_id} "${_output}/Applications/Runner.app/Runner""
 	ldid -S${_fakeent} -I${_bundle_id} "$_output/Applications/$_name.app/$_name"
 }
 
