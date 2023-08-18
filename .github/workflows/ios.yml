@@ -17,5 +17,5 @@ jobs:
       - name: Push artifacts
         uses: actions/upload-artifact@v3.1.2
         with:
-          name: Runner.app
+          name: Runner.app$GITHUB_ACTION_PATH
           path: /Users/runner/work/hw_manager_flutter/hw_manager_flutter/build/ios/iphoneos/Runner.xcarchive
