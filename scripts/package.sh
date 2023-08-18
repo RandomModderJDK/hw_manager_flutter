@@ -19,9 +19,10 @@ fi
 
 INPUT=$1
 OUTPUT=$2
+
+INPUT_APP="$INPUT/Products/Applications/Runner.app"
 echo "$(/usr/libexec/PlistBuddy "$INPUT_APP/Info.plist")"
 NAME=$(/usr/libexec/PlistBuddy -c "Print :CFBundleName" "$INPUT_APP/Info.plist")
-INPUT_APP="$INPUT/Products/Applications/Runner.app"
 BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$INPUT_APP/Info.plist")
 
 if [ ! -d "$INPUT_APP" ]; then
