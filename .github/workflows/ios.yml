@@ -20,8 +20,11 @@ jobs:
           brew install ldid
           chmod +x ${PWD}/scripts/package.sh 
           ${PWD}/scripts/package.sh build/ios/archive/Runner.xcarchive .
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - name: Push artifacts 
         uses: actions/upload-artifact@v3.1.2
         with:
-          name: Runner.xcarchive
-          path: $GITHUB_ACTION_PATH/build/ios/archive/Runner.xcarchive
+          name: HW-manager-${{ steps.date.outputs.date }}.ipa
+          path: ./hw_manager_flutter.ipa
