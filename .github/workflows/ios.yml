@@ -18,13 +18,13 @@ jobs:
       - name: Package xcarchive to ipa
         run: |
           brew install ldid
-          chmod +x ${PWD}/scripts/package.sh 
-          ${PWD}/scripts/package.sh build/ios/archive/Runner.xcarchive .
+          chmod +x ${PWD}/scripts/package_ios.sh 
+          ${PWD}/scripts/package_ios.sh build/ios/archive/Runner.xcarchive .
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
-      - name: Push artifacts 
+        run: echo "{date}={$(date +'%Y-%m-%d')}" >> $GITHUB_STATE
+      - name: Push artifact
         uses: actions/upload-artifact@v3.1.2
         with:
-          name: HW-manager-${{ steps.date.outputs.date }}.ipa
+          name: HW-manager-${{ env.date }}.ipa
           path: ./hw_manager_flutter.ipa
