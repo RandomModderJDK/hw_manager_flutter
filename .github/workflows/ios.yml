@@ -1,9 +1,9 @@
-name: "[DEV] Build and Publish iOS"
+name: "Build all flutter archs"
 on: [workflow_dispatch,push]
   
     
 jobs:
-  build:
+  build iOS:
     runs-on: macos-latest
     steps:
       - name: Checkout repositoriy
