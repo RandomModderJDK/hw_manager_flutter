@@ -3,7 +3,7 @@ on: [workflow_dispatch,push]
   
     
 jobs:
-  build iOS:
+  build_iOS:
     runs-on: macos-latest
     steps:
       - name: Checkout repositoriy
