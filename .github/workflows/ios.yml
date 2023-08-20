@@ -5,7 +5,6 @@ on:
     tags:
       - "v*.*.*"
 
-
 jobs:
   do_tests:
     name: Flutter Tests
@@ -49,4 +48,9 @@ jobs:
         uses: actions/upload-artifact@v3.1.2
         with:
           name: HW-manager-${{ env.date }}.ipa
+          path: ./hw_manager_flutter.ipa
+      - name: Release artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          name: hw-manager-${{ tag_name }}.ipa
           path: ./hw_manager_flutter.ipa
