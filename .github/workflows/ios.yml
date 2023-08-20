@@ -37,7 +37,7 @@ jobs:
         run: |
           brew install ldid
           chmod +x ${PWD}/scripts/package_ipa.sh 
-          ${PWD}/scripts/package_ipa.sh ${PWD}/build/ipa/archive/Runner.xcarchive .
+          ${PWD}/scripts/package_ipa.sh ./build/ipa/archive/Runner.xcarchive .
       - name: Get current date
         id: date
         run: echo "{date}={$(date +'%Y-%m-%d')}" >> $GITHUB_STATE
