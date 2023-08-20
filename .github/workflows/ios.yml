@@ -1,7 +1,11 @@
 name: "Build all flutter archs"
-on: [workflow_dispatch,push]
-  
-    
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*.*.*"
+
+
 jobs:
   do_tests:
     name: Flutter Tests
