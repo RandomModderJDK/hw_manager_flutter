@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hw_manager_flutter/routes/settings_route.dart';
+import 'package:hw_manager_flutter/sqlite.dart';
 
 class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key, required this.title});
@@ -11,8 +12,6 @@ class HomeRoute extends StatefulWidget {
 }
 
 class _HomeRouteState extends State<HomeRoute> {
-  int _counter = 0;
-
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -20,8 +19,19 @@ class _HomeRouteState extends State<HomeRoute> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
     });
+  }
+
+  final List<String> entries = <String>['A', 'B', 'C'];
+  final List<int> colorCodes = <int>[600, 500, 100];
+  bool dbLoaded = false;
+
+  @override
+  void initState() {
+    initDB().then((value) {
+      setState(() => dbLoaded = true);
+    });
+    super.initState();
   }
 
   @override
@@ -50,25 +60,23 @@ class _HomeRouteState extends State<HomeRoute> {
           )
         ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
+      body: dbLoaded
+          ? ListView.builder(
+              padding: const EdgeInsets.all(8),
+              itemCount: entries.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  height: 50,
+                  color: Colors.amber[colorCodes[index]],
+                  child: Text('Entry ${entries[index]}\nTest'),
+                );
+              })
+          : const Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                  Text('Loading Database...\nMaybe check logs?')
+                ])),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
