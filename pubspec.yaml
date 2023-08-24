@@ -36,8 +36,11 @@ dependencies:
   cupertino_icons: ^1.0.2
 
   # Saving
-  sqflite: ^2.3.0
+  #sqflite: ^2.3.0
+  sqflite_common_ffi: ^2.3.0
+  sqlite3_flutter_libs: ^0.5.15
   path: ^1.8.3
+  path_provider:
 
   # Dark mode preferences
   shared_preferences: ^2.2.0

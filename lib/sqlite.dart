@@ -1,26 +1,34 @@
+import 'dart:io' as io;
+
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<bool> initDB() async {
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
   // Avoid errors caused by flutter upgrade.
   // Importing 'package:flutter/widgets.dart' is required.
   WidgetsFlutterBinding.ensureInitialized();
+  final io.Directory appDocumentsDir = await getApplicationDocumentsDirectory();
   // Open the database and store the reference.
   final database = openDatabase(
     // Set the path to the database. Note: Using the `join` function from the
     // `path` package is best practice to ensure the path is correctly
     // constructed for each platform.
-    join(await getDatabasesPath(), 'doggie_database.db'),
-    // When the database is first created, create a table to store dogs.
+    join(appDocumentsDir.path, "databases", 'hw_database.db'),
+    // When the database is first created, create a table to store homework.
     onCreate: (db, version) {
-      // Run the CREATE TABLE statement on the database.
-      return db.execute(
-        'CREATE TABLE dogs(id INTEGER PRIMARY KEY, name TEXT, age INTEGER)',
-      );
+      return db.execute('CREATE TABLE homeworks('
+          'id INTEGER PRIMARY KEY, '
+          'subject_short TEXT, '
+          'subject TEXT, '
+          'overdueDate TEXT, '
+          'content TEXT, '
+          'finished BOOL'
+          ')');
     },
-// Set the version. This executes the onCreate function and provides a
-// path to perform database upgrades and downgrades.
     version: 1,
   );
   return true;
@@ -33,6 +41,7 @@ class Homework {
   final String content;
   final bool finished;
 
+  // DateTime needs DateTime.tryParse(isoString);
   const Homework(
       {required this.id,
       required this.subject,
@@ -40,17 +49,26 @@ class Homework {
       required this.content,
       required this.finished});
 
-  // Convert a Dog into a Map. The keys must correspond to the names of the
-  // columns in the database.
+  /// Convert a Dog into a Map.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'subject_short': subject.shortName,
       'subject': subject.name,
-      'overdueDate': overdueDate,
+      'overdueDate': overdueDate.toIso8601String(),
       'content': content,
       'finished': finished,
     };
+  }
+
+  /// Convert a Homework into a Map.
+  Homework fromMap(Map<String, dynamic> map) {
+    return Homework(
+        id: int.parse(map["id"]),
+        subject: map["subject"],
+        overdueDate: DateTime.parse(map["overdueDate"]),
+        content: map["content"],
+        finished: bool.parse(map["finished"]));
   }
 
   // Implement toString to make it easier to see information about
