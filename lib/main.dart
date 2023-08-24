@@ -41,7 +41,11 @@ class HWMAppState extends State<HWMApp> {
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            brightness: Brightness.dark, seedColor: Colors.red),
+          brightness: Brightness.dark,
+          seedColor: Colors.red.shade900,
+          surfaceTint: Colors.grey.shade900,
+          surface: Colors.red.withOpacity(0.6),
+        ),
         useMaterial3: true,
       ),
       themeMode: _themeMode,
