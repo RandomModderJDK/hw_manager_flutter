@@ -12,12 +12,13 @@ class DBHelper {
   DBHelper._();
 
   late Database db;
+  late Database subDb;
 
   factory DBHelper() {
     return _dbHelper;
   }
 
-  Future<bool> initDB() async {
+  Future<bool> initDBs() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
     // Avoid errors caused by flutter upgrade.
@@ -32,10 +33,14 @@ class DBHelper {
       // constructed for each platform.
       join(appDocumentsDir.path, "databases", 'hw_database.db'),
       // When the database is first created, create a table to store homework.
-      onCreate: (db, version) {
+      onCreate: (db, version) async {
+        await db.execute('CREATE TABLE subjects('
+            'name TEXT PRIMARY KEY AUTOINCREMENT, '
+            'shortName TEXT '
+            ')');
         return db.execute('CREATE TABLE homeworks('
             'id INTEGER PRIMARY KEY AUTOINCREMENT, '
-            'subject_short TEXT NOT NULL, '
+            'subject_short TEXT, '
             'subject TEXT NOT NULL, '
             'overdueDate TEXT NOT NULL, '
             'content TEXT NOT NULL, '
@@ -47,7 +52,28 @@ class DBHelper {
     return true;
   }
 
-// Define a function that inserts and replaces Homework into the database
+  /// Inserts or updates homework supplied into database
+  Future<int> insertSubject(Subject subject) async {
+    return await db.insert(
+      'subjects',
+      subject.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<Subject>> retrieveSubjects() async {
+    final List<Map<String, Object?>> queryResult = await db.query('subjects');
+    return queryResult.map((e) => Subject.fromMap(e)).toList();
+  }
+
+  Future<void> deleteSubject(String name) async {
+    await db.delete(
+      'subjects',
+      where: "name = ?",
+      whereArgs: [name],
+    );
+  }
+
   /// Inserts or updates homework supplied into database
   Future<int> insertHomework(Homework hw) async {
     return await db.insert(
@@ -79,8 +105,8 @@ class DBHelper {
 
 class Homework {
   final int? id;
-  final DateTime overdueDate;
-  final DateTime creationDate;
+  final DateTime overdueTimestamp;
+  final DateTime creationTimestamp;
   final Subject subject;
   final String content;
   final bool finished;
@@ -89,8 +115,8 @@ class Homework {
   const Homework(
       {this.id,
       required this.subject,
-      required this.overdueDate,
-      required this.creationDate,
+      required this.overdueTimestamp,
+      required this.creationTimestamp,
       required this.content,
       required this.finished});
 
@@ -100,8 +126,8 @@ class Homework {
       'id': id,
       'subject_short': subject.shortName,
       'subject': subject.name,
-      'overdueDate': overdueDate.toIso8601String(),
-      'creationDate': creationDate.toIso8601String(),
+      'overdueDate': overdueTimestamp.toIso8601String(),
+      'creationDate': creationTimestamp.toIso8601String(),
       'content': content,
       'finished': finished,
     };
@@ -111,9 +137,9 @@ class Homework {
   static Homework fromMap(Map<String, dynamic> map) {
     return Homework(
         id: int.parse(map["id"]),
-        subject: map["subject"],
-        overdueDate: DateTime.parse(map["overdueDate"]),
-        creationDate: DateTime.parse(map["overdueDate"]),
+        subject: Subject(name: map["subject"], shortName: map["subject_short"]),
+        overdueTimestamp: DateTime.parse(map["overdueDate"]),
+        creationTimestamp: DateTime.parse(map["overdueDate"]),
         content: map["content"],
         finished: bool.parse(map["finished"]));
   }
@@ -122,13 +148,26 @@ class Homework {
   // each dog when using the print statement.
   @override
   String toString() {
-    return 'Homework{id: $id, subject: ${subject.name}, content: $content}';
+    return 'Homework{id: $id, subject: ${subject.name}, overdue at: ${overdueTimestamp.toIso8601String()} content: $content}';
   }
 }
 
 class Subject {
   final String name;
-  final String shortName;
+  final String? shortName;
 
-  const Subject({required this.name, required this.shortName});
+  const Subject({required this.name, this.shortName});
+
+  /// Convert a Subject into a Map.
+  Map<String, Object?> toMap() {
+    return {
+      'name': name,
+      'shortName': shortName,
+    };
+  }
+
+  /// Convert a Subject into a Map.
+  static Subject fromMap(Map<String, dynamic> map) {
+    return Subject(name: map["name"], shortName: map["shortName"]);
+  }
 }

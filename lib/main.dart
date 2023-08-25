@@ -44,7 +44,7 @@ class HWMAppState extends State<HWMApp> {
           brightness: Brightness.dark,
           seedColor: Colors.red.shade900,
           surfaceTint: Colors.grey.shade900,
-          surface: Colors.red.withOpacity(0.6),
+          surface: Colors.red.shade900,
         ),
         useMaterial3: true,
       ),

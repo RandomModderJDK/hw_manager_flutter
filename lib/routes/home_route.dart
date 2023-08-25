@@ -23,7 +23,7 @@ class _HomeRouteState extends State<HomeRoute> {
   void initState() {
     super.initState();
     dbHelper = DBHelper();
-    dbHelper.initDB().whenComplete(() async {
+    dbHelper.initDBs().whenComplete(() async {
       setState(() => dbLoaded = true);
     });
   }
