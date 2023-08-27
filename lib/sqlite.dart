@@ -13,7 +13,6 @@ class DBHelper {
   DBHelper._();
 
   late Database db;
-  late Database subDb;
 
   factory DBHelper() {
     return _dbHelper;
@@ -29,14 +28,14 @@ class DBHelper {
         await getApplicationDocumentsDirectory();
     if (kDebugMode) {
       print(
-          "Saving/open database to/on ${join(appDocumentsDir.path, "databases", 'hw_database.db')}");
+          "Saving/open database to/on ${join(appDocumentsDir.path, "hwm_databases", 'hw_database.db')}");
     }
     // Open the database and store the reference.
     db = await openDatabase(
       // Set the path to the database. Note: Using the `join` function from the
       // `path` package is best practice to ensure the path is correctly
       // constructed for each platform.
-      join(appDocumentsDir.path, "databases", 'hw_database.db'),
+      join(appDocumentsDir.path, "hwm_databases", 'hw_database.db'),
       // When the database is first created, create a table to store homework.
       onCreate: (db, version) async {
         await db.execute('CREATE TABLE subjects('
@@ -49,11 +48,13 @@ class DBHelper {
             'subject TEXT NOT NULL, '
             'overdueDate TEXT NOT NULL, '
             'content TEXT NOT NULL, '
-            'finished BOOL NOT NULL'
+            'creationDate TEXT NOT NULL, '
+            'finished TEXT NOT NULL'
             ')');
       },
       version: 1,
     );
+    print("awdwad " + retrieveHomeworks().toString());
     return true;
   }
 
@@ -134,14 +135,14 @@ class Homework {
       'overdueDate': overdueTimestamp.toIso8601String(),
       'creationDate': creationTimestamp.toIso8601String(),
       'content': content,
-      'finished': finished,
+      'finished': finished.toString(),
     };
   }
 
   /// Convert a Homework into a Map.
   static Homework fromMap(Map<String, dynamic> map) {
     return Homework(
-        id: int.parse(map["id"]),
+        id: map["id"],
         subject: Subject(name: map["subject"], shortName: map["subject_short"]),
         overdueTimestamp: DateTime.parse(map["overdueDate"]),
         creationTimestamp: DateTime.parse(map["overdueDate"]),

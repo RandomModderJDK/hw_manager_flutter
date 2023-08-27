@@ -15,9 +15,104 @@ class HomeRoute extends StatefulWidget {
 class _HomeRouteState extends State<HomeRoute> {
   late DBHelper dbHelper;
 
-  final List<String> entries = <String>['A', 'B', 'C'];
-  final List<int> colorCodes = <int>[600, 500, 100];
+  final List<Homework> entries = List<Homework>.empty(growable: true);
   bool dbLoaded = false;
+
+  Widget hwListWidget() {
+    return FutureBuilder(
+        future: dbHelper.retrieveHomeworks(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+                itemCount: snapshot.data?.length,
+                itemBuilder: (context, position) {
+                  return Dismissible(
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Icon(Icons.delete_forever),
+                      ),
+                      key: UniqueKey(),
+                      onDismissed: (DismissDirection direction) async {
+                        await dbHelper
+                            .deleteHomeworkById(snapshot.data![position].id!);
+                      },
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          12.0, 12.0, 12.0, 6.0),
+                                      child: Text(
+                                        snapshot.data![position].subject.name,
+                                        style: TextStyle(
+                                            fontSize: 22.0,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          12.0, 6.0, 12.0, 12.0),
+                                      child: Text(
+                                        snapshot.data![position].content,
+                                        style: TextStyle(fontSize: 18.0),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Expanded(
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: <Widget>[
+                                              Container(
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.black26,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              100)),
+                                                  child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Text(
+                                                          snapshot
+                                                              .data![position]
+                                                              .overdueTimestamp
+                                                              .toLocal()
+                                                              .toIso8601String()
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            color: Colors.white,
+                                                          )))),
+                                            ]))),
+                              ],
+                            ),
+                            Divider(
+                              height: 2.0,
+                              color: Colors.grey,
+                            )
+                          ],
+                        ),
+                      ));
+                });
+          } else {
+            return Text("data");
+          }
+        });
+  }
 
   @override
   void initState() {
@@ -25,6 +120,11 @@ class _HomeRouteState extends State<HomeRoute> {
     dbHelper = DBHelper();
     dbHelper.initDBs().whenComplete(() async {
       setState(() => dbLoaded = true);
+
+      dbHelper.retrieveHomeworks().then((hws) {
+        entries.clear();
+        entries.addAll(hws);
+      });
     });
   }
 
@@ -44,24 +144,16 @@ class _HomeRouteState extends State<HomeRoute> {
                     ))
           ]),
       body: dbLoaded
-          ? ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: entries.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  height: 50,
-                  color: Colors.amber[colorCodes[index]],
-                  child: Text('Entry ${entries[index]}\nTest'),
-                );
-              })
+          ? hwListWidget()
           : const Center(
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
+                  CircularProgressIndicator(),
                   Text('Loading Database...\nMaybe check logs?')
                 ])),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => addHomework(context),
+        onPressed: () => addHomework(context, setState),
         tooltip: 'Add homework',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.

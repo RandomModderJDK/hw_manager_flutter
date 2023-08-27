@@ -14,7 +14,10 @@ final List<DropdownMenuEntry> subjectEntries =
     List<DropdownMenuEntry>.empty(growable: true);
 
 void _saveHomework(
-    BuildContext context, DateTime dateSelected, bool userDated) {
+    BuildContext context,
+    void Function(VoidCallback fn) setState,
+    DateTime dateSelected,
+    bool userDated) {
   String content = _contentController.text;
   String subject = _subjectController.text;
 
@@ -27,12 +30,14 @@ void _saveHomework(
   if (kDebugMode) {
     print(hw);
   }
+  setState(() => DBHelper().insertHomework(hw));
   Navigator.pop(context);
 }
 
 // TODO implement saving action
 // TODO add untis fetching to auto-select dates
-void addHomework(BuildContext context) {
+void addHomework(
+    BuildContext context, void Function(VoidCallback fn) setState) {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   // Load subject into dropdown selection
@@ -70,7 +75,8 @@ void addHomework(BuildContext context) {
                         backgroundColor: Colors.red.shade900),
                     onPressed: () => {
                           if (formKey.currentState!.validate())
-                            _saveHomework(context, _dateSelected, _userDated)
+                            _saveHomework(
+                                context, setState, _dateSelected, _userDated)
                         },
                     child: const Text("Ok")),
               ],
