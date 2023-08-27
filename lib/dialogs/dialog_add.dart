@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
+import 'package:intl/intl.dart';
 
 TextEditingController _contentController = TextEditingController();
 TextEditingController _subjectController = TextEditingController();
@@ -90,11 +91,12 @@ void addHomework(BuildContext context) {
                           mode: DateTimeFieldPickerMode.date,
                           decoration: const InputDecoration(
                               constraints: BoxConstraints(),
-                              labelText: "Date",
+                              labelText: "Until the",
                               floatingLabelBehavior:
                                   FloatingLabelBehavior.always,
                               border: OutlineInputBorder()),
                           initialDate: DateTime(2023, 8),
+                          dateFormat: DateFormat("dd. MMMM, yyyy"),
                         ),
                         const SizedBox(height: 12),
                         DropdownMenu(
