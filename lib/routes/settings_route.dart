@@ -24,10 +24,17 @@ class SettingsRoute extends StatelessWidget {
                 description:
                     const Text('Change between dark, light, automatic mode'),
                 onPressed: (context) {
-                  DarkThemePreference()
-                      .nextThemeMode()
+                  Preferences.nextThemeMode()
                       .then((mode) => HWMApp.of(context).changeTheme(mode));
                 },
+              ),
+              SettingsTile(
+                title: const Text('Persist dialog data'),
+                leading: const Icon(Icons.archive_outlined),
+                description: const Text(
+                    'Persist dialog data in-memory to load after closing dialog'),
+                onPressed: (context) => Preferences.getDialogPersistence()
+                    .then((b) => Preferences.setDialogPersistence(!b)),
               )
             ],
           ), /*

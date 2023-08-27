@@ -1,5 +1,6 @@
 import 'dart:io' as io;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -26,6 +27,10 @@ class DBHelper {
     WidgetsFlutterBinding.ensureInitialized();
     final io.Directory appDocumentsDir =
         await getApplicationDocumentsDirectory();
+    if (kDebugMode) {
+      print(
+          "Saving/open database to/on ${join(appDocumentsDir.path, "databases", 'hw_database.db')}");
+    }
     // Open the database and store the reference.
     db = await openDatabase(
       // Set the path to the database. Note: Using the `join` function from the
@@ -35,7 +40,7 @@ class DBHelper {
       // When the database is first created, create a table to store homework.
       onCreate: (db, version) async {
         await db.execute('CREATE TABLE subjects('
-            'name TEXT PRIMARY KEY AUTOINCREMENT, '
+            'name TEXT PRIMARY KEY, '
             'shortName TEXT '
             ')');
         return db.execute('CREATE TABLE homeworks('

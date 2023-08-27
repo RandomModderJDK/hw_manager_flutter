@@ -25,7 +25,7 @@ class HWMAppState extends State<HWMApp> {
   @override
   void initState() {
     super.initState();
-    DarkThemePreference().getThemeMode().then((value) {
+    Preferences.getThemeMode().then((value) {
       setState(() => _themeMode = value);
     });
   }
@@ -36,15 +36,20 @@ class HWMAppState extends State<HWMApp> {
     return MaterialApp(
       title: 'HWM',
       theme: ThemeData(
+        dialogTheme: const DialogTheme(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)))),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
+        dialogTheme: const DialogTheme(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)))),
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.dark,
           seedColor: Colors.red.shade900,
           surfaceTint: Colors.grey.shade900,
-          surface: Colors.red.shade900,
         ),
         useMaterial3: true,
       ),
@@ -58,7 +63,7 @@ class HWMAppState extends State<HWMApp> {
   /// e.g.:
   /// MyApp.of(context).changeTheme(ThemeMode.dark);
   void changeTheme(ThemeMode themeMode) {
-    DarkThemePreference().setThemeMode(themeMode);
+    Preferences.setThemeMode(themeMode);
     setState(() {
       _themeMode = themeMode;
       if (kDebugMode) {
