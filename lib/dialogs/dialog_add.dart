@@ -30,7 +30,7 @@ void _saveHomework(
   if (kDebugMode) {
     print(hw);
   }
-  setState(() => DBHelper().insertHomework(hw));
+  DBHelper().insertHomework(hw).whenComplete(() => setState(() => ()));
   Navigator.pop(context);
 }
 

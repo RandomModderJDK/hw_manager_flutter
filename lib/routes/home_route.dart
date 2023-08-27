@@ -31,8 +31,8 @@ class _HomeRouteState extends State<HomeRoute> {
                       background: Container(
                         color: Colors.red,
                         alignment: Alignment.centerRight,
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Icon(Icons.delete_forever),
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: const Icon(Icons.delete_forever),
                       ),
                       key: UniqueKey(),
                       onDismissed: (DismissDirection direction) async {
@@ -54,7 +54,7 @@ class _HomeRouteState extends State<HomeRoute> {
                                           12.0, 12.0, 12.0, 6.0),
                                       child: Text(
                                         snapshot.data![position].subject.name,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontSize: 22.0,
                                             fontWeight: FontWeight.bold),
                                       ),
@@ -93,14 +93,15 @@ class _HomeRouteState extends State<HomeRoute> {
                                                               .toLocal()
                                                               .toIso8601String()
                                                               .toString(),
-                                                          style: TextStyle(
+                                                          style:
+                                                              const TextStyle(
                                                             fontSize: 16,
                                                             color: Colors.white,
                                                           )))),
                                             ]))),
                               ],
                             ),
-                            Divider(
+                            const Divider(
                               height: 2.0,
                               color: Colors.grey,
                             )
@@ -109,7 +110,8 @@ class _HomeRouteState extends State<HomeRoute> {
                       ));
                 });
           } else {
-            return Text("data");
+            return const Text(
+                "There is no data available. Try adding homework, by using the + button");
           }
         });
   }
@@ -130,6 +132,7 @@ class _HomeRouteState extends State<HomeRoute> {
 
   @override
   Widget build(BuildContext context) {
+    print("REBUILD");
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
