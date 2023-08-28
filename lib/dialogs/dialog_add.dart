@@ -31,7 +31,7 @@ void _saveHomework(
     print(hw);
   }
   DBHelper().insertHomework(hw).whenComplete(() => setState(() => ()));
-  Navigator.pop(context);
+  Navigator.of(context).pop(true);
 }
 
 // TODO implement saving action
@@ -67,7 +67,7 @@ void addHomework(
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red.shade900),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.of(context).pop(true),
                     // Close dialog
                     child: const Text("Cancel")),
                 ElevatedButton(
@@ -105,6 +105,7 @@ void addHomework(
                           dateFormat: DateFormat("dd. MMMM, yyyy"),
                         ),
                         const SizedBox(height: 12),
+                        // TODO add DropdownButtonFormField, to validate user input
                         DropdownMenu(
                             controller: _subjectController,
                             enableSearch: true,

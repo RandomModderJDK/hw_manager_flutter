@@ -49,8 +49,9 @@ jobs:
         with:
           name: HW-manager-${{ env.date }}.ipa
           path: ./hw_manager_flutter.ipa
+      - run: mv ./hw_manager_flutter.ipa ./hw-manager-$GITHUB_REF_NAME.ipa
       - name: Release artifact
         uses: softprops/action-gh-release@v1
         with:
-          name: hw-manager-${{ github.event.release.tag_name }}.ipa
-          path: ./hw_manager_flutter.ipa
+          files:
+            ./hw-manager-${{ tag_name }}.ipa

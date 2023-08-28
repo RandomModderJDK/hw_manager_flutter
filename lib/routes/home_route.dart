@@ -74,18 +74,18 @@ class _HomeRouteState extends State<HomeRoute> {
                                         padding: const EdgeInsets.all(8.0),
                                         child: Column(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
+                                            MainAxisAlignment.spaceEvenly,
                                             children: <Widget>[
                                               Container(
                                                   decoration: BoxDecoration(
                                                       color: Colors.black26,
                                                       borderRadius:
-                                                          BorderRadius.circular(
-                                                              100)),
+                                                      BorderRadius.circular(
+                                                          100)),
                                                   child: Padding(
                                                       padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
+                                                      const EdgeInsets.all(
+                                                          8.0),
                                                       child: Text(
                                                           snapshot
                                                               .data![position]
@@ -94,7 +94,7 @@ class _HomeRouteState extends State<HomeRoute> {
                                                               .toIso8601String()
                                                               .toString(),
                                                           style:
-                                                              const TextStyle(
+                                                          const TextStyle(
                                                             fontSize: 16,
                                                             color: Colors.white,
                                                           )))),
@@ -135,12 +135,16 @@ class _HomeRouteState extends State<HomeRoute> {
     print("REBUILD");
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .inversePrimary,
           title: Text(widget.title),
           actions: <Widget>[
             IconButton(
                 icon: const Icon(Icons.settings),
-                onPressed: () => Navigator.push(
+                onPressed: () =>
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const SettingsRoute()),
@@ -149,14 +153,16 @@ class _HomeRouteState extends State<HomeRoute> {
       body: dbLoaded
           ? hwListWidget()
           : const Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                  CircularProgressIndicator(),
-                  Text('Loading Database...\nMaybe check logs?')
-                ])),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                CircularProgressIndicator(),
+                Text('Loading Database...\nMaybe check logs?')
+              ])),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => addHomework(context, setState),
+        onPressed: () async {
+          addHomework(context, setState);
+        },
         tooltip: 'Add homework',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
