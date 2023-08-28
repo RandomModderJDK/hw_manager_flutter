@@ -1,22 +1,26 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hw_manager_flutter/dialogs/dialog_add.dart';
 import 'package:hw_manager_flutter/routes/settings_route.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
+import 'package:intl/intl.dart';
 
 class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key, required this.title});
 
+  static HomeRouteState? of(BuildContext context) =>
+      context.findAncestorStateOfType<HomeRouteState>();
+
   final String title;
 
   @override
-  State<HomeRoute> createState() => _HomeRouteState();
+  State<HomeRoute> createState() => HomeRouteState();
 }
 
-class _HomeRouteState extends State<HomeRoute> {
+class HomeRouteState extends State<HomeRoute> {
   late DBHelper dbHelper;
 
   final List<Homework> entries = List<Homework>.empty(growable: true);
-  bool dbLoaded = false;
 
   Widget hwListWidget() {
     return FutureBuilder(
@@ -74,27 +78,28 @@ class _HomeRouteState extends State<HomeRoute> {
                                         padding: const EdgeInsets.all(8.0),
                                         child: Column(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
+                                                MainAxisAlignment.spaceEvenly,
                                             children: <Widget>[
                                               Container(
                                                   decoration: BoxDecoration(
                                                       color: Colors.black26,
                                                       borderRadius:
-                                                      BorderRadius.circular(
-                                                          100)),
+                                                          BorderRadius.circular(
+                                                              100)),
                                                   child: Padding(
                                                       padding:
-                                                      const EdgeInsets.all(
-                                                          8.0),
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Text(
-                                                          snapshot
-                                                              .data![position]
-                                                              .overdueTimestamp
-                                                              .toLocal()
-                                                              .toIso8601String()
-                                                              .toString(),
+                                                          DateFormat(
+                                                                  "EEEE, dd. MMMM, yyyy")
+                                                              .format(snapshot
+                                                                  .data![
+                                                                      position]
+                                                                  .overdueTimestamp
+                                                                  .toLocal()),
                                                           style:
-                                                          const TextStyle(
+                                                              const TextStyle(
                                                             fontSize: 16,
                                                             color: Colors.white,
                                                           )))),
@@ -110,8 +115,13 @@ class _HomeRouteState extends State<HomeRoute> {
                       ));
                 });
           } else {
-            return const Text(
-                "There is no data available. Try adding homework, by using the + button");
+            return const Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                  CircularProgressIndicator(),
+                  Text('Loading Database...\nMaybe check logs?')
+                ]));
           }
         });
   }
@@ -121,48 +131,33 @@ class _HomeRouteState extends State<HomeRoute> {
     super.initState();
     dbHelper = DBHelper();
     dbHelper.initDBs().whenComplete(() async {
-      setState(() => dbLoaded = true);
-
-      dbHelper.retrieveHomeworks().then((hws) {
-        entries.clear();
-        entries.addAll(hws);
-      });
+      setState(() {});
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    print("REBUILD");
+    if (kDebugMode) {
+      print("REBUILD");
+    }
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Theme
-              .of(context)
-              .colorScheme
-              .inversePrimary,
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(widget.title),
           actions: <Widget>[
             IconButton(
                 icon: const Icon(Icons.settings),
-                onPressed: () =>
-                    Navigator.push(
+                onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const SettingsRoute()),
                     ))
           ]),
-      body: dbLoaded
-          ? hwListWidget()
-          : const Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                CircularProgressIndicator(),
-                Text('Loading Database...\nMaybe check logs?')
-              ])),
+      body: hwListWidget(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          addHomework(context, setState);
-        },
+        onPressed: () async => addHomework(context, setState).then((v) {
+          if (v) setState(() {});
+        }),
         tooltip: 'Add homework',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.

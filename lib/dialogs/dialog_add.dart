@@ -14,10 +14,7 @@ final List<DropdownMenuEntry> subjectEntries =
     List<DropdownMenuEntry>.empty(growable: true);
 
 void _saveHomework(
-    BuildContext context,
-    void Function(VoidCallback fn) setState,
-    DateTime dateSelected,
-    bool userDated) {
+    BuildContext context, DateTime dateSelected, bool userDated) {
   String content = _contentController.text;
   String subject = _subjectController.text;
 
@@ -30,13 +27,13 @@ void _saveHomework(
   if (kDebugMode) {
     print(hw);
   }
-  DBHelper().insertHomework(hw).whenComplete(() => setState(() => ()));
-  Navigator.of(context).pop(true);
+  DBHelper().insertHomework(hw);
+  Navigator.pop(context, true);
 }
 
 // TODO implement saving action
 // TODO add untis fetching to auto-select dates
-void addHomework(
+Future addHomework(
     BuildContext context, void Function(VoidCallback fn) setState) {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -56,7 +53,7 @@ void addHomework(
     _userDated = false;
   });
 
-  showDialog(
+  return showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
           builder: (context, setState) => AlertDialog(
@@ -67,7 +64,7 @@ void addHomework(
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red.shade900),
-                    onPressed: () => Navigator.of(context).pop(true),
+                    onPressed: () => Navigator.of(context).pop(false),
                     // Close dialog
                     child: const Text("Cancel")),
                 ElevatedButton(
@@ -75,8 +72,7 @@ void addHomework(
                         backgroundColor: Colors.red.shade900),
                     onPressed: () => {
                           if (formKey.currentState!.validate())
-                            _saveHomework(
-                                context, setState, _dateSelected, _userDated)
+                            _saveHomework(context, _dateSelected, _userDated)
                         },
                     child: const Text("Ok")),
               ],
@@ -103,9 +99,9 @@ void addHomework(
                               border: OutlineInputBorder()),
                           initialDate: DateTime(2023, 8),
                           dateFormat: DateFormat("dd. MMMM, yyyy"),
+                          use24hFormat: true,
                         ),
                         const SizedBox(height: 12),
-                        // TODO add DropdownButtonFormField, to validate user input
                         DropdownMenu(
                             controller: _subjectController,
                             enableSearch: true,

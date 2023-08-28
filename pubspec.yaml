@@ -46,6 +46,7 @@ dependencies:
   # Dark mode preferences
   shared_preferences: ^2.2.0
   settings_ui: ^2.0.2
+  intl: ^0.18.1
 
 
 dev_dependencies:
