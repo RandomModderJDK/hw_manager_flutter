@@ -45,12 +45,38 @@ class HomeRouteState extends State<HomeRoute> {
                       child: GestureDetector(
                           behavior: HitTestBehavior.opaque,
                           child: Card(
+                              margin: const EdgeInsets.fromLTRB(4, 3, 4, 3),
                               child: ListTile(
-                            contentPadding: const EdgeInsets.all(8.0),
-                            title: Text(snapshot.data![position].subject.name),
-                            subtitle: Text(snapshot.data![position].content),
-                            shape: const OutlineInputBorder(),
-                          ))));
+                                  contentPadding:
+                                  const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                  title: Text(
+                                      snapshot.data![position].subject.name),
+                                  subtitle:
+                                  Text(snapshot.data![position].content),
+                                  visualDensity: VisualDensity.comfortable,
+                                  shape: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1.5,
+                                          color: Theme
+                                              .of(context)
+                                              .colorScheme
+                                              .primary),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(12.0))),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {},
+                                          icon: const Icon(Icons.edit)),
+                                      IconButton(
+                                          onPressed: () {},
+                                          icon: const Icon(Icons.delete)),
+                                      IconButton(
+                                          onPressed: () {},
+                                          icon: const Icon(Icons.add_box)),
+                                    ],
+                                  )))));
                 }); /*Column(
                           children: <Widget>[
                             Row(
@@ -123,9 +149,9 @@ class HomeRouteState extends State<HomeRoute> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                  CircularProgressIndicator(),
-                  Text('Loading Database...\nMaybe check logs?')
-                ]));
+                      CircularProgressIndicator(),
+                      Text('Loading Database...\nMaybe check logs?')
+                    ]));
           }
         });
   }
@@ -146,12 +172,16 @@ class HomeRouteState extends State<HomeRoute> {
     }
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .inversePrimary,
           title: Text(widget.title),
           actions: <Widget>[
             IconButton(
                 icon: const Icon(Icons.settings),
-                onPressed: () => Navigator.push(
+                onPressed: () =>
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const SettingsRoute()),
@@ -159,9 +189,10 @@ class HomeRouteState extends State<HomeRoute> {
           ]),
       body: hwListWidget(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async => addHomework(context, setState).then((v) {
-          if (v) setState(() {});
-        }),
+        onPressed: () async =>
+            addHomework(context, setState).then((v) {
+              if (v) setState(() {});
+            }),
         tooltip: 'Add homework',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
