@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:hw_manager_flutter/dialogs/dialog_add.dart';
 import 'package:hw_manager_flutter/routes/settings_route.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
-import 'package:intl/intl.dart';
 
 class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key, required this.title});
@@ -44,8 +43,15 @@ class HomeRouteState extends State<HomeRoute> {
                             .deleteHomeworkById(snapshot.data![position].id!);
                       },
                       child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        child: Column(
+                          behavior: HitTestBehavior.opaque,
+                          child: Card(
+                              child: ListTile(
+                            contentPadding: const EdgeInsets.all(8.0),
+                            title: Text(snapshot.data![position].subject.name),
+                            subtitle: Text(snapshot.data![position].content),
+                            shape: const OutlineInputBorder(),
+                          ))));
+                }); /*Column(
                           children: <Widget>[
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -111,9 +117,7 @@ class HomeRouteState extends State<HomeRoute> {
                               color: Colors.grey,
                             )
                           ],
-                        ),
-                      ));
-                });
+                        ),*/
           } else {
             return const Center(
                 child: Column(
