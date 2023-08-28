@@ -35,7 +35,7 @@ class HomeRouteState extends State<HomeRoute> {
                       background: Container(
                         color: Colors.red,
                         alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
                         child: const Icon(Icons.delete_forever),
                       ),
                       key: UniqueKey(),
@@ -46,48 +46,50 @@ class HomeRouteState extends State<HomeRoute> {
                       child: GestureDetector(
                           behavior: HitTestBehavior.opaque,
                           child: Card(
-                              margin: const EdgeInsets.fromLTRB(4, 3, 4, 3),
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 3, horizontal: 3),
+                              shape: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 1.5,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .inversePrimary),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10.0))),
                               child: ListTile(
-                                  contentPadding:
-                                      const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                  minVerticalPadding: 10,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
                                   title: Text(
                                       snapshot.data![position].subject.name),
-                                  subtitleTextStyle: TextStyle(
+                                  titleTextStyle: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .primary),
-                                  subtitle: Row(children: [
-                                    Expanded(
-                                        child: Text(
-                                            snapshot.data![position].content)),
-                                    Center(
-                                        child: Text(
-                                            DateFormat("EEEE, dd. MMMM, yyyy")
-                                                .format(snapshot.data![position]
-                                                    .overdueTimestamp
-                                                    .toLocal()))),
-                                  ]),
+                                  subtitle:
+                                      Text(snapshot.data![position].content),
                                   visualDensity: VisualDensity.comfortable,
-                                  shape: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          width: 1.5,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .inversePrimary),
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(12.0))),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
+                                  trailing: Column(
                                     children: [
-                                      IconButton(
-                                          onPressed: () {},
-                                          icon: const Icon(Icons.edit)),
-                                      IconButton(
-                                          onPressed: () {},
-                                          icon: const Icon(Icons.delete)),
-                                      IconButton(
-                                          onPressed: () {},
-                                          icon: const Icon(Icons.add_box)),
+                                      Expanded(
+                                          child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                              onPressed: () {},
+                                              icon: const Icon(Icons.edit)),
+                                          IconButton(
+                                              onPressed: () {},
+                                              icon: const Icon(
+                                                  Icons.camera_alt_rounded)),
+                                        ],
+                                      )),
+                                      Text(DateFormat("EEEE, dd. MMMM, yyyy")
+                                          .format(snapshot
+                                              .data![position].overdueTimestamp
+                                              .toLocal())),
                                     ],
                                   )))));
                 }); /*Column(
