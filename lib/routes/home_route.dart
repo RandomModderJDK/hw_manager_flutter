@@ -29,70 +29,46 @@ class HomeRouteState extends State<HomeRoute> {
           if (snapshot.hasData) {
             return ListView.builder(
                 itemCount: snapshot.data?.length,
-                itemBuilder: (context, position) {
-                  return Dismissible(
-                      direction: DismissDirection.endToStart,
-                      background: Container(
-                        color: Colors.red,
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        child: const Icon(Icons.delete_forever),
-                      ),
-                      key: UniqueKey(),
-                      onDismissed: (DismissDirection direction) async {
-                        await dbHelper
-                            .deleteHomeworkById(snapshot.data![position].id!);
-                      },
-                      child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          child: Card(
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 3, horizontal: 3),
-                              shape: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 1.5,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .inversePrimary),
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(10.0))),
-                              child: ListTile(
-                                  minVerticalPadding: 10,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
-                                  title: Text(
-                                      snapshot.data![position].subject.name),
-                                  titleTextStyle: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
-                                  subtitle:
-                                      Text(snapshot.data![position].content),
-                                  visualDensity: VisualDensity.comfortable,
-                                  trailing: Column(
-                                    children: [
-                                      Expanded(
-                                          child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          IconButton(
-                                              onPressed: () {},
-                                              icon: const Icon(Icons.edit)),
-                                          IconButton(
-                                              onPressed: () {},
-                                              icon: const Icon(
-                                                  Icons.camera_alt_rounded)),
-                                        ],
-                                      )),
-                                      Text(DateFormat("EEEE, dd. MMMM, yyyy")
-                                          .format(snapshot
-                                              .data![position].overdueTimestamp
-                                              .toLocal())),
-                                    ],
-                                  )))));
-                }); /*Column(
+                itemBuilder: (context, position) => Card(
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
+                    shape: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            width: 1.5,
+                            color:
+                                Theme.of(context).colorScheme.inversePrimary),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10.0))),
+                    child: ListTile(
+                        minVerticalPadding: 10,
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 8.0),
+                        title: Text(snapshot.data![position].subject.name),
+                        titleTextStyle: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary),
+                        subtitle: Text(snapshot.data![position].content),
+                        visualDensity: VisualDensity.comfortable,
+                        trailing: Column(
+                          children: [
+                            Expanded(
+                                child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.edit)),
+                                IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.camera_alt_rounded)),
+                              ],
+                            )),
+                            Text(DateFormat("EEEE, dd. MMMM, yyyy").format(
+                                snapshot.data![position].overdueTimestamp
+                                    .toLocal())),
+                          ],
+                        )))); /*Column(
                           children: <Widget>[
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
