@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:hw_manager_flutter/dialogs/dialog_add.dart';
 import 'package:hw_manager_flutter/routes/settings_route.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
-import 'package:intl/intl.dart';
+
+import '../hw_tile.dart';
 
 class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key, required this.title});
@@ -39,7 +40,10 @@ class HomeRouteState extends State<HomeRoute> {
                                 Theme.of(context).colorScheme.inversePrimary),
                         borderRadius:
                             const BorderRadius.all(Radius.circular(10.0))),
-                    child: ListTile(
+                    child: CustomListItem(
+                      thumbnail: Text("a"),
+                      homework: snapshot.data![position],
+                      /*
                         minVerticalPadding: 10,
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 8.0),
@@ -51,6 +55,9 @@ class HomeRouteState extends State<HomeRoute> {
                         subtitle: Text(snapshot.data![position].content),
                         visualDensity: VisualDensity.comfortable,
                         trailing: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Expanded(
                                 child: Row(
@@ -68,7 +75,8 @@ class HomeRouteState extends State<HomeRoute> {
                                 snapshot.data![position].overdueTimestamp
                                     .toLocal())),
                           ],
-                        )))); /*Column(
+                        )*/
+                    ))); /*Column(
                           children: <Widget>[
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
