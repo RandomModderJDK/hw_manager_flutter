@@ -35,7 +35,7 @@ class CustomListItem extends StatelessWidget {
                     ],
                   ),
                   const Spacer(flex: 1),
-                  Text(DateFormat("EEEE, dd. MMMM, yyyy")
+                  Text(DateFormat("EEEE, dd.MM.yyyy")
                       .format(homework.overdueTimestamp.toLocal())),
                 ],
               ),
