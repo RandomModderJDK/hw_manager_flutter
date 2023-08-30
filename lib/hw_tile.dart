@@ -68,7 +68,7 @@ class _HomeworkDescription extends StatelessWidget {
           SelectionArea(
             child: ExpandableText(
               homework.content,
-              overflow: TextOverflow.ellipsis,
+              overflow: TextOverflow.clip,
               style: TextStyle(
                   fontSize: 12,
                   color: Theme.of(context).colorScheme.inverseSurface),
@@ -135,6 +135,7 @@ class _ExpandableTextState extends State<ExpandableText> {
         textToDisplay,
         style: widget.style,
         overflow: widget.overflow,
+        softWrap: true,
       ),
       onTap: () {
         //if the text is not expanded we show it all
