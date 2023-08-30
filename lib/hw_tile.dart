@@ -3,10 +3,8 @@ import 'package:hw_manager_flutter/sqlite.dart';
 import 'package:intl/intl.dart';
 
 class CustomListItem extends StatelessWidget {
-  const CustomListItem(
-      {super.key, required this.thumbnail, required this.homework});
+  const CustomListItem({super.key, required this.homework});
 
-  final Widget thumbnail;
   final Homework homework;
 
   @override
