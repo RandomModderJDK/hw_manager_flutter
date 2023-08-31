@@ -1,7 +1,6 @@
 import 'package:date_field/date_field.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hw_manager_flutter/shared_preferences.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 import 'package:intl/intl.dart';
 
@@ -9,12 +8,14 @@ class HomeworkFormDialog extends StatefulWidget {
   final String title;
   final String submit;
   final String cancel;
+  final Homework? homework;
 
   const HomeworkFormDialog(
       {super.key,
       required this.title,
       required this.submit,
-      required this.cancel});
+      required this.cancel,
+      this.homework});
 
   @override
   _HomeworkFormDialogState createState() => _HomeworkFormDialogState();
@@ -32,18 +33,24 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
   @override
   void initState() {
     super.initState();
-    _loadInitialState();
+    _initStateAsync();
+    _loadSubjects();
   }
 
-  Future<void> _loadInitialState() async {
-    bool persisting = await Preferences.getDialogPersistence();
+  Future<void> _initStateAsync() async {
+    if (widget.homework == null) return;
+    _contentController.text = widget.homework!.content;
+    _subjectController.text = widget.homework!.subject.name;
+    _dateSelected = widget.homework!.overdueTimestamp;
+    _userDated = true;
+    //TODO REIMPLEMENT
+    /*bool persisting = await Preferences.getDialogPersistence();
     if (!persisting) {
       setState(() {
         _dateSelected = DateTime.now();
         _userDated = false;
       });
-    }
-    _loadSubjects();
+    }*/
   }
 
   Future<void> _loadSubjects() async {
@@ -56,23 +63,22 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
     });
   }
 
-  void _saveHomework(BuildContext context) {
+  void _saveHomework(BuildContext context) async {
     String content = _contentController.text;
     String subject = _subjectController.text;
 
     Homework hw = Homework(
+        id: widget.homework?.id,
         subject: Subject(name: subject),
         overdueTimestamp: _dateSelected,
         creationTimestamp: DateTime.timestamp(),
         content: content,
         finished: false);
-
     if (kDebugMode) {
       print(hw);
     }
 
-    DBHelper().insertHomework(hw);
-    Navigator.pop(context, true);
+    DBHelper().insertHomework(hw).then((value) => Navigator.pop(context, true));
   }
 
   @override

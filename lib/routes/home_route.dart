@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hw_manager_flutter/dialogs/dialog_add.dart';
+import 'package:hw_manager_flutter/dialogs/dialog_homework_form.dart';
 import 'package:hw_manager_flutter/routes/settings_route.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 
@@ -29,6 +29,8 @@ class HomeRouteState extends State<HomeRoute> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
+                padding: const EdgeInsets.only(
+                    bottom: kFloatingActionButtonMargin + 64),
                 itemCount: snapshot.data?.length,
                 itemBuilder: (context, position) => Card(
                     margin:
@@ -40,8 +42,19 @@ class HomeRouteState extends State<HomeRoute> {
                                 Theme.of(context).colorScheme.inversePrimary),
                         borderRadius:
                             const BorderRadius.all(Radius.circular(10.0))),
-                    child: CustomListItem(
+                    child: HWListItem(
                       homework: snapshot.data![position],
+                      onEdit: () async => showDialog(
+                        context: context,
+                        builder: (context) => HomeworkFormDialog(
+                          homework: snapshot.data![position],
+                          title: 'Edit homework',
+                          submit: 'Edit',
+                          cancel: 'Cancel',
+                        ),
+                      ).then((v) {
+                        if (v ?? false) setState(() {});
+                      }),
                     )));
           } else {
             return const Center(
@@ -92,7 +105,7 @@ class HomeRouteState extends State<HomeRoute> {
             cancel: 'Cancel',
           ),
         ).then((v) {
-          setState(() {});
+          if (v) setState(() {});
         }),
         tooltip: 'Add homework',
         child: const Icon(Icons.add),

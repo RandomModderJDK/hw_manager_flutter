@@ -41,6 +41,7 @@ class Preferences {
     }
   }
 
+// TODO REIMPLEMENT
   static Future<bool> getDialogPersistence() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool persisting = prefs.getBool(persistDialog) ?? false;

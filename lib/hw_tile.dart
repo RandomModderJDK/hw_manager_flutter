@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 import 'package:intl/intl.dart';
 
-class CustomListItem extends StatelessWidget {
-  const CustomListItem({super.key, required this.homework});
+class HWListItem extends StatelessWidget {
+  const HWListItem({super.key, required this.homework, required this.onEdit});
 
   final Homework homework;
+  final Function onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -28,21 +29,35 @@ class CustomListItem extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                          onPressed: () {}, icon: const Icon(Icons.edit)),
+                          onPressed: () => onEdit(),
+                          icon: const Icon(Icons.edit)),
                       IconButton(
                           onPressed: () {},
                           icon: const Icon(Icons.camera_alt_rounded)),
                     ],
                   ),
                   const Spacer(flex: 1),
-                  Text(DateFormat("EEEE, dd.MM.yyyy")
-                      .format(homework.overdueTimestamp.toLocal())),
+                  Text(_formatDate(homework.overdueTimestamp.toLocal())),
                 ],
               ),
             ]),
       ),
     );
   }
+}
+
+String _formatDate(DateTime date) {
+  Duration diff = date.difference(DateTime.now());
+  print(diff.inDays);
+
+  if (diff.inDays == 0) return "Today!"; // Diff of 0 is apparently negative
+  if (diff.isNegative) return "Passed already";
+  if (diff.inDays < 6) return "This ${DateFormat("EEEE").format(date)}";
+  if (diff.inDays >= 6 && diff.inDays < 13) {
+    return "${DateFormat("EEEE").format(date)}, next week";
+  }
+
+  return DateFormat("EEEE, dd.MM.yyyy").format(date);
 }
 
 class _HomeworkDescription extends StatelessWidget {

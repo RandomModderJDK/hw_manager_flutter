@@ -25,10 +25,11 @@ class DBHelper {
     // Importing 'package:flutter/widgets.dart' is required.
     WidgetsFlutterBinding.ensureInitialized();
     final io.Directory appDocumentsDir =
-        await getApplicationDocumentsDirectory();
+    await getApplicationDocumentsDirectory();
     if (kDebugMode) {
       print(
-          "Saving/open database to/on ${join(appDocumentsDir.path, "hwm_databases", 'hw_database.db')}");
+          "Saving/open database to/on ${join(
+              appDocumentsDir.path, "hwm_databases", 'hw_database.db')}");
     }
     // Open the database and store the reference.
     db = await openDatabase(
@@ -91,7 +92,7 @@ class DBHelper {
 
   Future<List<Homework>> retrieveHomeworks() async {
     final List<Map<String, Object?>> queryResult =
-        await db.query('homeworks', orderBy: "overdueDate");
+    await db.query('homeworks', orderBy: "overdueDate");
     return queryResult.map((e) => Homework.fromMap(e)).toList();
   }
 
@@ -118,13 +119,12 @@ class Homework {
   final bool finished;
 
   // DateTime needs DateTime.tryParse(isoString);
-  const Homework(
-      {this.id,
-      required this.subject,
-      required this.overdueTimestamp,
-      required this.creationTimestamp,
-      required this.content,
-      required this.finished});
+  const Homework({this.id,
+    required this.subject,
+    required this.overdueTimestamp,
+    required this.creationTimestamp,
+    required this.content,
+    required this.finished});
 
   /// Convert a Homework into a Map.
   Map<String, Object?> toMap() {
@@ -154,7 +154,9 @@ class Homework {
   // each dog when using the print statement.
   @override
   String toString() {
-    return 'Homework{id: $id, subject: ${subject.name}, overdue at: ${overdueTimestamp.toIso8601String()} content: $content}';
+    return 'Homework{id: $id, subject: ${subject
+        .name}, overdue at: ${overdueTimestamp
+        .toIso8601String()} content: $content}';
   }
 }
 
