@@ -84,8 +84,15 @@ class HomeRouteState extends State<HomeRoute> {
           ]),
       body: hwListWidget(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async => addHomework(context, setState).then((v) {
-          if (v) setState(() {});
+        onPressed: () async => showDialog(
+          context: context,
+          builder: (context) => const HomeworkFormDialog(
+            title: 'Add homework',
+            submit: 'Add',
+            cancel: 'Cancel',
+          ),
+        ).then((v) {
+          setState(() {});
         }),
         tooltip: 'Add homework',
         child: const Icon(Icons.add),
