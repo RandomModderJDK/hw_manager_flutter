@@ -39,7 +39,6 @@ class DBHelper {
       // When the database is first created, create a table to store homework.
       onCreate: (db, version) async {
         await db.execute('CREATE TABLE subjects('
-            'id INTEGER PRIMARY KEY AUTOINCREMENT, '
             'name TEXT PRIMARY KEY, '
             'shortName TEXT '
             ')');
@@ -59,13 +58,18 @@ class DBHelper {
     return true;
   }
 
-  /// Inserts or updates homework supplied into database
+  /// Inserts or edits subject supplied into database
   Future<int> insertSubject(Subject subject) async {
     return await db.insert(
       'subjects',
       subject.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+  }
+
+  Future<Subject?> getSubject(String name) async {
+    return Subject.fromMap(
+        (await db.query('subjects', where: "name = ?", whereArgs: [name]))[0]);
   }
 
   Future<List<Subject>> retrieveSubjects() async {
@@ -162,14 +166,12 @@ class Homework {
 class Subject {
   final String name;
   final String? shortName;
-  final int? id;
 
-  const Subject({this.id, required this.name, this.shortName});
+  const Subject({required this.name, this.shortName});
 
   /// Convert a Subject into a Map.
   Map<String, Object?> toMap() {
     return {
-      'id': id,
       'name': name,
       'shortName': shortName,
     };

@@ -57,6 +57,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.5"
+  expandable_widgets:
+    dependency: "direct main"
+    description:
+      name: expandable_widgets
+      sha256: "4c533af4056a529b341977566700a7fab34f76f33510c95e4416ab38451cfa12"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3+1"
   fake_async:
     dependency: transitive
     description:
@@ -86,14 +94,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_expandable_text:
-    dependency: "direct main"
-    description:
-      name: flutter_expandable_text
-      sha256: "9c6496051fda42bb7d25bbf09453a587475bb3f6c2114f312cb5b2e87cff7e89"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   flutter_lints:
     dependency: "direct dev"
     description:

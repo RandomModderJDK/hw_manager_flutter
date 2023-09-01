@@ -5,7 +5,7 @@ import 'package:hw_manager_flutter/my_listview.dart';
 import 'package:hw_manager_flutter/routes/settings_route.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 
-import '../hw_tile.dart';
+import '../list_tiles.dart';
 
 class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key, required this.title});
@@ -93,7 +93,7 @@ class HomeRouteState extends State<HomeRoute> {
             cancel: 'Cancel',
           ),
         ).then((v) {
-          if (v) setState(() {});
+          if (v ?? false) setState(() {});
         }),
         tooltip: 'Add homework',
         child: const Icon(Icons.add),

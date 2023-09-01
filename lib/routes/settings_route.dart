@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hw_manager_flutter/routes/subject_route.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 import '../main.dart';
@@ -29,13 +30,22 @@ class SettingsRoute extends StatelessWidget {
                 },
               ),
               SettingsTile(
-                title: const Text('Persist dialog data'),
+                title: const Text('OBSOLETE: Persist dialog data'),
                 leading: const Icon(Icons.archive_outlined),
                 description: const Text(
-                    'Persist dialog data in-memory to load after closing dialog'),
+                    'OBSOLETE: Persist dialog data in-memory to load after closing dialog'),
                 onPressed: (context) => Preferences.getDialogPersistence()
                     .then((b) => Preferences.setDialogPersistence(!b)),
-              )
+              ),
+              SettingsTile(
+                title: const Text('Subjects overview'),
+                leading: const Icon(Icons.subject),
+                description:
+                    const Text('Delete, insert or edit the suggested subjects'),
+                onPressed: (context) => Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => const SubjectRoute())),
+              ),
             ],
           ), /*
           SettingsSection(

@@ -18,7 +18,7 @@ class HomeworkFormDialog extends StatefulWidget {
       this.homework});
 
   @override
-  _HomeworkFormDialogState createState() => _HomeworkFormDialogState();
+  State<HomeworkFormDialog> createState() => _HomeworkFormDialogState();
 }
 
 class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
@@ -28,13 +28,13 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   DateTime _dateSelected = DateTime.now();
   bool _userDated = false;
-  final List<DropdownMenuEntry> subjectEntries = [];
+
+  String subjectErrorText = "";
 
   @override
   void initState() {
-    super.initState();
     _initStateAsync();
-    _loadSubjects();
+    super.initState();
   }
 
   Future<void> _initStateAsync() async {
@@ -53,19 +53,9 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
     }*/
   }
 
-  Future<void> _loadSubjects() async {
-    List<Subject> subjList = await DBHelper().retrieveSubjects();
-    setState(() {
-      subjectEntries.clear();
-      subjectEntries.addAll(subjList
-          .map((s) => DropdownMenuEntry(value: s.name, label: s.name))
-          .toList());
-    });
-  }
-
   void _saveHomework(BuildContext context) async {
-    String content = _contentController.text;
-    String subject = _subjectController.text;
+    String content = _contentController.text.trim();
+    String subject = _subjectController.text.trim();
 
     Homework hw = Homework(
         id: widget.homework?.id,
@@ -96,49 +86,51 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
         ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade900),
           onPressed: () {
-            if (formKey.currentState!.validate()) {
-              _saveHomework(context);
+            if (_subjectController.text.isEmpty) {
+              setState(() => subjectErrorText = "Enter Subject!");
             }
+            if (!formKey.currentState!.validate()) return;
+            if (_subjectController.text.isEmpty) return;
+            _saveHomework(context);
           },
           child: Text(widget.submit),
         ),
       ],
       content: HomeworkFormContent(
-        formKey: formKey,
-        contentController: _contentController,
-        subjectController: _subjectController,
-        dateSelected: _dateSelected,
-        userDated: _userDated,
-        onDateSelected: (DateTime value) {
-          setState(() {
-            _dateSelected = value;
-            _userDated = true;
-          });
-        },
-        subjectEntries: subjectEntries,
-      ),
+          formKey: formKey,
+          contentController: _contentController,
+          subjectController: _subjectController,
+          subjectErrorText: subjectErrorText,
+          dateSelected: _dateSelected,
+          userDated: _userDated,
+          onDateSelected: (DateTime value) {
+            setState(() {
+              _dateSelected = value;
+              _userDated = true;
+            });
+          }),
     );
   }
 }
 
 class HomeworkFormContent extends StatelessWidget {
-  HomeworkFormContent({
-    Key? key,
-    required this.formKey,
-    required this.contentController,
-    required this.subjectController,
-    required this.dateSelected,
-    required this.userDated,
-    required this.onDateSelected,
-    required this.subjectEntries,
-  }) : super(key: key);
+  const HomeworkFormContent(
+      {Key? key,
+      required this.formKey,
+      required this.contentController,
+      required this.subjectController,
+      required this.subjectErrorText,
+      required this.dateSelected,
+      required this.userDated,
+      required this.onDateSelected})
+      : super(key: key);
 
   final TextEditingController contentController;
   final TextEditingController subjectController;
+  final String subjectErrorText;
   final DateTime dateSelected;
   final bool userDated;
   final Function(DateTime) onDateSelected;
-  final List<DropdownMenuEntry> subjectEntries;
   final GlobalKey<FormState> formKey;
 
   @override
@@ -153,7 +145,7 @@ class HomeworkFormContent extends StatelessWidget {
             onDateSelected: onDateSelected,
             selectedDate: dateSelected,
             mode: DateTimeFieldPickerMode.date,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: "Until the",
               floatingLabelBehavior: FloatingLabelBehavior.always,
               border: OutlineInputBorder(),
@@ -163,17 +155,24 @@ class HomeworkFormContent extends StatelessWidget {
             use24hFormat: true,
           ),
           const SizedBox(height: 12),
-          DropdownMenu(
-            controller: subjectController,
-            enableSearch: true,
-            requestFocusOnTap: true,
-            label: const Text("Subject"),
-            inputDecorationTheme: const InputDecorationTheme(
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              border: OutlineInputBorder(),
-            ),
-            dropdownMenuEntries: subjectEntries,
-          ),
+          FutureBuilder(
+              future: DBHelper().retrieveSubjects(),
+              builder: (context, snapshot) => DropdownMenu(
+                  controller: subjectController,
+                  enableSearch: true,
+                  errorText: subjectErrorText,
+                  requestFocusOnTap: true,
+                  label: const Text("Subject"),
+                  inputDecorationTheme: const InputDecorationTheme(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    border: OutlineInputBorder(),
+                  ),
+                  dropdownMenuEntries: snapshot.data != null
+                      ? snapshot.data!
+                          .map((s) =>
+                              DropdownMenuEntry(value: s.name, label: s.name))
+                          .toList()
+                      : [])),
           const SizedBox(height: 10),
           TextFormField(
             controller: contentController,

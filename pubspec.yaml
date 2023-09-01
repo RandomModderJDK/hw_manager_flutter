@@ -42,7 +42,7 @@ dependencies:
   path: ^1.8.3
   path_provider:
   date_field: ^3.0.5
-  flutter_expandable_text: ^1.0.0
+  expandable_widgets: ^1.0.3+1
 
   # Dark mode preferences
   shared_preferences: ^2.2.0
