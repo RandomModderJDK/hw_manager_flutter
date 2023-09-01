@@ -48,6 +48,7 @@ class HWListItem extends StatelessWidget {
                       IconButton(
                           onPressed: () {},
                           icon: const Icon(Icons.camera_alt_rounded)),
+                      // TODO Implement Photo view/taking
                     ],
                   ),
                   const Spacer(flex: 1),
