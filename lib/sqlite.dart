@@ -25,11 +25,10 @@ class DBHelper {
     // Importing 'package:flutter/widgets.dart' is required.
     WidgetsFlutterBinding.ensureInitialized();
     final io.Directory appDocumentsDir =
-    await getApplicationDocumentsDirectory();
+        await getApplicationDocumentsDirectory();
     if (kDebugMode) {
       print(
-          "Saving/open database to/on ${join(
-              appDocumentsDir.path, "hwm_databases", 'hw_database.db')}");
+          "Saving/open database to/on ${join(appDocumentsDir.path, "hwm_databases", 'hw_database.db')}");
     }
     // Open the database and store the reference.
     db = await openDatabase(
@@ -40,6 +39,7 @@ class DBHelper {
       // When the database is first created, create a table to store homework.
       onCreate: (db, version) async {
         await db.execute('CREATE TABLE subjects('
+            'id INTEGER PRIMARY KEY AUTOINCREMENT, '
             'name TEXT PRIMARY KEY, '
             'shortName TEXT '
             ')');
@@ -55,7 +55,7 @@ class DBHelper {
       },
       version: 1,
     );
-    print("awdwad " + retrieveHomeworks().toString());
+    print("awdwad ${retrieveHomeworks()}");
     return true;
   }
 
@@ -92,7 +92,7 @@ class DBHelper {
 
   Future<List<Homework>> retrieveHomeworks() async {
     final List<Map<String, Object?>> queryResult =
-    await db.query('homeworks', orderBy: "overdueDate");
+        await db.query('homeworks', orderBy: "overdueDate");
     return queryResult.map((e) => Homework.fromMap(e)).toList();
   }
 
@@ -119,12 +119,13 @@ class Homework {
   final bool finished;
 
   // DateTime needs DateTime.tryParse(isoString);
-  const Homework({this.id,
-    required this.subject,
-    required this.overdueTimestamp,
-    required this.creationTimestamp,
-    required this.content,
-    required this.finished});
+  const Homework(
+      {this.id,
+      required this.subject,
+      required this.overdueTimestamp,
+      required this.creationTimestamp,
+      required this.content,
+      required this.finished});
 
   /// Convert a Homework into a Map.
   Map<String, Object?> toMap() {
@@ -154,21 +155,21 @@ class Homework {
   // each dog when using the print statement.
   @override
   String toString() {
-    return 'Homework{id: $id, subject: ${subject
-        .name}, overdue at: ${overdueTimestamp
-        .toIso8601String()} content: $content}';
+    return 'Homework{id: $id, subject: ${subject.name}, overdue at: ${overdueTimestamp.toIso8601String()} content: $content}';
   }
 }
 
 class Subject {
   final String name;
   final String? shortName;
+  final int? id;
 
-  const Subject({required this.name, this.shortName});
+  const Subject({this.id, required this.name, this.shortName});
 
   /// Convert a Subject into a Map.
   Map<String, Object?> toMap() {
     return {
+      'id': id,
       'name': name,
       'shortName': shortName,
     };

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' as intl;
 
 class HWListItem extends StatelessWidget {
   const HWListItem({super.key, required this.homework, required this.onEdit});
@@ -52,12 +52,12 @@ String _formatDate(DateTime date) {
 
   if (diff.inDays == 0) return "Today!"; // Diff of 0 is apparently negative
   if (diff.isNegative) return "Passed already";
-  if (diff.inDays < 6) return "This ${DateFormat("EEEE").format(date)}";
+  if (diff.inDays < 6) return "This ${intl.DateFormat("EEEE").format(date)}";
   if (diff.inDays >= 6 && diff.inDays < 13) {
-    return "${DateFormat("EEEE").format(date)}, next week";
+    return "${intl.DateFormat("EEEE").format(date)}, next week";
   }
 
-  return DateFormat("EEEE, dd.MM.yyyy").format(date);
+  return intl.DateFormat("EEEE, dd.MM.yyyy").format(date);
 }
 
 class _HomeworkDescription extends StatelessWidget {
@@ -93,58 +93,62 @@ class _HomeworkDescription extends StatelessWidget {
   }
 }
 
-// TODO Use the following function to determine text overflow:
-/*
-bool hasTextOverflow(
-  String text,
-  TextStyle style,
-  {double minWidth = 0,
-       double maxWidth = double.infinity,
-       int maxLines = 2
-  }) {
-  final TextPainter textPainter = TextPainter(
-    text: TextSpan(text: text, style: style),
-    maxLines: maxLines,
-    textDirection: TextDirection.ltr,
-  )..layout(minWidth: minWidth, maxWidth: maxWidth);
-  return textPainter.didExceedMaxLines;
-}
- */
 class ExpandableText extends StatefulWidget {
   const ExpandableText(this.text,
-      {super.key, this.style, this.overflow, textShowMore, treshold})
-      : textShowMore = textShowMore ?? "...",
-        treshold = treshold ?? 70;
+      {super.key,
+      required this.style,
+      this.overflow,
+      overflowText,
+      treshold,
+      maxLines})
+      : overflowText = overflowText ?? "...",
+        treshold = treshold ?? 70,
+        maxLines = maxLines ?? 2;
 
   //text is the total text of our expandable widget
   final String text;
-  final TextStyle? style;
+  final TextStyle style;
   final TextOverflow? overflow;
-  final String textShowMore;
+  final String overflowText;
   final int treshold;
+  final int maxLines;
 
   @override
-  _ExpandableTextState createState() => _ExpandableTextState();
+  State<ExpandableText> createState() => _ExpandableTextState();
 }
 
 class _ExpandableTextState extends State<ExpandableText> {
   late String textToDisplay;
+  bool contracted = true;
 
   @override
   void initState() {
-    //if the text has more than a certain number of characters, the text we display will consist of that number of characters;
-    //if it's not longer we display all the text
-    print(widget.text.length);
-
-    //we arbitrarily chose 25 as the length
-    textToDisplay = widget.text.length > widget.treshold
-        ? widget.text.substring(0, widget.treshold) + widget.textShowMore
-        : widget.text;
     super.initState();
+  }
+
+  _formatText() {
+    if (contracted) {
+      textToDisplay = widget.text.length > widget.treshold
+          ? widget.text.substring(0, widget.treshold) + widget.overflowText
+          : widget.text;
+    } else {
+      textToDisplay = widget.text;
+    }
+  }
+
+  bool _hasTextOverflow(String text,
+      {double minWidth = 0, double maxWidth = double.infinity}) {
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(text: text, style: widget.style),
+      maxLines: widget.maxLines,
+      textDirection: TextDirection.ltr,
+    )..layout(minWidth: minWidth, maxWidth: maxWidth);
+    return textPainter.didExceedMaxLines;
   }
 
   @override
   Widget build(BuildContext context) {
+    _formatText();
     return InkWell(
       child: Text(
         textToDisplay,
@@ -156,17 +160,18 @@ class _ExpandableTextState extends State<ExpandableText> {
         //if the text is not expanded we show it all
         if (widget.text.length > widget.treshold &&
             textToDisplay.length <=
-                widget.treshold + widget.textShowMore.length) {
+                widget.treshold + widget.overflowText.length) {
+          contracted = false;
           setState(() {
-            textToDisplay = widget.text;
+            _formatText();
           });
         }
         //else if the text is already expanded we contract it back
         else if (widget.text.length > widget.treshold &&
             textToDisplay.length > widget.treshold) {
+          contracted = true;
           setState(() {
-            textToDisplay =
-                widget.text.substring(0, widget.treshold) + widget.textShowMore;
+            _formatText();
           });
         }
       },
