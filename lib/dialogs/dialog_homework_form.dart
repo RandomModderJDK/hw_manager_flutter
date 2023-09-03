@@ -155,26 +155,29 @@ class HomeworkFormContent extends StatelessWidget {
             use24hFormat: true,
           ),
           const SizedBox(height: 12),
-          FutureBuilder(
-              future: DBHelper().retrieveSubjects(),
-              builder: (context, snapshot) => DropdownMenu(
-                  controller: subjectController,
-                  onSelected: (v) {},
-                  // TODO Implement untis date fetching here. NOTE: Check for user date selection
-                  enableSearch: true,
-                  errorText: subjectErrorText,
-                  requestFocusOnTap: true,
-                  label: const Text("Subject"),
-                  inputDecorationTheme: const InputDecorationTheme(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    border: OutlineInputBorder(),
-                  ),
-                  dropdownMenuEntries: snapshot.data != null
-                      ? snapshot.data!
-                          .map((s) =>
-                              DropdownMenuEntry(value: s.name, label: s.name))
-                          .toList()
-                      : [])),
+          Row(mainAxisSize: MainAxisSize.max, children: [
+            Expanded(
+                child: FutureBuilder(
+                    future: DBHelper().retrieveSubjects(),
+                    builder: (context, snapshot) => DropdownMenu(
+                        controller: subjectController,
+                        onSelected: (v) {},
+                        // TODO Implement untis date fetching here. NOTE: Check for user date selection
+                        enableSearch: true,
+                        errorText: subjectErrorText,
+                        requestFocusOnTap: true,
+                        label: const Text("Subject"),
+                        inputDecorationTheme: const InputDecorationTheme(
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          border: OutlineInputBorder(),
+                        ),
+                        dropdownMenuEntries: snapshot.data != null
+                            ? snapshot.data!
+                                .map((s) => DropdownMenuEntry(
+                                    value: s.name, label: s.name))
+                                .toList()
+                            : [])))
+          ]),
           const SizedBox(height: 10),
           TextFormField(
             controller: contentController,
