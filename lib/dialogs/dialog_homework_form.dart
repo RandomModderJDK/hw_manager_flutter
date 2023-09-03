@@ -160,6 +160,7 @@ class HomeworkFormContent extends StatelessWidget {
                 child: FutureBuilder(
                     future: DBHelper().retrieveSubjects(),
                     builder: (context, snapshot) => DropdownMenu(
+                        expandedInsets: EdgeInsets.zero,
                         controller: subjectController,
                         onSelected: (v) {},
                         // TODO Implement untis date fetching here. NOTE: Check for user date selection
