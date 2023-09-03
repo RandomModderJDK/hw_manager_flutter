@@ -1,6 +1,7 @@
 import 'package:expandable_widgets/expandable_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' as intl;
 
 class HWListItem extends StatelessWidget {
@@ -46,7 +47,17 @@ class HWListItem extends StatelessWidget {
                           onPressed: () => onEdit(),
                           icon: const Icon(Icons.edit)),
                       IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            // TODO Create new route for viewing images
+                            ImagePicker()
+                                .pickImage(source: ImageSource.gallery)
+                                .then((imgFile) async {
+                              if (imgFile == null) return;
+                              HWImage.readXFile(homework.id!, imgFile).then(
+                                  (hwImage) =>
+                                      DBHelper().insertHWImage(hwImage));
+                            });
+                          },
                           icon: const Icon(Icons.camera_alt_rounded)),
                       // TODO Implement Photo view/taking
                     ],
