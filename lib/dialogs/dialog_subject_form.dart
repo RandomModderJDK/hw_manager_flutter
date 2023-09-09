@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 
@@ -50,9 +49,6 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
     String shortName = _shortNameController.text.trim();
 
     Subject subject = Subject(name: name, shortName: shortName);
-    if (kDebugMode) {
-      print(subject);
-    }
 
     DBHelper dbHelper = DBHelper();
     if (widget.subject != null) {

@@ -39,25 +39,19 @@ class DBHelper {
       // constructed for each platform.
       join(appDocumentsDir.path, "hwm_databases", 'hw_database.db'),
       onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion == 1) {
-          return db.execute('CREATE TABLE imageBlobs('
-              'id INTEGER PRIMARY KEY AUTOINCREMENT, '
-              'homeworkId INTEGER NOT NULL, '
-              'orderId INTEGER NOT NULL, '
-              'data BLOB NOT NULL'
-              ')');
-        }
+        return await db.execute('CREATE TABLE imageBlobs('
+            'id TEXT PRIMARY KEY, '
+            'data BLOB NOT NULL'
+            ')');
       },
       onCreate: (db, version) async {
+        await db.execute('CREATE TABLE imageBlobs('
+            'id TEXT PRIMARY KEY, '
+            'data BLOB NOT NULL'
+            ')');
         await db.execute('CREATE TABLE subjects('
             'name TEXT PRIMARY KEY, '
             'shortName TEXT '
-            ')');
-        await db.execute('CREATE TABLE imageBlobs('
-            'id INTEGER PRIMARY KEY AUTOINCREMENT, '
-            'homeworkId INTEGER NOT NULL, '
-            'orderId INTEGER NOT NULL, '
-            'data BLOB NOT NULL'
             ')');
         return db.execute('CREATE TABLE homeworks('
             'id INTEGER PRIMARY KEY AUTOINCREMENT, '
@@ -130,56 +124,96 @@ class DBHelper {
     );
   }
 
-  /// Insert or update picture(s) from existing homework id
-  Future<int> insertHWImage(HWImage hwImage) async {
-    int orderId;
-    if (hwImage.order == null) {
-      List<int> order = await _retrieveHWImageOrder(hwImage.homeworkId);
-      order.add(0); // The default ordering number i.e. the first photo
-      order.sort();
-      orderId = order[order.length - 1] + 1;
-    } else {
-      orderId = hwImage.order!;
-    }
-    return await db.insert(
+  /// Insert/update document with existing homework id
+  Future<Future<int>> insertHWPage(HWPage page, {bool orderIn = false}) async {
+    print("INSERT: ${page.order}");
+    if (orderIn) page.order = await countHWPages(page.hwId);
+    print("INSERT AFTER REORDER: ${page.order}");
+    return db.insert(
       'imageBlobs',
-      hwImage.toMap(orderId: orderId),
+      await page.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<List<HWImage>> retrieveHWImages(Homework hw) async {
-    return await retrieveHWImagesById(hw.id);
+  Future<int> countHWPages(int hwId) async {
+    final List<Map<String, Object?>> queryResult = await db.query("imageBlobs",
+        columns: ["COUNT(id)"], where: 'id LIKE ?', whereArgs: ["$hwId+%"]);
+    if (queryResult[0]["COUNT(id)"] == null) return 0;
+    return queryResult[0]["COUNT(id)"] as int;
   }
 
-  /// -1 Stands for wildcard
-  Future<List<HWImage>> retrieveHWImagesById(int? id) async {
-    if (id == -1) {
-      final List<Map<String, Object?>> queryResult =
-          await db.query('imageBlobs');
-      return queryResult.map((e) => HWImage.fromMap(e)).toList();
+  Future<HWPage?> retrieveHWPage(Homework hw, int order) async {
+    final List<Map<String, Object?>> queryResult = await db.query('imageBlobs',
+        where: 'id = ?', whereArgs: ["${hw.id ?? "NULL"}+$order"]);
+    if (queryResult.isEmpty) return null;
+    return queryResult.map((e) => HWPage.fromMap(e)).toList()[0];
+  }
+
+  Future<List<HWPage>> retrieveHWPages(Homework hw) async {
+    final List<Map<String, Object?>> queryResult = await db.query('imageBlobs',
+        where: 'id LIKE ?', whereArgs: ["${hw.id ?? "NULL"}+%"]);
+    if (queryResult.isEmpty) return [];
+    var result = queryResult.map((e) => HWPage.fromMap(e)).toList();
+    return result;
+  }
+
+  /// Deletes HWPage from database. If HWPage does not have id, nothing will be deleted
+  Future<int> deleteHWPage(HWPage page) async {
+    return await deleteHWPageByFullId("${page.hwId}+${page.order}");
+  }
+
+  Future<int> deleteHWPagesByHW(Homework hw) async {
+    return await db.delete(
+      'imageBlobs',
+      where: "id LIKE ?",
+      whereArgs: ["${hw.id}+%"],
+    );
+  }
+
+  Future<List<void>> deleteHWPagesByHWOrder(
+      Homework hw, List<int> order) async {
+    for (int p in order) {
+      print("DELET ${hw.id ?? -1}+$p");
+      await db.delete(
+        'imageBlobs',
+        where: "id = ?",
+        whereArgs: ["${hw.id}+$p"],
+      );
     }
-    final List<Map<String, Object?>> queryResult = await db.query('imageBlobs',
-        orderBy: "orderId", where: 'homeworkId = ?', whereArgs: [id ?? "NULL"]);
-    return queryResult.map((e) => HWImage.fromMap(e)).toList();
+    return await reorderHWPages(hw);
   }
 
-  Future<List<int>> _retrieveHWImageOrder(int? hwId) async {
-    final List<Map<String, Object?>> queryResult = await db.query('imageBlobs',
-        columns: ["orderId"],
-        orderBy: "orderId",
-        where: 'homeworkId = ?',
-        whereArgs: [hwId ?? "NULL"]);
-    return queryResult.map((e) => e["orderId"] as int).toList();
+  Future<List<void>> reorderHWPages(Homework hw) async {
+    List<HWPage> pages = await retrieveHWPages(hw);
+    pages.sort((a, b) => a.order.compareTo(b.order));
+    print(
+        "These are the currently existing pages: ${pages.map((e) => e.order)}");
+    return await Future.wait([
+      for (int i = 0; i < pages.length; i++)
+        () async {
+          HWPage p = pages[i];
+          await deleteHWPage(p);
+          p.order = i;
+          await insertHWPage(p, orderIn: false);
+        }()
+    ]);
   }
 
-  /// Deletes HWImage from database. If HWImage does not have id, nothing will be deleted
-  Future<void> deleteHWImage(HWImage hw) async {
-    return await deleteHomeworkById(hw.id ?? -1);
+  Future<int> deleteHWPageByHWOrder(Homework hw, int order) async {
+    return await db.delete(
+      'imageBlobs',
+      where: "id = ?+?",
+      whereArgs: [hw.id, order],
+    );
   }
 
-  Future<void> deleteHWImageById(int id) async {
-    await db.delete(
+  Future<int> deleteAllHWPages() async {
+    return await db.delete('imageBlobs');
+  }
+
+  Future<int> deleteHWPageByFullId(String id) async {
+    return await db.delete(
       'imageBlobs',
       where: "id = ?",
       whereArgs: [id],
@@ -228,8 +262,6 @@ class Homework {
         finished: bool.parse(map["finished"]));
   }
 
-  // Implement toString to make it easier to see information about
-  // each dog when using the print statement.
   @override
   String toString() {
     return 'Homework{id: $id, subject: ${subject.name}, overdue at: ${overdueTimestamp.toIso8601String()} content: $content}';
@@ -256,44 +288,36 @@ class Subject {
   }
 }
 
-class HWImage {
-  /// The Image own ID
-  final int? id;
-
+class HWPage {
   /// The linked homework
-  final int homeworkId;
+  final int hwId;
+  int order;
+  Uint8List data;
 
-  /// Specifies which image is "page 1", etc.
-  final int? order;
-  final Uint8List data;
+  HWPage(this.hwId, this.data, {int? order}) : order = order ?? 0;
 
-  const HWImage(this.homeworkId, this.data, {this.id, this.order});
-
-  static Future<HWImage> readXFile(int homeworkId, XFile xFile,
-      {int? id, int? order}) async {
-    return HWImage(homeworkId, await xFile.readAsBytes(), id: id, order: order);
+  static Future<HWPage> readXFile(int homeworkId, XFile xFile) async {
+    return HWPage(homeworkId, await xFile.readAsBytes());
   }
 
-  /// Convert a HWImage into a Map.
-  Map<String, Object?> toMap({int? orderId}) {
+  /// Convert a HWPage into a Map.
+  Future<Map<String, Object?>> toMap() async {
     return {
-      'id': id,
-      'homeworkId': homeworkId,
-      'orderId': orderId ?? order,
+      'id': "$hwId+$order",
       'data': data,
     };
   }
 
-  /// Convert a HWImage into a Map.
-  static HWImage fromMap(Map<String, dynamic> map) {
-    return HWImage(map["homeworkId"], map["data"] as Uint8List,
-        id: map["id"], order: map["orderId"]);
+  /// Convert a HWPage into a Map.
+  static HWPage fromMap(Map<String, Object?> map) {
+    List<String> id = map["id"]!.toString().split("+");
+    int hwID = int.parse(id[0]);
+    int order = int.parse(id[1]);
+    return HWPage(hwID, map["data"]! as Uint8List, order: order);
   }
 
-  // Implement toString to make it easier to see information about
-  // each dog when using the print statement.
   @override
   String toString() {
-    return 'HWImage{id: $id, homeworkId: $homeworkId, orderId: $order, data_len: ${data.length}';
+    return 'HWImage{id: $hwId+$order, data: ${data.length}';
   }
 }

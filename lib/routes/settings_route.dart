@@ -49,50 +49,10 @@ class SettingsRoute extends StatelessWidget {
                         builder: (context) => const SubjectRoute())),
               ),
               SettingsTile(
-                title: const Text('Show photo'),
-                leading: const Icon(Icons.archive_outlined),
-                description: const Text('TEST: Shows photo'),
-                onPressed: (context) async => await showDialog(
-                    context: context,
-                    builder: (context) {
-                      return Dialog(
-                          child: FutureBuilder(
-                              future: DBHelper().retrieveHWImagesById(-1),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return ListView.builder(
-                                      itemCount: snapshot.data!.length,
-                                      itemBuilder: (context, position) {
-                                        HWImage img = snapshot.data![position];
-                                        return Stack(children: <Widget>[
-                                          ConstrainedBox(
-                                              constraints: BoxConstraints(
-                                                  maxHeight: 300),
-                                              child: Image.memory(img.data,
-                                                  fit: BoxFit.contain)),
-                                          Align(
-                                              alignment: Alignment.topLeft,
-                                              child: Text(
-                                                img
-                                                    .toString()
-                                                    .splitMapJoin(", ",
-                                                        onMatch: (m) => "\n")
-                                                    .split("{")[1],
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .inversePrimary,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ))
-                                        ]);
-                                      });
-                                } else {
-                                  print("tes");
-                                  return Text("data");
-                                }
-                              }));
-                    }),
+                title: const Text('Delete all fotos'),
+                leading: const Icon(Icons.delete),
+                description: const Text('Delete all the photos'),
+                onPressed: (context) => DBHelper().deleteAllHWPages(),
               ),
             ],
           ), /*

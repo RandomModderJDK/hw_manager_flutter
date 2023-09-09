@@ -1,14 +1,22 @@
+import 'dart:io' show Platform;
+
 import 'package:expandable_widgets/expandable_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:hw_manager_flutter/routes/image_viewer_route.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' as intl;
 
 class HWListItem extends StatelessWidget {
-  const HWListItem({super.key, required this.homework, required this.onEdit});
+  const HWListItem(
+      {super.key,
+      required this.homework,
+      required this.onEdit,
+      required this.onDeleted});
 
   final Homework homework;
   final Function onEdit;
+  final Function onDeleted;
 
   String _formatDate(DateTime date) {
     Duration diff = date.difference(DateTime.now());
@@ -46,20 +54,45 @@ class HWListItem extends StatelessWidget {
                       IconButton(
                           onPressed: () => onEdit(),
                           icon: const Icon(Icons.edit)),
-                      IconButton(
-                          onPressed: () {
-                            // TODO Create new route for viewing images
-                            ImagePicker()
-                                .pickImage(source: ImageSource.gallery)
-                                .then((imgFile) async {
-                              if (imgFile == null) return;
-                              HWImage.readXFile(homework.id!, imgFile).then(
-                                  (hwImage) =>
-                                      DBHelper().insertHWImage(hwImage));
-                            });
-                          },
-                          icon: const Icon(Icons.camera_alt_rounded)),
-                      // TODO Implement Photo view/taking
+                      FutureBuilder(
+                          future: DBHelper().countHWPages(homework.id ?? -1),
+                          builder: (context, snapshot) =>
+                              StatefulBuilder(builder: (context, setState) {
+                                if (snapshot.hasData) {
+                                  if (snapshot.data! != 0) {
+                                    return IconButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ImageViewerRoute(
+                                                  homework: homework,
+                                                ),
+                                              ));
+                                        },
+                                        icon: const Icon(Icons.photo_album));
+                                  }
+                                }
+                                return IconButton(
+                                    onPressed: () {
+                                      ImagePicker()
+                                          .pickImage(
+                                              source: Platform.isAndroid ||
+                                                      Platform.isIOS
+                                                  ? ImageSource.camera
+                                                  : ImageSource.gallery)
+                                          .then((imgFile) async {
+                                        if (imgFile == null) return;
+                                        HWPage page = await HWPage.readXFile(
+                                            homework.id!, imgFile);
+                                        DBHelper()
+                                            .insertHWPage(page, orderIn: true);
+                                      }).then((value) => setState(() {}));
+                                    },
+                                    icon:
+                                        const Icon(Icons.add_a_photo_rounded));
+                              })),
                     ],
                   ),
                   const Spacer(flex: 1),

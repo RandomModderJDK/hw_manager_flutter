@@ -35,6 +35,7 @@ class HWMAppState extends State<HWMApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'HWM',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         dialogTheme: const DialogTheme(
             shape: RoundedRectangleBorder(
