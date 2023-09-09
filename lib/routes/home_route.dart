@@ -22,8 +22,6 @@ class HomeRoute extends StatefulWidget {
 class HomeRouteState extends State<HomeRoute> {
   late DBHelper dbHelper;
 
-  final List<Homework> entries = List<Homework>.empty(growable: true);
-
   Widget hwListWidget() {
     return FutureBuilder(
         future: dbHelper.retrieveHomeworks(),
@@ -43,7 +41,27 @@ class HomeRouteState extends State<HomeRoute> {
                           ),
                         ).then((v) {
                           if (v ?? false) setState(() {});
-                        })));
+                        }),
+                    onDeleted: (DismissDirection direction) async {
+                      Homework hw = snapshot.data![position];
+                      List<HWPage> pages = await DBHelper().retrieveHWPages(hw);
+                      snapshot.data!.remove(hw);
+                      await DBHelper().deleteHomework(hw);
+                      setState(() {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text("Deleted ${hw.id} (${hw.subject.name})"),
+                            action: SnackBarAction(
+                                label: "UNDO",
+                                onPressed: () => Future.wait([
+                                      DBHelper().insertHomework(hw),
+                                      DBHelper().insertHWPages(pages)
+                                    ]).then((value) => setState(() {}))),
+                          ),
+                        );
+                      });
+                    }));
           } else {
             return const Center(
                 child: Column(

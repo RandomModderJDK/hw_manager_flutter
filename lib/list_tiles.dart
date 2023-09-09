@@ -16,7 +16,7 @@ class HWListItem extends StatelessWidget {
 
   final Homework homework;
   final Function onEdit;
-  final Function onDeleted;
+  final Function(DismissDirection) onDeleted;
 
   String _formatDate(DateTime date) {
     Duration diff = date.difference(DateTime.now());
@@ -33,74 +33,86 @@ class HWListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-      child: IntrinsicHeight(
-        child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Expanded(
-                child: _HomeworkDescription(homework),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  const Spacer(flex: 1),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
+    return Dismissible(
+      key: Key(homework.id!.toString()),
+      onDismissed: onDeleted,
+      background: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.all(30),
+        child: const Icon(Icons.delete_forever),
+      ),
+      child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          child: IntrinsicHeight(
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Expanded(
+                    child: _HomeworkDescription(homework),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      IconButton(
-                          onPressed: () => onEdit(),
-                          icon: const Icon(Icons.edit)),
-                      FutureBuilder(
-                          future: DBHelper().countHWPages(homework.id ?? -1),
-                          builder: (context, snapshot) =>
-                              StatefulBuilder(builder: (context, setState) {
-                                if (snapshot.hasData) {
-                                  if (snapshot.data! != 0) {
+                      const Spacer(flex: 1),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                              onPressed: () => onEdit(),
+                              icon: const Icon(Icons.edit)),
+                          FutureBuilder(
+                              future:
+                                  DBHelper().countHWPages(homework.id ?? -1),
+                              builder: (context, snapshot) =>
+                                  StatefulBuilder(builder: (context, setState) {
+                                    if (snapshot.hasData) {
+                                      if (snapshot.data! != 0) {
+                                        return IconButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ImageViewerRoute(
+                                                      homework: homework,
+                                                    ),
+                                                  ));
+                                            },
+                                            icon:
+                                                const Icon(Icons.photo_album));
+                                      }
+                                    }
                                     return IconButton(
                                         onPressed: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ImageViewerRoute(
-                                                  homework: homework,
-                                                ),
-                                              ));
+                                          ImagePicker()
+                                              .pickImage(
+                                                  source: Platform.isAndroid ||
+                                                          Platform.isIOS
+                                                      ? ImageSource.camera
+                                                      : ImageSource.gallery)
+                                              .then((imgFile) async {
+                                            if (imgFile == null) return;
+                                            HWPage page =
+                                                await HWPage.readXFile(
+                                                    homework.id!, imgFile);
+                                            DBHelper().insertHWPage(page,
+                                                orderIn: true);
+                                          }).then((value) => setState(() {}));
                                         },
-                                        icon: const Icon(Icons.photo_album));
-                                  }
-                                }
-                                return IconButton(
-                                    onPressed: () {
-                                      ImagePicker()
-                                          .pickImage(
-                                              source: Platform.isAndroid ||
-                                                      Platform.isIOS
-                                                  ? ImageSource.camera
-                                                  : ImageSource.gallery)
-                                          .then((imgFile) async {
-                                        if (imgFile == null) return;
-                                        HWPage page = await HWPage.readXFile(
-                                            homework.id!, imgFile);
-                                        DBHelper()
-                                            .insertHWPage(page, orderIn: true);
-                                      }).then((value) => setState(() {}));
-                                    },
-                                    icon:
-                                        const Icon(Icons.add_a_photo_rounded));
-                              })),
+                                        icon: const Icon(
+                                            Icons.add_a_photo_rounded));
+                                  })),
+                        ],
+                      ),
+                      const Spacer(flex: 1),
+                      Text(_formatDate(homework.overdueTimestamp.toLocal())),
                     ],
                   ),
-                  const Spacer(flex: 1),
-                  Text(_formatDate(homework.overdueTimestamp.toLocal())),
-                ],
-              ),
-            ]),
-      ),
+                ]),
+          )),
     );
   }
 }

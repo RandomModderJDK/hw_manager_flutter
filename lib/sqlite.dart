@@ -112,8 +112,9 @@ class DBHelper {
   }
 
   // Deletes homework from database. If homework does not have id, nothing will be deleted
-  Future<void> deleteHomework(Homework hw) async {
-    return await deleteHomeworkById(hw.id ?? -1);
+  Future<List<void>> deleteHomework(Homework hw) async {
+    return await Future.wait(
+        [deleteHomeworkById(hw.id ?? -1), deleteHWPagesByHW(hw)]);
   }
 
   Future<void> deleteHomeworkById(int id) async {
@@ -125,15 +126,19 @@ class DBHelper {
   }
 
   /// Insert/update document with existing homework id
-  Future<Future<int>> insertHWPage(HWPage page, {bool orderIn = false}) async {
+  Future<int> insertHWPage(HWPage page, {bool orderIn = false}) async {
     print("INSERT: ${page.order}");
     if (orderIn) page.order = await countHWPages(page.hwId);
     print("INSERT AFTER REORDER: ${page.order}");
-    return db.insert(
+    return await db.insert(
       'imageBlobs',
       await page.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+  }
+
+  Future<List<int>> insertHWPages(List<HWPage> pages) async {
+    return await Future.wait([for (HWPage page in pages) insertHWPage(page)]);
   }
 
   Future<int> countHWPages(int hwId) async {
