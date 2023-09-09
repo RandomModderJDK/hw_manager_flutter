@@ -63,16 +63,16 @@ class HWListItem extends StatelessWidget {
                           IconButton(
                               onPressed: () => onEdit(),
                               icon: const Icon(Icons.edit)),
-                          FutureBuilder(
-                              future:
-                                  DBHelper().countHWPages(homework.id ?? -1),
-                              builder: (context, snapshot) =>
-                                  StatefulBuilder(builder: (context, setState) {
+                          StatefulBuilder(
+                              builder: (context, setState) => FutureBuilder(
+                                  future: DBHelper()
+                                      .countHWPages(homework.id ?? -1),
+                                  builder: (context, snapshot) {
                                     if (snapshot.hasData) {
                                       if (snapshot.data! != 0) {
                                         return IconButton(
-                                            onPressed: () {
-                                              Navigator.push(
+                                            onPressed: () async {
+                                              await Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                     builder: (context) =>
@@ -80,6 +80,7 @@ class HWListItem extends StatelessWidget {
                                                       homework: homework,
                                                     ),
                                                   ));
+                                              setState(() {});
                                             },
                                             icon:
                                                 const Icon(Icons.photo_album));
@@ -98,9 +99,10 @@ class HWListItem extends StatelessWidget {
                                             HWPage page =
                                                 await HWPage.readXFile(
                                                     homework.id!, imgFile);
-                                            DBHelper().insertHWPage(page,
+                                            await DBHelper().insertHWPage(page,
                                                 orderIn: true);
-                                          }).then((value) => setState(() {}));
+                                            setState(() {});
+                                          });
                                         },
                                         icon: const Icon(
                                             Icons.add_a_photo_rounded));
