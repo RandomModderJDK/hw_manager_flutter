@@ -15,7 +15,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           architecture: x64
-          channel: 'beta'
+          channel: 'master'
       - name: Download dependencies
         run: flutter pub get
       - name: Run tests
