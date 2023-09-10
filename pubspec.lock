@@ -57,6 +57,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
+  dart_webuntis:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: main
+      resolved-ref: "42ab5f77a4d22c4612e50cf7034c487d53b3b4da"
+      url: "https://github.com/RandomModderJDK/dart-webuntis.git"
+    source: git
+    version: "1.0.0"
   date_field:
     dependency: "direct main"
     description:
@@ -509,6 +518,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  string_similarity:
+    dependency: transitive
+    description:
+      name: string_similarity
+      sha256: "5219d2ca048f6d3b8954747644b99b103244b5f84ef62b2577d29eb6bdeb61bb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   synchronized:
     dependency: transitive
     description:

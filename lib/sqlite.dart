@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' as io;
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -7,6 +7,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
+/// Pick and add image to database for the specified homework
+/// Return true on success, otherwise false
+Future<bool> pickAndAddImage(Homework hw) async {
+  XFile? xFile = await ImagePicker()
+      .pickImage(source: Platform.isAndroid || Platform.isIOS ? ImageSource.camera : ImageSource.gallery);
+  if (xFile == null) return false;
+  HWPage page = await HWPage.readXFile(hw.id!, xFile);
+  DBHelper().insertHWPage(page, orderIn: true);
+  return true;
+}
 
 // TODO Add search function/do not return the whole list of homeworks
 class DBHelper {
@@ -26,11 +37,9 @@ class DBHelper {
     // Avoid errors caused by flutter upgrade.
     // Importing 'package:flutter/widgets.dart' is required.
     WidgetsFlutterBinding.ensureInitialized();
-    final io.Directory appDocumentsDir =
-        await getApplicationDocumentsDirectory();
+    final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
     if (kDebugMode) {
-      print(
-          "Saving/open database to/on ${join(appDocumentsDir.path, "hwm_databases", 'hw_database.db')}");
+      print("Saving/open database to/on ${join(appDocumentsDir.path, "hwm_databases", 'hw_database.db')}");
     }
     // Open the database and store the reference.
     db = await openDatabase(
@@ -79,8 +88,7 @@ class DBHelper {
   }
 
   Future<Subject?> getSubject(String name) async {
-    return Subject.fromMap(
-        (await db.query('subjects', where: "name = ?", whereArgs: [name]))[0]);
+    return Subject.fromMap((await db.query('subjects', where: "name = ?", whereArgs: [name]))[0]);
   }
 
   Future<List<Subject>> retrieveSubjects() async {
@@ -106,15 +114,13 @@ class DBHelper {
   }
 
   Future<List<Homework>> retrieveHomeworks() async {
-    final List<Map<String, Object?>> queryResult =
-        await db.query('homeworks', orderBy: "overdueDate");
+    final List<Map<String, Object?>> queryResult = await db.query('homeworks', orderBy: "overdueDate");
     return queryResult.map((e) => Homework.fromMap(e)).toList();
   }
 
   // Deletes homework from database. If homework does not have id, nothing will be deleted
   Future<List<void>> deleteHomework(Homework hw) async {
-    return await Future.wait(
-        [deleteHomeworkById(hw.id ?? -1), deleteHWPagesByHW(hw)]);
+    return await Future.wait([deleteHomeworkById(hw.id ?? -1), deleteHWPagesByHW(hw)]);
   }
 
   Future<void> deleteHomeworkById(int id) async {
@@ -142,22 +148,22 @@ class DBHelper {
   }
 
   Future<int> countHWPages(int hwId) async {
-    final List<Map<String, Object?>> queryResult = await db.query("imageBlobs",
-        columns: ["COUNT(id)"], where: 'id LIKE ?', whereArgs: ["$hwId+%"]);
+    final List<Map<String, Object?>> queryResult =
+        await db.query("imageBlobs", columns: ["COUNT(id)"], where: 'id LIKE ?', whereArgs: ["$hwId+%"]);
     if (queryResult[0]["COUNT(id)"] == null) return 0;
     return queryResult[0]["COUNT(id)"] as int;
   }
 
   Future<HWPage?> retrieveHWPage(Homework hw, int order) async {
-    final List<Map<String, Object?>> queryResult = await db.query('imageBlobs',
-        where: 'id = ?', whereArgs: ["${hw.id ?? "NULL"}+$order"]);
+    final List<Map<String, Object?>> queryResult =
+        await db.query('imageBlobs', where: 'id = ?', whereArgs: ["${hw.id ?? "NULL"}+$order"]);
     if (queryResult.isEmpty) return null;
     return queryResult.map((e) => HWPage.fromMap(e)).toList()[0];
   }
 
   Future<List<HWPage>> retrieveHWPages(Homework hw) async {
-    final List<Map<String, Object?>> queryResult = await db.query('imageBlobs',
-        where: 'id LIKE ?', whereArgs: ["${hw.id ?? "NULL"}+%"]);
+    final List<Map<String, Object?>> queryResult =
+        await db.query('imageBlobs', where: 'id LIKE ?', whereArgs: ["${hw.id ?? "NULL"}+%"]);
     if (queryResult.isEmpty) return [];
     var result = queryResult.map((e) => HWPage.fromMap(e)).toList();
     return result;
@@ -176,8 +182,7 @@ class DBHelper {
     );
   }
 
-  Future<List<void>> deleteHWPagesByHWOrder(
-      Homework hw, List<int> order) async {
+  Future<List<void>> deleteHWPagesByHWOrder(Homework hw, List<int> order) async {
     for (int p in order) {
       print("DELET ${hw.id ?? -1}+$p");
       await db.delete(
@@ -192,8 +197,7 @@ class DBHelper {
   Future<List<void>> reorderHWPages(Homework hw) async {
     List<HWPage> pages = await retrieveHWPages(hw);
     pages.sort((a, b) => a.order.compareTo(b.order));
-    print(
-        "These are the currently existing pages: ${pages.map((e) => e.order)}");
+    print("These are the currently existing pages: ${pages.map((e) => e.order)}");
     return await Future.wait([
       for (int i = 0; i < pages.length; i++)
         () async {

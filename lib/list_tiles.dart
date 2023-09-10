@@ -1,18 +1,11 @@
-import 'dart:io' show Platform;
-
 import 'package:expandable_widgets/expandable_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:hw_manager_flutter/routes/image_viewer_route.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' as intl;
 
 class HWListItem extends StatelessWidget {
-  const HWListItem(
-      {super.key,
-      required this.homework,
-      required this.onEdit,
-      required this.onDeleted});
+  const HWListItem({super.key, required this.homework, required this.onEdit, required this.onDeleted});
 
   final Homework homework;
   final Function onEdit;
@@ -60,13 +53,10 @@ class HWListItem extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          IconButton(
-                              onPressed: () => onEdit(),
-                              icon: const Icon(Icons.edit)),
+                          IconButton(onPressed: () => onEdit(), icon: const Icon(Icons.edit)),
                           StatefulBuilder(
                               builder: (context, setState) => FutureBuilder(
-                                  future: DBHelper()
-                                      .countHWPages(homework.id ?? -1),
+                                  future: DBHelper().countHWPages(homework.id ?? -1),
                                   builder: (context, snapshot) {
                                     if (snapshot.hasData) {
                                       if (snapshot.data! != 0) {
@@ -75,37 +65,22 @@ class HWListItem extends StatelessWidget {
                                               await Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        ImageViewerRoute(
+                                                    builder: (context) => ImageViewerRoute(
                                                       homework: homework,
                                                     ),
                                                   ));
                                               setState(() {});
                                             },
-                                            icon:
-                                                const Icon(Icons.photo_album));
+                                            icon: const Icon(Icons.photo_album));
                                       }
                                     }
                                     return IconButton(
                                         onPressed: () {
-                                          ImagePicker()
-                                              .pickImage(
-                                                  source: Platform.isAndroid ||
-                                                          Platform.isIOS
-                                                      ? ImageSource.camera
-                                                      : ImageSource.gallery)
-                                              .then((imgFile) async {
-                                            if (imgFile == null) return;
-                                            HWPage page =
-                                                await HWPage.readXFile(
-                                                    homework.id!, imgFile);
-                                            await DBHelper().insertHWPage(page,
-                                                orderIn: true);
-                                            setState(() {});
+                                          pickAndAddImage(homework).then((success) {
+                                            if (success) setState(() {});
                                           });
                                         },
-                                        icon: const Icon(
-                                            Icons.add_a_photo_rounded));
+                                        icon: const Icon(Icons.add_a_photo_rounded));
                                   })),
                         ],
                       ),
@@ -126,50 +101,40 @@ class _HomeworkDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          SelectionArea(
-              child: Text(homework.subject.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary))),
-          const Padding(padding: EdgeInsets.only(bottom: 0.8)),
-          Expanded(
-            child: SelectionArea(
-              child: ExpandableText(
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                boxShadow: const [],
-                animationDuration: const Duration(milliseconds: 1),
-                helperTextList: const [" Show more", " Show less"],
-                padding: EdgeInsets.zero,
-                helper: Helper.text,
-                helperTextStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary),
-                textWidget: Text(
-                  homework.content,
-                  maxLines: 2,
-                  style: TextStyle(
-                      overflow: TextOverflow.clip,
-                      fontSize: 14,
-                      color: Theme.of(context).colorScheme.inverseSurface),
-                ),
-              ),
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
+      SelectionArea(
+          child: Text(homework.subject.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style:
+                  TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary))),
+      const Padding(padding: EdgeInsets.only(bottom: 0.8)),
+      Expanded(
+        child: SelectionArea(
+          child: ExpandableText(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            boxShadow: const [],
+            animationDuration: const Duration(milliseconds: 1),
+            helperTextList: const [" Show more", " Show less"],
+            padding: EdgeInsets.zero,
+            helper: Helper.text,
+            helperTextStyle:
+                TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+            textWidget: Text(
+              homework.content,
+              maxLines: 2,
+              style: TextStyle(
+                  overflow: TextOverflow.clip, fontSize: 14, color: Theme.of(context).colorScheme.inverseSurface),
             ),
           ),
-        ]);
+        ),
+      ),
+    ]);
   }
 }
 
 class SubjectListItem extends StatelessWidget {
-  const SubjectListItem(
-      {super.key, required this.subject, required this.onEdit});
+  const SubjectListItem({super.key, required this.subject, required this.onEdit});
 
   final Subject subject;
   final Function onEdit;
@@ -189,10 +154,7 @@ class SubjectListItem extends StatelessWidget {
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  IconButton(
-                      onPressed: () => onEdit(), icon: const Icon(Icons.edit))
-                ],
+                children: [IconButton(onPressed: () => onEdit(), icon: const Icon(Icons.edit))],
               ),
             ]),
       ),
@@ -207,30 +169,23 @@ class _SubjectDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          SelectionArea(
-              child: Text(subject.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary))),
-          const Padding(padding: EdgeInsets.only(bottom: 0.8)),
-          Expanded(
-            child: SelectionArea(
-                child: Text(
-              subject.shortName ?? "",
-              maxLines: 2,
-              style: TextStyle(
-                  overflow: TextOverflow.clip,
-                  fontSize: 14,
-                  color: Theme.of(context).colorScheme.inverseSurface),
-            )),
-          ),
-        ]);
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
+      SelectionArea(
+          child: Text(subject.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style:
+                  TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary))),
+      const Padding(padding: EdgeInsets.only(bottom: 0.8)),
+      Expanded(
+        child: SelectionArea(
+            child: Text(
+          subject.shortName ?? "",
+          maxLines: 2,
+          style:
+              TextStyle(overflow: TextOverflow.clip, fontSize: 14, color: Theme.of(context).colorScheme.inverseSurface),
+        )),
+      ),
+    ]);
   }
 }

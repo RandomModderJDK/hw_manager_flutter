@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:hw_manager_flutter/dialogs/dialog_delete_form.dart';
 import 'package:hw_manager_flutter/routes/settings_route.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../sqlite.dart';
 
@@ -42,7 +39,7 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
     _controller.value.setEntry(1, 3, -yTranslate);
   }
 
-  Widget? subjectList() {
+  Widget? photoViewer() {
     return FutureBuilder(
       future: (() async => await DBHelper().retrieveHWPages(widget.homework))(),
       builder: (_, snap) {
@@ -72,8 +69,7 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
                     transformationController: _controller,
                     minScale: 0.75,
                     maxScale: 50,
-                    boundaryMargin: const EdgeInsets.symmetric(
-                        vertical: 200, horizontal: 700),
+                    boundaryMargin: const EdgeInsets.symmetric(vertical: 200, horizontal: 700),
                     clipBehavior: Clip.none,
                     child: SizedBox(
                         width: MediaQuery.of(context).size.width,
@@ -103,8 +99,7 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
                   IconButton(
                       onPressed: () => showDialog(
                             context: context,
-                            builder: (context) =>
-                                DeleteFormDialog(widget.homework),
+                            builder: (context) => DeleteFormDialog(widget.homework),
                           ).then((value) {
                             if (value == null) return;
                             if (value == pages) return;
@@ -116,19 +111,8 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
                       icon: const Icon(Icons.delete_rounded)),
                   IconButton(
                     onPressed: () {
-                      ImagePicker()
-                          .pickImage(
-                              source: Platform.isAndroid || Platform.isIOS
-                                  ? ImageSource.camera
-                                  : ImageSource.gallery)
-                          .then((imgFile) async {
-                        if (imgFile == null) return false;
-                        HWPage page = await HWPage.readXFile(
-                            widget.homework.id!, imgFile);
-                        DBHelper().insertHWPage(page, orderIn: true);
-                        return true;
-                      }).then((v) {
-                        setState(() => pages++);
+                      pickAndAddImage(widget.homework).then((success) {
+                        if (success) setState(() => pages++);
                       });
                     },
                     tooltip: 'Take a photo',
@@ -138,16 +122,13 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
                       icon: const Icon(Icons.reorder_rounded),
                       onPressed: () => Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => const SettingsRoute()),
+                            MaterialPageRoute(builder: (context) => const SettingsRoute()),
                           )),
                 ],
                 title: const Text('Image Viewer')),
-            body: subjectList(),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
-            floatingActionButton:
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            body: photoViewer(),
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               if (page != 0)
                 FloatingActionButton(
                   onPressed: () => setState(() {

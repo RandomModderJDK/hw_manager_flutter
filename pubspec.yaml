@@ -45,6 +45,11 @@ dependencies:
   expandable_widgets: ^1.0.3+1
   photo_view: ^0.14.0
 
+  dart_webuntis:
+    git:
+      url: https://github.com/RandomModderJDK/dart-webuntis.git
+      ref: main
+
   # Dark mode preferences
   shared_preferences: ^2.2.0
   settings_ui: ^2.0.2
