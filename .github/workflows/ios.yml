@@ -1,9 +1,8 @@
 name: "Build all flutter archs"
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "v*.*.*"
+  release:
+    types: [published]
 
 jobs:
   do_tests:
