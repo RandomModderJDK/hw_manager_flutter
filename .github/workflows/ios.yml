@@ -49,9 +49,10 @@ jobs:
           name: HW-manager-${{ env.date }}.ipa
           path: ./hw_manager_flutter.ipa
    
-      - uses: planet-code/upload-to-release-action@1.0.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          asset-name: hw-manager-${{ github.ref_name }}.ipaipa
-          asset-path: ./hw_manager_flutter.ipa
-
+      - name: Upload files to a GitHub release
+        uses: svenstaro/upload-release-action@2.7.0
+        with:  
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          asset_name: hw-manager-$tag.ipa
+          file: ./hw_manager_flutter.ipa
+          tag: ${{ github.ref_name }}
