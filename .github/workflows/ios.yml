@@ -15,7 +15,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           architecture: x64
-          channel: 'master'
+          channel: 'beta'
       - name: Download dependencies
         run: flutter pub get
       - name: Run tests
@@ -31,7 +31,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           architecture: x64
-          channel: 'stable'
+          channel: 'beta'
       - name: Build ios xcarchive
         run: |
           flutter pub get
