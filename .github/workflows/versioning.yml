@@ -18,4 +18,4 @@ jobs:
       - name: "Create Release"
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ""
+          tag_name: ${{ steps.read_yaml.outputs['version'] }}
