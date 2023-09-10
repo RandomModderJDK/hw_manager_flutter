@@ -47,10 +47,9 @@ jobs:
         with:
           name: HW-manager-${{ env.date }}.ipa
           path: ./hw_manager_flutter.ipa
-      - run: mv ./hw_manager_flutter.ipa ./hw-manager-$GITHUB_REF_NAME.ipa
-
+      
       - run: |
-          upload_url=$(curl -sL https://api.github.com/repos/actions/checkout/releases/latest | jq -r '.upload_url')
+          mv ./hw_manager_flutter.ipa ./hw-manager-$GITHUB_REF_NAME.ipa          upload_url=$(curl -sL https://api.github.com/repos/actions/checkout/releases/latest | jq -r '.upload_url')
          echo UPLOAD_URL=$upload_url >> $GITHUB_ 
         shell: bash
 
