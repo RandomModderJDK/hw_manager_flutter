@@ -2,6 +2,7 @@ name: "Build all flutter archs"
 on:
   workflow_dispatch:
   release:
+    types: [created]
 
 jobs:
   do_tests:
