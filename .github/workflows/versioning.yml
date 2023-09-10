@@ -1,5 +1,6 @@
 name: "Fetch version and make release"
 on:
+  workflow_dispatch:
   push:
     paths: ["pubspec.yaml"]
 jobs:
