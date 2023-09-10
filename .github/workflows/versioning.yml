@@ -9,6 +9,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: 'pubspec.yaml'
+      - name: "YAML Read"
+        uses: softprops/action-gh-release@v1
+        id: read_yaml
+        with:
+          config: ${{ github.workspace }}/pubspec.yaml
+      
       - name: "Create Release"
         uses: softprops/action-gh-release@v1
         with:
