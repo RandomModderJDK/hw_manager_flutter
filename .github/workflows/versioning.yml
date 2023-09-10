@@ -22,6 +22,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.PAT }}
-          tag_name: ${{ steps.read_yaml.outputs['version'] }}
-          name: Release ${{ steps.read_yaml.outputs['version'] }}
+          tag_name: v${{ steps.read_yaml.outputs['version'] }}
+          name: Release v${{ steps.read_yaml.outputs['version'] }}
    
