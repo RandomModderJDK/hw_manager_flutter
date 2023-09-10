@@ -76,7 +76,7 @@ class HWListItem extends StatelessWidget {
                                     }
                                     return IconButton(
                                         onPressed: () {
-                                          pickAndAddImage(homework).then((success) {
+                                          pickAndAddImage(context, homework).then((success) {
                                             if (success) setState(() {});
                                           });
                                         },

@@ -62,7 +62,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "42ab5f77a4d22c4612e50cf7034c487d53b3b4da"
+      resolved-ref: "61d678dac1fd40c8e9e4a934104405223d3af1ba"
       url: "https://github.com/RandomModderJDK/dart-webuntis.git"
     source: git
     version: "1.0.0"

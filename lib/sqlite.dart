@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -10,13 +10,62 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 /// Pick and add image to database for the specified homework
 /// Return true on success, otherwise false
-Future<bool> pickAndAddImage(Homework hw) async {
-  XFile? xFile = await ImagePicker()
-      .pickImage(source: Platform.isAndroid || Platform.isIOS ? ImageSource.camera : ImageSource.gallery);
+Future<bool> pickAndAddImage(BuildContext context, Homework hw) async {
+  bool takePhoto = Platform.isAndroid || Platform.isIOS || kDebugMode ? await _openChooseSourceBar(context) : false;
+  XFile? xFile = await ImagePicker().pickImage(source: takePhoto ? ImageSource.camera : ImageSource.gallery);
   if (xFile == null) return false;
   HWPage page = await HWPage.readXFile(hw.id!, xFile);
   DBHelper().insertHWPage(page, orderIn: true);
   return true;
+}
+
+Future<bool> _openChooseSourceBar(BuildContext context) async {
+  return await showModalBottomSheet(
+          context: context,
+          builder: (BuildContext context) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                        child: TextButton(
+                      style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero
+                            .copyWith(topLeft: const Radius.circular(30.0), topRight: const Radius.circular(30.0)),
+                      )),
+                      child: const Row(
+                        children: [
+                          SizedBox(width: 70),
+                          Icon(size: 50, Icons.add_a_photo_rounded),
+                          Expanded(
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text(style: TextStyle(fontSize: 25.0), 'Take a photo')))
+                        ],
+                      ),
+                      onPressed: () => Navigator.pop(context, true),
+                    )),
+                    Expanded(
+                        child: TextButton(
+                      style: TextButton.styleFrom(shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
+                      child: const Row(
+                        children: [
+                          SizedBox(width: 70),
+                          Icon(size: 50, Icons.add_photo_alternate_rounded),
+                          Expanded(
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text(style: TextStyle(fontSize: 25.0), 'Add from Gallery')))
+                        ],
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                    )),
+                  ],
+                ),
+              )) ==
+      true;
 }
 
 // TODO Add search function/do not return the whole list of homeworks

@@ -111,7 +111,7 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
                       icon: const Icon(Icons.delete_rounded)),
                   IconButton(
                     onPressed: () {
-                      pickAndAddImage(widget.homework).then((success) {
+                      pickAndAddImage(context, widget.homework).then((success) {
                         if (success) setState(() => pages++);
                       });
                     },
