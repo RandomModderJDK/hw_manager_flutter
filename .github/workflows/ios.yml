@@ -7,8 +7,6 @@ on:
 jobs:
   do_tests:
     name: Flutter Tests
-    permissions:
-      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repositoriy
@@ -25,6 +23,8 @@ jobs:
     name: Build iOS ipa
     needs: do_tests
     runs-on: macos-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repositoriy
         uses: actions/checkout@v3
