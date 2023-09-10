@@ -54,12 +54,8 @@ jobs:
           echo UPLOAD_URL=$upload_url >> $GITHUB_ENV
         shell: bash
 
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: planet-code/upload-to-release-action@1.0.0
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
-          asset_name: hw-manager-${{ github.ref_name }}.ipaipa
-          asset_path: ./hw_manager_flutter.ipa    
-          asset_content_type: application/octet-stream
+          asset-name: hw-manager-${{ github.ref_name }}.ipaipa
+          asset-path: ./hw_manager_flutter.ipa
 
