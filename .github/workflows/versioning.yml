@@ -20,7 +20,6 @@ jobs:
       
       - name: "Create Release"
         uses: softprops/action-gh-release@v1
-        env:
-          token: ${{ secrets.PAT }}
         with:
+          token: ${{ secrets.PAT }}
           tag_name: ${{ steps.read_yaml.outputs['version'] }}
