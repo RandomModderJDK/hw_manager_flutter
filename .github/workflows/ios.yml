@@ -57,5 +57,5 @@ jobs:
         with:  
           upload_url: ${{ github.event.release.upload_url }}
           asset_name: hw-manager-${{ github.ref_name }}.ipa
-          asset_path: ./hw_manager_flutter.ipa
+          asset_path: hw_manager_flutter.ipa
           asset_content_type: application/octet-stream
