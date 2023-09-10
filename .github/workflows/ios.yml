@@ -48,14 +48,10 @@ jobs:
         with:
           name: HW-manager-${{ env.date }}.ipa
           path: ./hw_manager_flutter.ipa
-      
-      - run: 
-          upload_url=$(curl -sL https://api.github.com/repos/actions/checkout/releases/latest | jq -r '.upload_url')
-          echo UPLOAD_URL=$upload_url >> $GITHUB_ENV
-        shell: bash
-
+   
       - uses: planet-code/upload-to-release-action@1.0.0
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           asset-name: hw-manager-${{ github.ref_name }}.ipaipa
           asset-path: ./hw_manager_flutter.ipa
 
