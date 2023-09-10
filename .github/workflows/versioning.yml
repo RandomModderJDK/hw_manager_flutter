@@ -1,0 +1,14 @@
+name: "Fetch version and make release"
+on:
+  push:
+    paths: ["pubspec.yaml"]
+jobs:
+  fetch_mk_release:
+    runs-on: alpine-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          
+
+
+    
