@@ -23,3 +23,5 @@ jobs:
         with:
           token: ${{ secrets.PAT }}
           tag_name: ${{ steps.read_yaml.outputs['version'] }}
+          name: Release ${{ steps.read_yaml.outputs['version'] }}
+   
