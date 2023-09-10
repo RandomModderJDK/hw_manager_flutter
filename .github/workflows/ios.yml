@@ -55,6 +55,8 @@ jobs:
         shell: bash
 
       - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ env.UPLOAD_URL }}
           asset_name: hw-manager-${{ github.ref_name }}.ipaipa
