@@ -52,7 +52,7 @@ jobs:
       - run: |
           mv ./hw_manager_flutter.ipa ./hw-manager-$GITHUB_REF_NAME.ipa
           upload_url=$(curl -sL https://api.github.com/repos/actions/checkout/releases/latest | jq -r '.upload_url')
-          echo UPLOAD_URL=$upload_url >> $GITHUB_ 
+          echo UPLOAD_URL=$upload_url >> $GITHUB_ENV
         shell: bash
 
       - uses: actions/upload-release-asset@v1
