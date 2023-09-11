@@ -20,6 +20,8 @@ Future<bool> pickAndAddImage(BuildContext context, Homework hw) async {
   return true;
 }
 
+// TODO: Fix that this doesnt work on iOS/iPadOS
+// TODO: Add permission_handler
 Future<bool> _openChooseSourceBar(BuildContext context) async {
   return await showModalBottomSheet(
           context: context,

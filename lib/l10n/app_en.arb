@@ -105,7 +105,7 @@
   "@showLess": {
     "description": "Show less indicator when text is collapsed"
   },
-  "takePhoto": "Take a photo",
+  "takePhoto": "Add a photo",
   "@takePhoto": {
     "description": "Take a photo tooltip"
   },
