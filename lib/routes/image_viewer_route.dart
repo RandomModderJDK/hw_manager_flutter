@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/dialogs/dialog_delete_form.dart';
-import 'package:hw_manager_flutter/routes/settings_route.dart';
 
+import '../dialogs/dialog_homework_form.dart';
 import '../sqlite.dart';
 
 class ImageViewerRoute extends StatefulWidget {
@@ -54,7 +56,9 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
           );
 
           pages = snap.data!.length;
-          print("PAGES: $pages, CURRENT: $page");
+          if (kDebugMode) {
+            print("PAGES: $pages, CURRENT: $page");
+          }
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -62,7 +66,7 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
             children: [
               const SizedBox(height: 3),
               Align(
-                child: Text("Page ${page + 1}/$pages"),
+                child: Text(AppLocalizations.of(context)!.pageDisplay(page + 1, pages)),
               ),
               Expanded(
                 child: InteractiveViewer(
@@ -87,7 +91,9 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
 
   @override
   Widget build(BuildContext context) {
-    print("initState $page $pages");
+    if (kDebugMode) {
+      print("initState $page $pages");
+    }
     return FutureBuilder(
         future: DBHelper().countHWPages(widget.homework.id ?? -1),
         builder: (context, snap) {
@@ -108,6 +114,7 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
                               pages = value;
                             });
                           }),
+                      tooltip: AppLocalizations.of(context)!.deletePagesTitle,
                       icon: const Icon(Icons.delete_rounded)),
                   IconButton(
                     onPressed: () {
@@ -115,17 +122,25 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
                         if (success) setState(() => pages++);
                       });
                     },
-                    tooltip: 'Take a photo',
+                    tooltip: AppLocalizations.of(context)!.takePhoto,
                     icon: const Icon(Icons.add_a_photo_rounded),
                   ),
                   IconButton(
                       icon: const Icon(Icons.reorder_rounded),
-                      onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const SettingsRoute()),
-                          )),
+                      tooltip: AppLocalizations.of(context)!.dialogHWEditTitle,
+                      onPressed: () => showDialog(
+                            context: context,
+                            builder: (context) => HomeworkFormDialog(
+                              homework: widget.homework,
+                              title: AppLocalizations.of(context)!.dialogHWEditTitle,
+                              submit: AppLocalizations.of(context)!.dialogHWEdit,
+                              cancel: AppLocalizations.of(context)!.dialogHWEditCancel,
+                            ),
+                          ).then((v) {
+                            if (v ?? false) setState(() {});
+                          })),
                 ],
-                title: const Text('Image Viewer')),
+                title: Text(AppLocalizations.of(context)!.imageViewer)),
             body: photoViewer(),
             floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
             floatingActionButton: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -135,7 +150,7 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
                     page--;
                     initTransCont();
                   }),
-                  tooltip: "Previous page",
+                  tooltip: AppLocalizations.of(context)!.previousPage,
                   child: const Icon(Icons.navigate_before_rounded),
                 ),
               if (page != 0 || page + 1 != pages) const SizedBox(width: 3),
@@ -145,7 +160,7 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
                     page++;
                     initTransCont();
                   }),
-                  tooltip: "Next page",
+                  tooltip: AppLocalizations.of(context)!.nextPage,
                   child: const Icon(Icons.navigate_next_rounded),
                 )
             ]),

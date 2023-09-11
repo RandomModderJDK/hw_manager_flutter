@@ -1,6 +1,7 @@
 import 'package:date_field/date_field.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 import 'package:intl/intl.dart';
 
@@ -10,12 +11,7 @@ class HomeworkFormDialog extends StatefulWidget {
   final String cancel;
   final Homework? homework;
 
-  const HomeworkFormDialog(
-      {super.key,
-      required this.title,
-      required this.submit,
-      required this.cancel,
-      this.homework});
+  const HomeworkFormDialog({super.key, required this.title, required this.submit, required this.cancel, this.homework});
 
   @override
   State<HomeworkFormDialog> createState() => _HomeworkFormDialogState();
@@ -87,7 +83,7 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
           style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade900),
           onPressed: () {
             if (_subjectController.text.isEmpty) {
-              setState(() => subjectErrorText = "Enter Subject!");
+              setState(() => subjectErrorText = AppLocalizations.of(context)!.dialogHWSubjectValidator);
             }
             if (!formKey.currentState!.validate()) return;
             if (_subjectController.text.isEmpty) return;
@@ -141,58 +137,78 @@ class HomeworkFormContent extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            Expanded(
+                child: FutureBuilder(
+                    future: DBHelper().retrieveSubjects(),
+                    builder: (context, snapshot) {
+                      final bool isError = subjectErrorText != "";
+                      return DropdownMenu(
+                          expandedInsets: EdgeInsets.zero,
+                          controller: subjectController,
+                          onSelected: (v) {},
+                          // TODO Implement untis date fetching here. NOTE: Check for user date selection
+                          enableSearch: true,
+                          errorText: subjectErrorText,
+                          requestFocusOnTap: true,
+                          label: Text(AppLocalizations.of(context)!.dialogHWSubject),
+                          inputDecorationTheme: InputDecorationTheme(
+                            labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            border: MaterialStateOutlineInputBorder.resolveWith((_) {
+                              final Color color = isError
+                                  ? Color.alphaBlend(Theme.of(context).colorScheme.primary.withAlpha(125),
+                                      Theme.of(context).colorScheme.inversePrimary)
+                                  : Theme.of(context).colorScheme.primary;
+                              return OutlineInputBorder(borderSide: BorderSide(color: color));
+                            }),
+                            errorStyle: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
+                            errorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: isError
+                                        ? Theme.of(context).colorScheme.inversePrimary
+                                        : Theme.of(context).colorScheme.primary)),
+                          ),
+                          dropdownMenuEntries: snapshot.data != null
+                              ? snapshot.data!.map((s) => DropdownMenuEntry(value: s.name, label: s.name)).toList()
+                              : []);
+                    }))
+          ]),
+          const SizedBox(height: 5),
           DateTimeField(
             onDateSelected: onDateSelected,
             selectedDate: dateSelected,
             mode: DateTimeFieldPickerMode.date,
-            decoration: const InputDecoration(
-              labelText: "Until the",
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              border: OutlineInputBorder(),
-            ),
-            initialDate: DateTime(2023, 8),
-            dateFormat: DateFormat("dd. MMMM, yyyy"),
-            use24hFormat: true,
-          ),
-          const SizedBox(height: 12),
-          Row(mainAxisSize: MainAxisSize.max, children: [
-            Expanded(
-                child: FutureBuilder(
-                    future: DBHelper().retrieveSubjects(),
-                    builder: (context, snapshot) => DropdownMenu(
-                        expandedInsets: EdgeInsets.zero,
-                        controller: subjectController,
-                        onSelected: (v) {},
-                        // TODO Implement untis date fetching here. NOTE: Check for user date selection
-                        enableSearch: true,
-                        errorText: subjectErrorText,
-                        requestFocusOnTap: true,
-                        label: const Text("Subject"),
-                        inputDecorationTheme: const InputDecorationTheme(
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          border: OutlineInputBorder(),
-                        ),
-                        dropdownMenuEntries: snapshot.data != null
-                            ? snapshot.data!
-                                .map((s) => DropdownMenuEntry(
-                                    value: s.name, label: s.name))
-                                .toList()
-                            : [])))
-          ]),
-          const SizedBox(height: 10),
-          TextFormField(
-            controller: contentController,
-            validator: (value) =>
-                value!.isEmpty ? "Enter homework content!" : null,
-            maxLines: 5,
             decoration: InputDecoration(
-              labelText: "Content",
+              labelText: AppLocalizations.of(context)!.dateTimeFieldLabel,
               floatingLabelBehavior: FloatingLabelBehavior.always,
               border: const OutlineInputBorder(),
-              hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
-              hintText:
-                  "What did you do last lesson?\nWhat could the teacher have been thinking?",
             ),
+            initialDate: DateTime(2023, 8),
+            dateFormat: DateFormat.yMMMMd(),
+            use24hFormat: true,
+          ),
+          const SizedBox(height: 30),
+          TextFormField(
+            controller: contentController,
+            validator: (value) => value!.isEmpty ? AppLocalizations.of(context)!.dialogHWContentValidator : null,
+            maxLines: 5,
+            decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.dialogHWContent,
+                labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                border: MaterialStateOutlineInputBorder.resolveWith((Set<MaterialState> states) {
+                  final Color color = states.contains(MaterialState.error)
+                      ? Color.alphaBlend(Theme.of(context).colorScheme.primary.withAlpha(125),
+                          Theme.of(context).colorScheme.inversePrimary)
+                      : Theme.of(context).colorScheme.primary;
+                  return OutlineInputBorder(borderSide: BorderSide(color: color));
+                }),
+                hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
+                hintText: AppLocalizations.of(context)!.dialogHWContentHint,
+                errorStyle: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
+                errorBorder:
+                    OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.inversePrimary))),
           ),
         ],
       ),

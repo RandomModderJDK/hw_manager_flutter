@@ -1,0 +1,164 @@
+{
+  "homeTitle": "Manage Homework",
+  "@homeTitle": {
+    "description": "Shows title text of the app"
+  },
+  "dateToday": "Until today!",
+  "@dateToday": {
+    "description": "A date descriptor in homework entry"
+  },
+  "datePassed": "Passed already",
+  "@datePassed": {
+    "description": "A date descriptor in homework entry"
+  },
+  "dateThisWeek": "This {date}",
+  "@dateThisWeek": {
+    "description": "A date(this week) descriptor in homework entry",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "EEEE",
+        "example": "Wednesday"
+      }
+    }
+  },
+  "dateNextWeek": "{date}, next week",
+  "@dateNextWeek": {
+    "description": "A date(next week) descriptor in homework entry",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "EEEE",
+        "example": "Wednesday"
+      }
+    }
+  },
+  "dateAnywhereElse": "{weekday}, {date}",
+  "@dateAnywhereElse": {
+    "description": "A date(not translated by others) descriptor in homework entry",
+    "placeholders": {
+      "weekday": {
+        "type": "DateTime",
+        "format": "EEEE",
+        "example": "Wednesday"
+      },
+      "date": {
+        "type": "DateTime",
+        "format": "yMd",
+        "example": "01.01.2023"
+      }
+    }
+  },
+  "dateTimeFieldLabel": "Until the ",
+  "@dateTimeFieldLabel": {
+    "description": "Completes to e.g Until the 12. of June"
+  },
+  "dialogHWSubject": "Subject",
+  "@dialogHWSubject": {
+    "description": "The label of the Subject selected"
+  },
+  "dialogHWSubjectValidator": "Enter or select subject!",
+  "@dialogHWSubjectValidator": {
+    "description": "The text appearing when nothing is entered"
+  },
+  "dialogHWContent": "Content",
+  "@dialogHWContent": {
+    "description": "The label of the Content entered"
+  },
+  "dialogHWContentHint": "What did you do last lesson?\nWhat could the teacher have been thinking?",
+  "@dialogHWContentHint": {
+    "description": "A hint what you can write into content field"
+  },
+  "dialogHWContentValidator": "Enter content!",
+  "@dialogHWContentValidator": {
+    "description": "The text appearing when nothing is entered"
+  },
+  "dialogHWAddTitle": "Add homework",
+  "@dialogHWAddTitle": {
+    "description": "Title/tooltip of add homework dialog"
+  },
+  "dialogHWAdd": "Add",
+  "@dialogHWAdd": {
+    "description": "Submit button of add homework dialog"
+  },
+  "dialogHWAddCancel": "Cancel",
+  "@dialogHWAddCancel": {
+    "description": "Cancel button of add homework dialog"
+  },
+  "dialogHWEditTitle": "Edit homework",
+  "@dialogHWEditTitle": {
+    "description": "Title/tooltip of add homework dialog"
+  },
+  "dialogHWEdit": "Edit",
+  "@dialogHWEdit": {
+    "description": "Submit button of add homework dialog"
+  },
+  "dialogHWEditCancel": "Cancel",
+  "@dialogHWEditCancel": {
+    "description": "Cancel button of add homework dialog"
+  },
+  "showMore": " Show more",
+  "@showMore": {
+    "description": "Show more indicator when text is collapsed"
+  },
+  "showLess": " Show less",
+  "@showLess": {
+    "description": "Show less indicator when text is collapsed"
+  },
+  "takePhoto": "Take a photo",
+  "@takePhoto": {
+    "description": "Take a photo tooltip"
+  },
+  "openImageViewer": "Open Image Viewer",
+  "@openImageViewer": {
+    "description": "Open Image Viewer tooltip"
+  },
+  "imageViewer": "Image Viewer",
+  "@imageViewer": {
+    "description": "The title of the image viewer"
+  },
+  "previousPage": "Previous page",
+  "@previousPage": {
+    "description": "Previous page of the image viewer"
+  },
+  "nextPage": "Next page",
+  "@nextPage": {
+    "description": "Next page of the image viewer"
+  },
+  "pageDisplay": "Page {current}/{pages}",
+  "@pageDisplay": {
+    "description": "The page display to let the user know on which page they are on",
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "example": "1"
+      },
+      "pages": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "deletePagesTitle": "Delete pages",
+  "@deletePagesTitle": {
+    "description": "Title/tooltip for deleting pages dialog"
+  },
+  "deletePages": "Delete",
+  "@deletePages": {
+    "description": "Submit button for deleting pages dialog"
+  },
+  "deletePagesCancel": "Cancel",
+  "@deletePagesCancel": {
+    "description": "Cancel button for deleting pages dialog"
+  },
+  "deletePagesEntry": "Page {page}",
+  "@deletePagesEntry": {
+    "description": "One entry in delete pages dialog",
+    "placeholders": {
+      "page": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  }
+}

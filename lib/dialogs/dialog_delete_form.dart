@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../sqlite.dart';
 
@@ -18,16 +20,14 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
   @override
   void initState() {
     super.initState();
-    DBHelper()
-        .countHWPages(widget.hw.id ?? -1)
-        .then((value) => setState(() => pages = value));
+    DBHelper().countHWPages(widget.hw.id ?? -1).then((value) => setState(() => pages = value));
   }
 
   void _deletePages(BuildContext context) async {
-    print(_tempSelectedPages);
-    DBHelper()
-        .deleteHWPagesByHWOrder(widget.hw, _tempSelectedPages)
-        .then((value) {
+    if (kDebugMode) {
+      print(_tempSelectedPages);
+    }
+    DBHelper().deleteHWPagesByHWOrder(widget.hw, _tempSelectedPages).then((value) {
       if (pages - _tempSelectedPages.length > 0) {
         return Navigator.pop(context, pages - _tempSelectedPages.length);
       }
@@ -50,42 +50,33 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
                     // TITLE HERE
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 24.0,
-                                top: 24.0,
-                                right: 24.0,
-                                bottom: 0.0),
-                            child: DefaultTextStyle(
-                              style: DialogTheme.of(context).titleTextStyle ??
-                                  Theme.of(context).textTheme.titleLarge!,
-                              textAlign: TextAlign.center,
-                              child: Semantics(
-                                // For iOS platform, the focus always lands on the title.
-                                // Set nameRoute to false to avoid title being announce twice.
-                                namesRoute: true,
-                                container: true,
-                                child: const Text("Delete pages"),
-                              ),
-                            ),
+                    Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(left: 24.0, top: 24.0, right: 24.0, bottom: 0.0),
+                        child: DefaultTextStyle(
+                          style: DialogTheme.of(context).titleTextStyle ?? Theme.of(context).textTheme.titleLarge!,
+                          textAlign: TextAlign.center,
+                          child: Semantics(
+                            // For iOS platform, the focus always lands on the title.
+                            // Set nameRoute to false to avoid title being announce twice.
+                            namesRoute: true,
+                            container: true,
+                            child: Text(AppLocalizations.of(context)!.deletePagesTitle),
                           ),
-                        ]),
+                        ),
+                      ),
+                    ]),
                     // CONTENT STARTING HERE
                     Padding(
-                      padding: const EdgeInsets.only(
-                          left: 24.0, top: 16.0, right: 24.0, bottom: 24.0),
+                      padding: const EdgeInsets.only(left: 24.0, top: 16.0, right: 24.0, bottom: 24.0),
                       child: DefaultTextStyle(
-                        style: DialogTheme.of(context).contentTextStyle ??
-                            Theme.of(context).textTheme.bodyMedium!,
+                        style: DialogTheme.of(context).contentTextStyle ?? Theme.of(context).textTheme.bodyMedium!,
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
                           itemCount: pages,
                           itemBuilder: (BuildContext context, int index) {
-                            final checkboxName = "Page ${index + 1}";
+                            final checkboxName = AppLocalizations.of(context)!.deletePagesEntry(index + 1);
                             return CheckboxListTile(
                                 title: Text(checkboxName),
                                 value: _tempSelectedPages.contains(index),
@@ -99,8 +90,7 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
                                   } else {
                                     if (_tempSelectedPages.contains(index)) {
                                       setState(() {
-                                        _tempSelectedPages
-                                            .removeWhere((int i) => i == index);
+                                        _tempSelectedPages.removeWhere((int i) => i == index);
                                       });
                                     }
                                   }
@@ -112,8 +102,7 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
                   ]))),
           // ACTIONS STARTING HERE
           Padding(
-              padding:
-                  const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 24.0),
+              padding: const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 24.0),
               child: OverflowBar(
                 alignment: MainAxisAlignment.end,
                 spacing: 8,
@@ -122,16 +111,14 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
                 overflowSpacing: 0,
                 children: <Widget>[
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade900),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade900),
                     onPressed: () => Navigator.pop(context, pages),
-                    child: const Text('Cancel'),
+                    child: Text(AppLocalizations.of(context)!.deletePagesCancel),
                   ),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade900),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade900),
                     onPressed: () => _deletePages(context),
-                    child: const Text("Delete"),
+                    child: Text(AppLocalizations.of(context)!.deletePagesTitle),
                   ),
                 ],
               )),

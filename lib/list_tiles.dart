@@ -1,8 +1,8 @@
 import 'package:expandable_widgets/expandable_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/routes/image_viewer_route.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
-import 'package:intl/intl.dart' as intl;
 
 class HWListItem extends StatelessWidget {
   const HWListItem({super.key, required this.homework, required this.onEdit, required this.onDeleted});
@@ -11,17 +11,17 @@ class HWListItem extends StatelessWidget {
   final Function onEdit;
   final Function(DismissDirection) onDeleted;
 
-  String _formatDate(DateTime date) {
+  String _formatDate(BuildContext context, DateTime date) {
     Duration diff = date.difference(DateTime.now());
 
-    if (diff.inDays == 0) return "Today!"; // Diff of 0 is apparently negative
-    if (diff.isNegative) return "Passed already";
-    if (diff.inDays < 6) return "This ${intl.DateFormat("EEEE").format(date)}";
+    if (diff.inDays == 0) return AppLocalizations.of(context)!.dateToday; // Diff of 0 is apparently negative
+    if (diff.isNegative) return AppLocalizations.of(context)!.datePassed;
+    if (diff.inDays < 6) return AppLocalizations.of(context)!.dateThisWeek(date);
     if (diff.inDays >= 6 && diff.inDays < 13) {
-      return "${intl.DateFormat("EEEE").format(date)}, next week";
+      return AppLocalizations.of(context)!.dateNextWeek(date);
     }
 
-    return intl.DateFormat("EEEE, dd.MM.yyyy").format(date);
+    return AppLocalizations.of(context)!.dateAnywhereElse(date, date);
   }
 
   @override
@@ -53,7 +53,10 @@ class HWListItem extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          IconButton(onPressed: () => onEdit(), icon: const Icon(Icons.edit)),
+                          IconButton(
+                              onPressed: () => onEdit(),
+                              tooltip: AppLocalizations.of(context)!.dialogHWEditTitle,
+                              icon: const Icon(Icons.edit)),
                           StatefulBuilder(
                               builder: (context, setState) => FutureBuilder(
                                   future: DBHelper().countHWPages(homework.id ?? -1),
@@ -71,6 +74,7 @@ class HWListItem extends StatelessWidget {
                                                   ));
                                               setState(() {});
                                             },
+                                            tooltip: AppLocalizations.of(context)!.openImageViewer,
                                             icon: const Icon(Icons.photo_album));
                                       }
                                     }
@@ -80,12 +84,13 @@ class HWListItem extends StatelessWidget {
                                             if (success) setState(() {});
                                           });
                                         },
+                                        tooltip: AppLocalizations.of(context)!.takePhoto,
                                         icon: const Icon(Icons.add_a_photo_rounded));
                                   })),
                         ],
                       ),
                       const Spacer(flex: 1),
-                      Text(_formatDate(homework.overdueTimestamp.toLocal())),
+                      Text(_formatDate(context, homework.overdueTimestamp.toLocal())),
                     ],
                   ),
                 ]),
@@ -115,7 +120,7 @@ class _HomeworkDescription extends StatelessWidget {
             backgroundColor: Theme.of(context).colorScheme.surface,
             boxShadow: const [],
             animationDuration: const Duration(milliseconds: 1),
-            helperTextList: const [" Show more", " Show less"],
+            helperTextList: [AppLocalizations.of(context)!.showMore, AppLocalizations.of(context)!.showLess],
             padding: EdgeInsets.zero,
             helper: Helper.text,
             helperTextStyle:

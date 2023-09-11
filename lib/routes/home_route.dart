@@ -1,19 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/dialogs/dialog_homework_form.dart';
 import 'package:hw_manager_flutter/my_listview.dart';
 import 'package:hw_manager_flutter/routes/settings_route.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
 import '../list_tiles.dart';
 
 class HomeRoute extends StatefulWidget {
-  const HomeRoute({super.key, required this.title});
+  const HomeRoute({super.key});
 
-  static HomeRouteState? of(BuildContext context) =>
-      context.findAncestorStateOfType<HomeRouteState>();
-
-  final String title;
+  static HomeRouteState? of(BuildContext context) => context.findAncestorStateOfType<HomeRouteState>();
 
   @override
   State<HomeRoute> createState() => HomeRouteState();
@@ -35,9 +35,9 @@ class HomeRouteState extends State<HomeRoute> {
                           context: context,
                           builder: (context) => HomeworkFormDialog(
                             homework: snapshot.data![position],
-                            title: 'Edit homework',
-                            submit: 'Edit',
-                            cancel: 'Cancel',
+                            title: AppLocalizations.of(context)!.dialogHWEditTitle,
+                            submit: AppLocalizations.of(context)!.dialogHWEdit,
+                            cancel: AppLocalizations.of(context)!.dialogHWEditCancel,
                           ),
                         ).then((v) {
                           if (v ?? false) setState(() {});
@@ -50,14 +50,12 @@ class HomeRouteState extends State<HomeRoute> {
                       setState(() {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content:
-                                Text("Deleted ${hw.id} (${hw.subject.name})"),
+                            content: Text("Deleted ${hw.id} (${hw.subject.name})"),
                             action: SnackBarAction(
                                 label: "UNDO",
-                                onPressed: () => Future.wait([
-                                      DBHelper().insertHomework(hw),
-                                      DBHelper().insertHWPages(pages)
-                                    ]).then((value) => setState(() {}))),
+                                onPressed: () =>
+                                    Future.wait([DBHelper().insertHomework(hw), DBHelper().insertHWPages(pages)])
+                                        .then((value) => setState(() {}))),
                           ),
                         );
                       });
@@ -66,10 +64,7 @@ class HomeRouteState extends State<HomeRoute> {
             return const Center(
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                  CircularProgressIndicator(),
-                  Text('Loading Database...\nMaybe check logs?')
-                ]));
+                    children: <Widget>[CircularProgressIndicator(), Text('Loading Database...\nMaybe check logs?')]));
           }
         });
   }
@@ -85,35 +80,36 @@ class HomeRouteState extends State<HomeRoute> {
 
   @override
   Widget build(BuildContext context) {
+    Intl.defaultLocale = Localizations.localeOf(context).languageCode;
+    initializeDateFormatting();
     if (kDebugMode) {
       print("REBUILD");
     }
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
+          title: Text(AppLocalizations.of(context)!.homeTitle),
           actions: <Widget>[
             IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const SettingsRoute()),
+                      MaterialPageRoute(builder: (context) => const SettingsRoute()),
                     ))
           ]),
       body: hwListWidget(),
       floatingActionButton: FloatingActionButton(
         onPressed: () async => showDialog(
           context: context,
-          builder: (context) => const HomeworkFormDialog(
-            title: 'Add homework',
-            submit: 'Add',
-            cancel: 'Cancel',
+          builder: (context) => HomeworkFormDialog(
+            title: AppLocalizations.of(context)!.dialogHWAddTitle,
+            submit: AppLocalizations.of(context)!.dialogHWAdd,
+            cancel: AppLocalizations.of(context)!.dialogHWAddCancel,
           ),
         ).then((v) {
           if (v ?? false) setState(() {});
         }),
-        tooltip: 'Add homework',
+        tooltip: AppLocalizations.of(context)!.dialogHWAddTitle,
         child: const Icon(Icons.add),
       ),
     );

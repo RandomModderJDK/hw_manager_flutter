@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/routes/home_route.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
 
@@ -14,8 +15,7 @@ class HWMApp extends StatefulWidget {
   HWMAppState createState() => HWMAppState();
 
   /// InheritedWidget style accessor to our State object.
-  static HWMAppState of(BuildContext context) =>
-      context.findAncestorStateOfType<HWMAppState>()!;
+  static HWMAppState of(BuildContext context) => context.findAncestorStateOfType<HWMAppState>()!;
 }
 
 class HWMAppState extends State<HWMApp> {
@@ -36,17 +36,17 @@ class HWMAppState extends State<HWMApp> {
     return MaterialApp(
       title: 'HWM',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
-        dialogTheme: const DialogTheme(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10)))),
+        dialogTheme:
+            const DialogTheme(shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)))),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
-        dialogTheme: const DialogTheme(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10)))),
+        dialogTheme:
+            const DialogTheme(shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)))),
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.dark,
           seedColor: Colors.red.shade900,
@@ -56,7 +56,7 @@ class HWMAppState extends State<HWMApp> {
       ),
       themeMode: _themeMode,
       // device controls theme
-      home: const HomeRoute(title: 'Manage homework'),
+      home: const HomeRoute(),
     );
   }
 
