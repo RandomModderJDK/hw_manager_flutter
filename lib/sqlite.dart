@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -35,14 +36,16 @@ Future<bool> _openChooseSourceBar(BuildContext context) async {
                         borderRadius: BorderRadius.zero
                             .copyWith(topLeft: const Radius.circular(30.0), topRight: const Radius.circular(30.0)),
                       )),
-                      child: const Row(
+                      child: Row(
                         children: [
-                          SizedBox(width: 70),
-                          Icon(size: 50, Icons.add_a_photo_rounded),
+                          const SizedBox(width: 70),
+                          const Icon(size: 50, Icons.add_a_photo_rounded),
                           Expanded(
                               child: Align(
                                   alignment: Alignment.center,
-                                  child: Text(style: TextStyle(fontSize: 25.0), 'Take a photo')))
+                                  child: Text(
+                                      style: const TextStyle(fontSize: 25.0),
+                                      AppLocalizations.of(context)!.photoOptionCamera)))
                         ],
                       ),
                       onPressed: () => Navigator.pop(context, true),
@@ -50,14 +53,16 @@ Future<bool> _openChooseSourceBar(BuildContext context) async {
                     Expanded(
                         child: TextButton(
                       style: TextButton.styleFrom(shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
-                      child: const Row(
+                      child: Row(
                         children: [
-                          SizedBox(width: 70),
-                          Icon(size: 50, Icons.add_photo_alternate_rounded),
+                          const SizedBox(width: 70),
+                          const Icon(size: 50, Icons.add_photo_alternate_rounded),
                           Expanded(
                               child: Align(
                                   alignment: Alignment.center,
-                                  child: Text(style: TextStyle(fontSize: 25.0), 'Add from Gallery')))
+                                  child: Text(
+                                      style: const TextStyle(fontSize: 25.0),
+                                      AppLocalizations.of(context)!.photoOptionGallery)))
                         ],
                       ),
                       onPressed: () => Navigator.pop(context),

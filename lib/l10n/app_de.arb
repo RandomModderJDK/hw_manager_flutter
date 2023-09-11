@@ -23,6 +23,8 @@
   "showMore": " Mehr anzeigen",
   "showLess": " Weniger anzeigen",
   "takePhoto": "Ein Foto machen",
+  "photoOptionCamera": "Schieß ein Foto",
+  "photoOptionGallery": "Füge Bild aus Gallerie hinzu",
   "openImageViewer": "Seiten ansehen",
   "imageViewer": "Bildbetrachter",
   "previousPage": "Vorherige Seite",

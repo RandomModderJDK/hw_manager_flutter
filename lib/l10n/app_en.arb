@@ -109,6 +109,14 @@
   "@takePhoto": {
     "description": "Take a photo tooltip"
   },
+  "photoOptionCamera": "Take a photo",
+  "@photoOptionCamera": {
+    "description": "Option to use shot image for ios and android devices"
+  },
+  "photoOptionGallery": "Add image from gallery",
+  "@photoOptionGallery": {
+    "description": "Option to use gallery image for ios and android devices"
+  },
   "openImageViewer": "Open Image Viewer",
   "@openImageViewer": {
     "description": "Open Image Viewer tooltip"
