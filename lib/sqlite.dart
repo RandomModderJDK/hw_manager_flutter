@@ -12,8 +12,14 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 /// Pick and add image to database for the specified homework
 /// Return true on success, otherwise false
 Future<bool> pickAndAddImage(BuildContext context, Homework hw) async {
-  bool takePhoto = Platform.isAndroid || Platform.isIOS || kDebugMode ? await _openChooseSourceBar(context) : false;
-  XFile? xFile = await ImagePicker().pickImage(source: takePhoto ? ImageSource.camera : ImageSource.gallery);
+  ImageSource? imageSource = ImageSource.gallery;
+  if (Platform.isAndroid || Platform.isIOS || kDebugMode) {
+    imageSource = await _openChooseSourceBar(context);
+    // If user decides to select nothing, the dialog will get closed.
+    if (imageSource == null) return false;
+  }
+
+  XFile? xFile = await ImagePicker().pickImage(source: imageSource);
   if (xFile == null) return false;
   HWPage page = await HWPage.readXFile(hw.id!, xFile);
   DBHelper().insertHWPage(page, orderIn: true);
@@ -22,57 +28,56 @@ Future<bool> pickAndAddImage(BuildContext context, Homework hw) async {
 
 // TODO: Fix that this doesnt work on iOS/iPadOS
 // TODO: Add permission_handler
-Future<bool> _openChooseSourceBar(BuildContext context) async {
+Future<ImageSource?> _openChooseSourceBar(BuildContext context) async {
   return await showModalBottomSheet(
-          context: context,
-          builder: (BuildContext context) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                        child: TextButton(
-                      style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero
-                            .copyWith(topLeft: const Radius.circular(30.0), topRight: const Radius.circular(30.0)),
-                      )),
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 70),
-                          const Icon(size: 50, Icons.add_a_photo_rounded),
-                          Expanded(
-                              child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                      style: const TextStyle(fontSize: 25.0),
-                                      AppLocalizations.of(context)!.photoOptionCamera)))
-                        ],
-                      ),
-                      onPressed: () => Navigator.pop(context, true),
-                    )),
-                    Expanded(
-                        child: TextButton(
-                      style: TextButton.styleFrom(shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 70),
-                          const Icon(size: 50, Icons.add_photo_alternate_rounded),
-                          Expanded(
-                              child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                      style: const TextStyle(fontSize: 25.0),
-                                      AppLocalizations.of(context)!.photoOptionGallery)))
-                        ],
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                    )),
-                  ],
-                ),
-              )) ==
-      true;
+    context: context,
+    isScrollControlled: true,
+    builder: (BuildContext context) => ListView(shrinkWrap: true, children: <Widget>[
+      Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          TextButton(
+            style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 40.00),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero
+                      .copyWith(topLeft: const Radius.circular(30.0), topRight: const Radius.circular(30.0)),
+                )),
+            child: Row(
+              children: [
+                const SizedBox(width: 70),
+                const Icon(size: 50, Icons.add_a_photo_rounded),
+                Expanded(
+                    child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                            style: const TextStyle(fontSize: 25.0), AppLocalizations.of(context)!.photoOptionCamera)))
+              ],
+            ),
+            onPressed: () => Navigator.pop(context, ImageSource.camera),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 40.00),
+                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
+            child: Row(
+              children: [
+                const SizedBox(width: 70),
+                const Icon(size: 50, Icons.add_photo_alternate_rounded),
+                Expanded(
+                    child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                            style: const TextStyle(fontSize: 25.0), AppLocalizations.of(context)!.photoOptionGallery)))
+              ],
+            ),
+            onPressed: () => Navigator.pop(context, ImageSource.gallery),
+          ),
+        ],
+      )
+    ]),
+  );
 }
 
 // TODO Add search function/do not return the whole list of homeworks
