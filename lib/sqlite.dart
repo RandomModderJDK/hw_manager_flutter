@@ -194,9 +194,13 @@ class DBHelper {
 
   /// Insert/update document with existing homework id
   Future<int> insertHWPage(HWPage page, {bool orderIn = false}) async {
-    print("INSERT: ${page.order}");
+    if (kDebugMode) {
+      print("INSERT: ${page.order}");
+    }
     if (orderIn) page.order = await countHWPages(page.hwId);
-    print("INSERT AFTER REORDER: ${page.order}");
+    if (kDebugMode) {
+      print("INSERT AFTER REORDER: ${page.order}");
+    }
     return await db.insert(
       'imageBlobs',
       await page.toMap(),
@@ -245,7 +249,9 @@ class DBHelper {
 
   Future<List<void>> deleteHWPagesByHWOrder(Homework hw, List<int> order) async {
     for (int p in order) {
-      print("DELET ${hw.id ?? -1}+$p");
+      if (kDebugMode) {
+        print("DELET ${hw.id ?? -1}+$p");
+      }
       await db.delete(
         'imageBlobs',
         where: "id = ?",
@@ -258,7 +264,9 @@ class DBHelper {
   Future<List<void>> reorderHWPages(Homework hw) async {
     List<HWPage> pages = await retrieveHWPages(hw);
     pages.sort((a, b) => a.order.compareTo(b.order));
-    print("These are the currently existing pages: ${pages.map((e) => e.order)}");
+    if (kDebugMode) {
+      print("These are the currently existing pages: ${pages.map((e) => e.order)}");
+    }
     return await Future.wait([
       for (int i = 0; i < pages.length; i++)
         () async {

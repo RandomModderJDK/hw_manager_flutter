@@ -12,9 +12,7 @@ class SettingsRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text('Settings')),
+      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.inversePrimary, title: const Text('Settings')),
       body: SettingsList(
         sections: [
           // TODO Implement Untis section
@@ -24,29 +22,17 @@ class SettingsRoute extends StatelessWidget {
               SettingsTile(
                 title: const Text('Dark Mode'),
                 leading: const Icon(Icons.dark_mode_outlined),
-                description:
-                    const Text('Change between dark, light, automatic mode'),
+                description: const Text('Change between dark, light, automatic mode'),
                 onPressed: (context) {
-                  Preferences.nextThemeMode()
-                      .then((mode) => HWMApp.of(context).changeTheme(mode));
+                  Preferences.nextThemeMode().then((mode) => HWMApp.of(context).changeTheme(mode));
                 },
-              ),
-              SettingsTile(
-                title: const Text('OBSOLETE: Persist dialog data'),
-                leading: const Icon(Icons.archive_outlined),
-                description: const Text(
-                    'OBSOLETE: Persist dialog data in-memory to load after closing dialog'),
-                onPressed: (context) => Preferences.getDialogPersistence()
-                    .then((b) => Preferences.setDialogPersistence(!b)),
               ),
               SettingsTile(
                 title: const Text('Subjects overview'),
                 leading: const Icon(Icons.subject),
-                description:
-                    const Text('Delete, insert or edit the suggested subjects'),
-                onPressed: (context) => Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => const SubjectRoute())),
+                description: const Text('Delete, insert or edit the suggested subjects'),
+                onPressed: (context) =>
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SubjectRoute())),
               ),
               SettingsTile(
                 title: const Text('Delete all fotos'),
