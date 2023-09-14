@@ -1,0 +1,17 @@
+{
+  "de": [
+    "settingsTitle",
+    "subjectsTitle",
+    "dialogSubjectAddTitle",
+    "dialogSubjectAdd",
+    "dialogSubjectAddCancel",
+    "dialogSubjectEditTitle",
+    "dialogSubjectEdit",
+    "dialogSubjectEditCancel",
+    "dialogSubjectFullName",
+    "dialogSubjectFullNameHint",
+    "dialogSubjectFullNameValidator",
+    "dialogSubjectShortName",
+    "dialogSubjectShortNameHint"
+  ]
+}
