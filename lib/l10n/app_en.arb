@@ -3,6 +3,14 @@
   "@homeTitle": {
     "description": "Shows title text of the app"
   },
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Shows title text of the settings route"
+  },
+  "subjectsTitle": "Subjects",
+  "@subjectsTitle": {
+    "description": "Shows title text of the subjects route"
+  },
   "dateToday": "Until today!",
   "@dateToday": {
     "description": "A date descriptor in homework entry"
@@ -52,6 +60,50 @@
   "dateTimeFieldLabel": "Until the ",
   "@dateTimeFieldLabel": {
     "description": "Completes to e.g Until the 12. of June"
+  },
+  "dialogSubjectAddTitle": "Add subject",
+  "@dialogSubjectAddTitle": {
+    "description": "Title/tooltip of add subject dialog"
+  },
+  "dialogSubjectAdd": "Add",
+  "@dialogSubjectAdd": {
+    "description": "Submit button of add subject dialog"
+  },
+  "dialogSubjectAddCancel": "Cancel",
+  "@dialogSubjectAddCancel": {
+    "description": "Cancel button of add subject dialog"
+  },
+  "dialogSubjectEditTitle": "Edit subject",
+  "@dialogSubjectEditTitle": {
+    "description": "Title/tooltip of edit subject dialog"
+  },
+  "dialogSubjectEdit": "Edit",
+  "@dialogSubjectEdit": {
+    "description": "Submit button of edit subject dialog"
+  },
+  "dialogSubjectEditCancel": "Cancel",
+  "@dialogSubjectEditCancel": {
+    "description": "Cancel button of edit subject dialog"
+  },
+  "dialogSubjectFullName": "Full name",
+  "@dialogSubjectFullName": {
+    "description": "The label of the subject's full name entered"
+  },
+  "dialogSubjectFullNameHint": "Mathematics",
+  "@dialogSubjectFullNameHint": {
+    "description": "A hint what you can write into subject's full name field"
+  },
+  "dialogSubjectFullNameValidator": "Enter subject name!",
+  "@dialogSubjectValidator": {
+    "description": "The text appearing when nothing is entered in subject edit/add dialog"
+  },
+  "dialogSubjectShortName": "Optional short name",
+  "@dialogSubjectShortName": {
+    "description": "The label of the subject's short name entered"
+  },
+  "dialogSubjectShortNameHint": "Ma (useful for untis)",
+  "@dialogSubjectShortNameHint": {
+    "description": "A hint what you can write into subject's short name field"
   },
   "dialogHWSubject": "Subject",
   "@dialogHWSubject": {
