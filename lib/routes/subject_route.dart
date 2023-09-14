@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/my_listview.dart';
 
 import '../dialogs/dialog_subject_form.dart';
@@ -38,9 +39,9 @@ class _SubjectRouteState extends State<SubjectRoute> {
                           context: context,
                           builder: (context) => SubjectFormDialog(
                             subject: snapshot.data![position],
-                            title: 'Edit subject',
-                            submit: 'Edit',
-                            cancel: 'Cancel',
+                            title: AppLocalizations.of(context)!.dialogSubjectEditTitle,
+                            submit: AppLocalizations.of(context)!.dialogSubjectEdit,
+                            cancel: AppLocalizations.of(context)!.dialogSubjectEditCancel,
                           ),
                         ).then((v) {
                           if (v ?? false) setState(() {});
@@ -49,10 +50,7 @@ class _SubjectRouteState extends State<SubjectRoute> {
             return const Center(
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                  CircularProgressIndicator(),
-                  Text('Loading database...\nMaybe check logs?')
-                ]));
+                    children: <Widget>[CircularProgressIndicator(), Text('Loading database...\nMaybe check logs?')]));
           }
         });
   }
@@ -62,20 +60,20 @@ class _SubjectRouteState extends State<SubjectRoute> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text('Settings')),
+          title: Text(AppLocalizations.of(context)!.subjectsTitle)),
       body: subjectList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () async => showDialog(
           context: context,
-          builder: (context) => const SubjectFormDialog(
-            title: 'Add subject',
-            submit: 'Add',
-            cancel: 'Cancel',
+          builder: (context) => SubjectFormDialog(
+            title: AppLocalizations.of(context)!.dialogSubjectAddTitle,
+            submit: AppLocalizations.of(context)!.dialogSubjectAdd,
+            cancel: AppLocalizations.of(context)!.dialogSubjectAddCancel,
           ),
         ).then((v) {
           if (v ?? false) setState(() {});
         }),
-        tooltip: 'Add subject',
+        tooltip: AppLocalizations.of(context)!.dialogSubjectAddTitle,
         child: const Icon(Icons.add),
       ),
     );

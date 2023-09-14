@@ -35,6 +35,13 @@ class SettingsRoute extends StatelessWidget {
                     Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SubjectRoute())),
               ),
               SettingsTile(
+                title: const Text('Untis Login'),
+                leading: const Icon(Icons.login_outlined),
+                description: const Text('Login with your Untis school account'),
+                onPressed: (context) =>
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SubjectRoute())),
+              ),
+              SettingsTile(
                 title: const Text('Delete all fotos'),
                 leading: const Icon(Icons.delete),
                 description: const Text('Delete all the photos'),
