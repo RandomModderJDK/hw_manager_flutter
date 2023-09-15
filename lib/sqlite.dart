@@ -153,7 +153,7 @@ class DBHelper {
   }
 
   Future<List<Subject>> retrieveSubjects() async {
-    final List<Map<String, Object?>> queryResult = await db.query('subjects');
+    final List<Map<String, Object?>> queryResult = await db.query('subjects', orderBy: "name");
     return queryResult.map((e) => Subject.fromMap(e)).toList();
   }
 

@@ -94,7 +94,7 @@ class HomeRouteState extends State<HomeRoute> {
                 icon: const Icon(Icons.settings),
                 onPressed: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const SettingsRoute()),
+                      MaterialPageRoute(builder: (context) => SettingsRoute()),
                     ))
           ]),
       body: hwListWidget(),

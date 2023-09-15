@@ -45,7 +45,22 @@ class _SubjectRouteState extends State<SubjectRoute> {
                           ),
                         ).then((v) {
                           if (v ?? false) setState(() {});
-                        })));
+                        }),
+                    onDeleted: (DismissDirection direction) async {
+                      Subject subject = snapshot.data![position];
+                      snapshot.data!.remove(subject);
+                      await DBHelper().deleteSubject(subject.name);
+                      setState(() {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Deleted ${subject.name} (${subject.shortName})"),
+                            action: SnackBarAction(
+                                label: "UNDO",
+                                onPressed: () => DBHelper().insertSubject(subject).then((value) => setState(() {}))),
+                          ),
+                        );
+                      });
+                    }));
           } else {
             return const Center(
                 child: Column(

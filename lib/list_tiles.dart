@@ -139,31 +139,46 @@ class _HomeworkDescription extends StatelessWidget {
 }
 
 class SubjectListItem extends StatelessWidget {
-  const SubjectListItem({super.key, required this.subject, required this.onEdit});
+  const SubjectListItem({super.key, required this.subject, required this.onEdit, required this.onDeleted});
 
   final Subject subject;
   final Function onEdit;
+  final Function(DismissDirection) onDeleted;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-      child: IntrinsicHeight(
-        child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Expanded(
-                child: _SubjectDescription(subject),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [IconButton(onPressed: () => onEdit(), icon: const Icon(Icons.edit))],
-              ),
-            ]),
-      ),
-    );
+    return Dismissible(
+        key: Key(subject.name),
+        onDismissed: onDeleted,
+        background: Container(
+          color: Colors.red,
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.all(30),
+          child: const Icon(Icons.delete_forever),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          child: IntrinsicHeight(
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Expanded(
+                    child: _SubjectDescription(subject),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      IconButton(
+                          tooltip: AppLocalizations.of(context)!.dialogSubjectEditTitle,
+                          onPressed: () => onEdit(),
+                          icon: const Icon(Icons.edit))
+                    ],
+                  ),
+                ]),
+          ),
+        ));
   }
 }
 
