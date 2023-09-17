@@ -5,7 +5,7 @@ import 'package:hw_manager_flutter/routes/image_viewer_route.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 
 class HWListItem extends StatelessWidget {
-  const HWListItem({super.key, required this.homework, required this.onEdit, required this.onDeleted});
+  HWListItem({super.key, required this.homework, required this.onEdit, required this.onDeleted});
 
   final Homework homework;
   final Function onEdit;
@@ -34,6 +34,7 @@ class HWListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool? hasFotos;
     return Dismissible(
       key: Key(homework.id!.toString()),
       onDismissed: onDeleted,
@@ -82,36 +83,59 @@ class HWListItem extends StatelessWidget {
                                   onPressed: () => onEdit(),
                                   tooltip: AppLocalizations.of(context)!.dialogHWEditTitle,
                                   icon: const Icon(Icons.edit)),
-                              StatefulBuilder(
-                                  builder: (context, setState) => FutureBuilder(
+                              StatefulBuilder(builder: (context, setState) {
+                                if (hasFotos == null) {
+                                  return FutureBuilder(
                                       future: DBHelper().countHWPages(homework.id ?? -1),
                                       builder: (context, snapshot) {
                                         if (snapshot.hasData) {
-                                          if (snapshot.data! != 0) {
-                                            return IconButton(
-                                                onPressed: () async {
-                                                  await Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) => ImageViewerRoute(
-                                                          homework: homework,
-                                                        ),
-                                                      ));
-                                                  setState(() {});
-                                                },
-                                                tooltip: AppLocalizations.of(context)!.openImageViewer,
-                                                icon: const Icon(Icons.photo_album));
-                                          }
+                                          hasFotos = snapshot.data! > 0;
+                                        } else {
+                                          return const CircularProgressIndicator();
                                         }
-                                        return IconButton(
-                                            onPressed: () {
-                                              pickAndAddImage(context, homework).then((success) {
-                                                if (success) setState(() {});
-                                              });
-                                            },
-                                            tooltip: AppLocalizations.of(context)!.takePhoto,
-                                            icon: const Icon(Icons.add_a_photo_rounded));
-                                      })),
+                                        return hasFotos!
+                                            ? IconButton(
+                                                onPressed: () => Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) => ImageViewerRoute(homework: homework)))
+                                                    .then((value) => setState(() {})),
+                                                tooltip: AppLocalizations.of(context)!.openImageViewer,
+                                                icon: const Icon(Icons.photo_album))
+                                            : IconButton(
+                                                onPressed: () {
+                                                  pickAndAddImage(context, homework).then((success) {
+                                                    if (success) setState(() {});
+                                                  });
+                                                },
+                                                tooltip: AppLocalizations.of(context)!.takePhoto,
+                                                icon: const Icon(Icons.add_a_photo_rounded));
+                                      });
+                                } else {
+                                  DBHelper().countHWPages(homework.id ?? -1).then((value) {
+                                    if (hasFotos == value > 0) return;
+                                    setState(() => hasFotos = value > 0);
+                                  });
+                                }
+
+                                return hasFotos!
+                                    ? IconButton(
+                                        onPressed: () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) => ImageViewerRoute(homework: homework)))
+                                            .then((value) => setState(() {})),
+                                        tooltip: AppLocalizations.of(context)!.openImageViewer,
+                                        icon: const Icon(Icons.photo_album))
+                                    : IconButton(
+                                        onPressed: () {
+                                          pickAndAddImage(context, homework).then((success) {
+                                            if (success) setState(() {});
+                                          });
+                                        },
+                                        tooltip: AppLocalizations.of(context)!.takePhoto,
+                                        icon: const Icon(Icons.add_a_photo_rounded));
+                              }),
                             ],
                           ),
                           const Spacer(flex: 1),
