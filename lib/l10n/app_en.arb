@@ -7,9 +7,107 @@
   "@settingsTitle": {
     "description": "Shows title text of the settings route"
   },
+  "settingsGeneral": "General",
+  "@settingsGeneral": {
+    "description": "The general settings section"
+  },
+  "settingsThemeModeTitle": "Change Theme",
+  "@settingsThemeModeTitle": {
+    "description": "Title for changing to dark/light/system mode"
+  },
+  "settingsThemeModeDescription": "Change between dark, light, system mode",
+  "@settingsThemeModeDescription": {
+    "description": "Description for changing to dark/light/system mode"
+  },
+  "settingsSubjectsTitle": "Subjects overview",
+  "@settingsSubjectsTitle": {
+    "description": "Title for subjects management route"
+  },
+  "settingsSubjectsDescription": "Delete, insert or edit the suggested subjects",
+  "@settingsSubjectsDescription": {
+    "description": "Description for subjects management route"
+  },
   "subjectsTitle": "Subjects",
   "@subjectsTitle": {
     "description": "Shows title text of the subjects route"
+  },
+  "deleteSubjectToast": "Deleted {longName} ({shortName})",
+  "@deleteSubjectToast": {
+    "description": "Text popping up from bottom when deleting subject",
+    "placeholders": {
+      "longName": {
+        "type": "String",
+        "example": "Mathematics"
+      },
+      "shortName": {
+        "type": "String",
+        "example": "Ma"
+      }
+    }
+  },
+  "deleteSubjectToastUndo": "UNDO",
+  "@deleteSubjectToastUndo": {
+    "description": "Button to undo deleting subject"
+  },
+  "settingsUntis": "Untis",
+  "@settingsUntis": {
+    "description": "Untis management settings section"
+  },
+  "settingsUntisLoginTitle": "Login",
+  "@settingsUntisLoginTitle": {
+    "description": "Untis login settings title"
+  },
+  "settingsUntisLoginDescription": "Login with your untis school account",
+  "@settingsUntisLoginDescription": {
+    "description": "Untis login settings description"
+  },
+  "settingsUntisLoginServer": "Server",
+  "@settingsUntisLoginServer": {
+    "description": "Untis login server setting"
+  },
+  "settingsUntisLoginServerHint": "lorem.webuntis.com",
+  "@settingsUntisLoginServerHint": {
+    "description": "Untis login server hint"
+  },
+  "settingsUntisLoginSchool": "School",
+  "@settingsUntisLoginSchool": {
+    "description": "Which school on the untis server"
+  },
+  "settingsUntisLoginSchoolHint": "max+schl",
+  "@settingsUntisLoginSchoolHint": {
+    "description": "Untis login school hint"
+  },
+  "settingsUntisLoginUsername": "Username",
+  "@settingsUntisLoginUsername": {
+    "description": "Untis login username setting"
+  },
+  "settingsUntisLoginUsernameHint": "mustermax",
+  "@settingsUntisLoginUsernameHint": {
+    "description": "Untis login username hint"
+  },
+  "settingsUntisLoginPassword": "Password",
+  "@settingsUntisLoginPassword": {
+    "description": "Untis login password setting"
+  },
+  "settingsUntisLoginPasswordHint": "mypass1234",
+  "@settingsUntisLoginPasswordHint": {
+    "description": "Untis login password hint"
+  },
+  "settingsUntisImportTitle": "Import subjects",
+  "@settingsUntisImportTitle": {
+    "description": "Title for fetching and importing subjects from WebUntis"
+  },
+  "settingsUntisImportDescription": "Fetch subjects from WebUntis",
+  "@settingsUntisImportDescription": {
+    "description": "Description for fetching and importing subjects from WebUntis"
+  },
+  "settingsUntisImportFailure": "Failed to log in",
+  "@settingsUntisImportFailure": {
+    "description": "Toast notification, when WebUntis login failed"
+  },
+  "settingsUntisImportSuccess": "Imported untis subjects",
+  "@settingsUntisImportSuccess": {
+    "description": "Toast notification, when WebUntis login succeeded"
   },
   "dateToday": "Until today!",
   "@dateToday": {
@@ -148,6 +246,24 @@
   "dialogHWEditCancel": "Cancel",
   "@dialogHWEditCancel": {
     "description": "Cancel button of add homework dialog"
+  },
+  "deleteHWToast": "Deleted {id} ({subject})",
+  "@deleteHWToast": {
+    "description": "Text popping up from bottom when deleting homework",
+    "placeholders": {
+      "id": {
+        "type": "int",
+        "example": "1"
+      },
+      "subject": {
+        "type": "String",
+        "example": "Math"
+      }
+    }
+  },
+  "deleteHWToastUndo": "UNDO",
+  "@deleteHWToastUndo": {
+    "description": "Button to undo deleting homework"
   },
   "showMore": " Show more",
   "@showMore": {

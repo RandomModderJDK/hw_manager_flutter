@@ -53,9 +53,10 @@ class _SubjectRouteState extends State<SubjectRoute> {
                       setState(() {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text("Deleted ${subject.name} (${subject.shortName})"),
+                            content: Text(AppLocalizations.of(context)!
+                                .deleteSubjectToast(subject.name, subject.shortName ?? "-")),
                             action: SnackBarAction(
-                                label: "UNDO",
+                                label: AppLocalizations.of(context)!.deleteSubjectToastUndo,
                                 onPressed: () => DBHelper().insertSubject(subject).then((value) => setState(() {}))),
                           ),
                         );

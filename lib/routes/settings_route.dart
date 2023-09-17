@@ -25,74 +25,76 @@ class SettingsRoute extends StatelessWidget {
           title: Text(AppLocalizations.of(context)!.settingsTitle)),
       body: SettingsList(
         sections: [
-          SettingsSection(title: const Text('General'), tiles: [
+          SettingsSection(title: Text(AppLocalizations.of(context)!.settingsGeneral), tiles: [
             SettingsTile(
-              title: const Text('Dark Mode'),
+              title: Text(AppLocalizations.of(context)!.settingsThemeModeTitle),
               leading: const Icon(Icons.dark_mode_outlined),
-              description: const Text('Change between dark, light, automatic mode'),
+              description: Text(AppLocalizations.of(context)!.settingsThemeModeDescription),
               onPressed: (context) {
                 Preferences.nextThemeMode().then((mode) => HWMApp.of(context).changeTheme(mode));
               },
             ),
             SettingsTile(
-              title: const Text('Subjects overview'),
+              title: Text(AppLocalizations.of(context)!.settingsSubjectsTitle),
               leading: const Icon(Icons.subject),
-              description: const Text('Delete, insert or edit the suggested subjects'),
+              description: Text(AppLocalizations.of(context)!.settingsSubjectsDescription),
               onPressed: (context) =>
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SubjectRoute())),
             )
           ]),
-          SettingsSection(title: const Text('Untis'), tiles: [
+          SettingsSection(title: Text(AppLocalizations.of(context)!.settingsUntis), tiles: [
             SettingsTile(
-                title: const Text('Login'),
+                title: Text(AppLocalizations.of(context)!.settingsUntisLoginTitle),
                 leading: const Icon(Icons.login_rounded),
                 description: Expandable(
                     backgroundColor: themeData.settingsListBackground!,
                     boxShadow: const [],
                     centralizeFirstChild: false,
                     arrowWidget: const Icon(Icons.keyboard_arrow_up_rounded, size: 40.0),
-                    firstChild: const Expanded(
+                    firstChild: Expanded(
                         child: Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('Login with your Untis school account'),
+                      child: Text(AppLocalizations.of(context)!.settingsUntisLoginDescription),
                     )),
                     secondChild: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 10),
                         UntisTextFormField(
-                            labelText: "Server",
-                            hintText: "lorem.untis.com",
+                            labelText: AppLocalizations.of(context)!.settingsUntisLoginServer,
+                            hintText: AppLocalizations.of(context)!.settingsUntisLoginServerHint,
                             initValue: Preferences.getUntisServer(),
                             onChanged: (s) => Preferences.saveUntisServer(s ?? "")),
                         const SizedBox(height: 10),
                         UntisTextFormField(
-                            labelText: "School",
-                            hintText: "max+schl",
+                            labelText: AppLocalizations.of(context)!.settingsUntisLoginSchool,
+                            hintText: AppLocalizations.of(context)!.settingsUntisLoginSchoolHint,
                             initValue: Preferences.getUntisSchool(),
                             onChanged: (s) => Preferences.saveUntisSchool(s ?? "")),
                         const SizedBox(height: 10),
                         UntisTextFormField(
-                            labelText: "Username",
-                            hintText: "maxmustermann",
+                            labelText: AppLocalizations.of(context)!.settingsUntisLoginUsername,
+                            hintText: AppLocalizations.of(context)!.settingsUntisLoginUsernameHint,
                             initValue: Preferences.getUntisUsername(),
                             onChanged: (s) => Preferences.saveUntisUsername(s ?? "")),
                         const SizedBox(height: 10),
                         UntisTextFormField(
                             passwordStyle: true,
-                            labelText: "Password",
-                            hintText: "mypass1234",
+                            labelText: AppLocalizations.of(context)!.settingsUntisLoginPassword,
+                            hintText: AppLocalizations.of(context)!.settingsUntisLoginPasswordHint,
                             initValue: Preferences.getUntisPassword(),
                             onChanged: (s) => Preferences.saveUntisPassword(s ?? ""))
                       ],
                     ))),
             SettingsTile(
-              title: const Text('Import subjects'),
+              title: Text(AppLocalizations.of(context)!.settingsUntisImportTitle),
               leading: const Icon(Icons.cloud_download_rounded),
-              description: const Text('Fetch subjects from untis'),
+              description: Text(AppLocalizations.of(context)!.settingsUntisImportDescription),
               onPressed: (context) async {
                 FToast fToast = FToast();
                 fToast.init(context);
+                String failure = AppLocalizations.of(context)!.settingsUntisImportFailure;
+                String success = AppLocalizations.of(context)!.settingsUntisImportSuccess;
 
                 List<untis.Subject> subjects = await UntisHelper().getCurrentSubjects();
                 if (subjects.isEmpty) {
@@ -102,14 +104,14 @@ class SettingsRoute extends StatelessWidget {
                       borderRadius: BorderRadius.circular(25.0),
                       color: Colors.redAccent.withOpacity(0.8),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.sms_failed_rounded),
-                        SizedBox(
+                        const Icon(Icons.sms_failed_rounded),
+                        const SizedBox(
                           width: 12.0,
                         ),
-                        Text("Failed to log in"),
+                        Text(failure),
                       ],
                     ),
                   );
@@ -125,14 +127,14 @@ class SettingsRoute extends StatelessWidget {
                     borderRadius: BorderRadius.circular(25.0),
                     color: Colors.greenAccent.withOpacity(0.8),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.check),
-                      SizedBox(
+                      const Icon(Icons.check),
+                      const SizedBox(
                         width: 12.0,
                       ),
-                      Text("Imported untis subjects"),
+                      Text(success),
                     ],
                   ),
                 );

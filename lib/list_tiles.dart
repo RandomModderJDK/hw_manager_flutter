@@ -14,7 +14,7 @@ class HWListItem extends StatelessWidget {
   String _formatDate(BuildContext context, DateTime date) {
     Duration diff = date.difference(DateTime.now());
 
-    if (diff.inDays == 0) return AppLocalizations.of(context)!.dateToday; // Diff of 0 is apparently negative
+    if (diff.inDays == 1) return AppLocalizations.of(context)!.dateToday; // Diff of 0 is apparently negative
     if (diff.isNegative) return AppLocalizations.of(context)!.datePassed;
     if (diff.inDays < 6) return AppLocalizations.of(context)!.dateThisWeek(date);
     if (diff.inDays >= 6 && diff.inDays < 13) {
@@ -30,71 +30,88 @@ class HWListItem extends StatelessWidget {
       key: Key(homework.id!.toString()),
       onDismissed: onDeleted,
       background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.all(30),
-        child: const Icon(Icons.delete_forever),
-      ),
-      child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-          child: IntrinsicHeight(
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Expanded(
-                    child: _HomeworkDescription(homework),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const Spacer(flex: 1),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
+          color: Colors.red,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.all(30),
+                child: const Icon(Icons.delete_forever),
+              ),
+              Container(
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.all(30),
+                child: const Icon(Icons.delete_forever),
+              )
+            ],
+          )),
+      child: Card(
+          margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
+          shape: OutlineInputBorder(
+              borderSide: BorderSide(width: 1.5, color: Theme.of(context).colorScheme.inversePrimary),
+              borderRadius: const BorderRadius.all(Radius.circular(10.0))),
+          child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+              child: IntrinsicHeight(
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Expanded(
+                        child: _HomeworkDescription(homework),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          IconButton(
-                              onPressed: () => onEdit(),
-                              tooltip: AppLocalizations.of(context)!.dialogHWEditTitle,
-                              icon: const Icon(Icons.edit)),
-                          StatefulBuilder(
-                              builder: (context, setState) => FutureBuilder(
-                                  future: DBHelper().countHWPages(homework.id ?? -1),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      if (snapshot.data! != 0) {
+                          const Spacer(flex: 1),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                  onPressed: () => onEdit(),
+                                  tooltip: AppLocalizations.of(context)!.dialogHWEditTitle,
+                                  icon: const Icon(Icons.edit)),
+                              StatefulBuilder(
+                                  builder: (context, setState) => FutureBuilder(
+                                      future: DBHelper().countHWPages(homework.id ?? -1),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          if (snapshot.data! != 0) {
+                                            return IconButton(
+                                                onPressed: () async {
+                                                  await Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => ImageViewerRoute(
+                                                          homework: homework,
+                                                        ),
+                                                      ));
+                                                  setState(() {});
+                                                },
+                                                tooltip: AppLocalizations.of(context)!.openImageViewer,
+                                                icon: const Icon(Icons.photo_album));
+                                          }
+                                        }
                                         return IconButton(
-                                            onPressed: () async {
-                                              await Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) => ImageViewerRoute(
-                                                      homework: homework,
-                                                    ),
-                                                  ));
-                                              setState(() {});
+                                            onPressed: () {
+                                              pickAndAddImage(context, homework).then((success) {
+                                                if (success) setState(() {});
+                                              });
                                             },
-                                            tooltip: AppLocalizations.of(context)!.openImageViewer,
-                                            icon: const Icon(Icons.photo_album));
-                                      }
-                                    }
-                                    return IconButton(
-                                        onPressed: () {
-                                          pickAndAddImage(context, homework).then((success) {
-                                            if (success) setState(() {});
-                                          });
-                                        },
-                                        tooltip: AppLocalizations.of(context)!.takePhoto,
-                                        icon: const Icon(Icons.add_a_photo_rounded));
-                                  })),
+                                            tooltip: AppLocalizations.of(context)!.takePhoto,
+                                            icon: const Icon(Icons.add_a_photo_rounded));
+                                      })),
+                            ],
+                          ),
+                          const Spacer(flex: 1),
+                          Text(_formatDate(context, homework.overdueTimestamp.toLocal())),
                         ],
                       ),
-                      const Spacer(flex: 1),
-                      Text(_formatDate(context, homework.overdueTimestamp.toLocal())),
-                    ],
-                  ),
-                ]),
-          )),
+                    ]),
+              ))),
     );
   }
 }
@@ -156,29 +173,34 @@ class SubjectListItem extends StatelessWidget {
           padding: const EdgeInsets.all(30),
           child: const Icon(Icons.delete_forever),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-          child: IntrinsicHeight(
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Expanded(
-                    child: _SubjectDescription(subject),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      IconButton(
-                          tooltip: AppLocalizations.of(context)!.dialogSubjectEditTitle,
-                          onPressed: () => onEdit(),
-                          icon: const Icon(Icons.edit))
-                    ],
-                  ),
-                ]),
-          ),
-        ));
+        child: Card(
+            margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
+            shape: OutlineInputBorder(
+                borderSide: BorderSide(width: 1.5, color: Theme.of(context).colorScheme.inversePrimary),
+                borderRadius: const BorderRadius.all(Radius.circular(10.0))),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              child: IntrinsicHeight(
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Expanded(
+                        child: _SubjectDescription(subject),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          IconButton(
+                              tooltip: AppLocalizations.of(context)!.dialogSubjectEditTitle,
+                              onPressed: () => onEdit(),
+                              icon: const Icon(Icons.edit))
+                        ],
+                      ),
+                    ]),
+              ),
+            )));
   }
 }
 

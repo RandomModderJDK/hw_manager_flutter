@@ -50,9 +50,9 @@ class HomeRouteState extends State<HomeRoute> {
                       setState(() {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text("Deleted ${hw.id} (${hw.subject.name})"),
+                            content: Text(AppLocalizations.of(context)!.deleteHWToast(hw.id!, hw.subject.name)),
                             action: SnackBarAction(
-                                label: "UNDO",
+                                label: AppLocalizations.of(context)!.deleteHWToastUndo,
                                 onPressed: () =>
                                     Future.wait([DBHelper().insertHomework(hw), DBHelper().insertHWPages(pages)])
                                         .then((value) => setState(() {}))),
