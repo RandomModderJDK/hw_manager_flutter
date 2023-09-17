@@ -11,17 +11,25 @@ class HWListItem extends StatelessWidget {
   final Function onEdit;
   final Function(DismissDirection) onDeleted;
 
-  String _formatDate(BuildContext context, DateTime date) {
-    Duration diff = date.difference(DateTime.now());
+  DateTime _dateTimeToDate(DateTime dateTime) =>
+      dateTime.copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
 
-    if (diff.inDays == 1) return AppLocalizations.of(context)!.dateToday; // Diff of 0 is apparently negative
-    if (diff.isNegative) return AppLocalizations.of(context)!.datePassed;
-    if (diff.inDays < 6) return AppLocalizations.of(context)!.dateThisWeek(date);
+  String _formatDate(BuildContext context, DateTime date) {
+    Duration diff = _dateTimeToDate(date).difference(_dateTimeToDate(DateTime.now()));
+    Duration diffWithTime = date.difference(DateTime.now());
+    if (_dateTimeToDate(date).hour == 0) diffWithTime = diff;
+
+    if (diffWithTime.isNegative || diffWithTime == Duration.zero) {
+      return AppLocalizations.of(context)!.datePassed(date, date, date.hour);
+    }
+    if (diff.inDays == 0) return AppLocalizations.of(context)!.dateToday(date, date.hour);
+    if (diff.inDays == 1) return AppLocalizations.of(context)!.dateTomorrow(date, date.hour);
+    if (diff.inDays < 6) return AppLocalizations.of(context)!.dateThisWeek(date, date, date.hour);
     if (diff.inDays >= 6 && diff.inDays < 13) {
-      return AppLocalizations.of(context)!.dateNextWeek(date);
+      return AppLocalizations.of(context)!.dateNextWeek(date, date, date.hour);
     }
 
-    return AppLocalizations.of(context)!.dateAnywhereElse(date, date);
+    return AppLocalizations.of(context)!.dateAnywhereElse(date, date, date, date.hour);
   }
 
   @override
@@ -146,7 +154,7 @@ class _HomeworkDescription extends StatelessWidget {
               homework.content,
               maxLines: 2,
               style: TextStyle(
-                  overflow: TextOverflow.clip, fontSize: 14, color: Theme.of(context).colorScheme.inverseSurface),
+                  overflow: TextOverflow.fade, fontSize: 14, color: Theme.of(context).colorScheme.inverseSurface),
             ),
           ),
         ),

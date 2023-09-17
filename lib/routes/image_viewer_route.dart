@@ -43,19 +43,21 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
 
   Widget? photoViewer() {
     return FutureBuilder(
-      future: (() async => await DBHelper().retrieveHWPages(widget.homework))(),
+      future: (() async => await DBHelper().retrieveHWPage(widget.homework, page))(),
       builder: (_, snap) {
         if (snap.hasData) {
-          if (snap.data!.isEmpty) {
+          if (snap.data == null) {
             return const Text("There are no pages");
           }
           Image image = Image.memory(
-            snap.data![page].data,
+            snap.data!.data,
             fit: BoxFit.scaleDown,
             alignment: Alignment.center,
           );
-
-          pages = snap.data!.length;
+          DBHelper().countHWPages(widget.homework.id!).then((value) {
+            if (value == pages) return;
+            setState(() => pages = value);
+          });
           if (kDebugMode) {
             print("PAGES: $pages, CURRENT: $page");
           }

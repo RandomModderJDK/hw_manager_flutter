@@ -109,26 +109,81 @@
   "@settingsUntisImportSuccess": {
     "description": "Toast notification, when WebUntis login succeeded"
   },
-  "dateToday": "Until today!",
-  "@dateToday": {
-    "description": "A date descriptor in homework entry"
-  },
-  "datePassed": "Passed already",
+  "datePassed": "Passed already since {date}{hours, plural, =0{} other{ at {time}}}",
   "@datePassed": {
-    "description": "A date descriptor in homework entry"
-  },
-  "dateThisWeek": "This {date}",
-  "@dateThisWeek": {
-    "description": "A date(this week) descriptor in homework entry",
+    "description": "A date descriptor in homework entry",
     "placeholders": {
       "date": {
         "type": "DateTime",
-        "format": "EEEE",
-        "example": "Wednesday"
+        "format": "yMd",
+        "example": "01.01.2023"
+      },
+      "time": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "12:06"
+      },
+      "hours": {
+        "type": "int",
+        "format": "compact",
+        "example": "1"
       }
     }
   },
-  "dateNextWeek": "{date}, next week",
+  "dateToday": "Today {hours, plural, =0{} other{at {time}}}",
+  "@dateToday": {
+    "description": "A date descriptor in homework entry",
+    "placeholders": {
+      "time": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "12:06"
+      },
+      "hours": {
+        "type": "int",
+        "format": "compact",
+        "example": "1"
+      }
+    }
+  },
+  "dateTomorrow": "Till tomorrow{hours, plural, =0{} other{ at {time}}}",
+  "@dateTomorrow": {
+    "description": "A date descriptor in homework entry",
+    "placeholders": {
+      "time": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "12:05"
+      },
+      "hours": {
+        "type": "int",
+        "format": "compact",
+        "example": "1"
+      }
+    }
+  },
+  "dateThisWeek": "This {weekday}{hours, plural, =0{} other{ at {time}}}",
+  "@dateThisWeek": {
+    "description": "A date(this week) descriptor in homework entry",
+    "placeholders": {
+      "weekday": {
+        "type": "DateTime",
+        "format": "EEEE",
+        "example": "Wednesday"
+      },
+      "time": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "12:05"
+      },
+      "hours": {
+        "type": "int",
+        "format": "compact",
+        "example": "1"
+      }
+    }
+  },
+  "dateNextWeek": "{date}{hours, plural, =0{} other{ at {time}}}, next week",
   "@dateNextWeek": {
     "description": "A date(next week) descriptor in homework entry",
     "placeholders": {
@@ -136,10 +191,20 @@
         "type": "DateTime",
         "format": "EEEE",
         "example": "Wednesday"
+      },
+      "time": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "12:05"
+      },
+      "hours": {
+        "type": "int",
+        "format": "compact",
+        "example": "1"
       }
     }
   },
-  "dateAnywhereElse": "{weekday}, {date}",
+  "dateAnywhereElse": "{weekday}, {date}{hours, plural, =0{} other{ at {time}}}",
   "@dateAnywhereElse": {
     "description": "A date(not translated by others) descriptor in homework entry",
     "placeholders": {
@@ -152,6 +217,16 @@
         "type": "DateTime",
         "format": "yMd",
         "example": "01.01.2023"
+      },
+      "time": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "12:05"
+      },
+      "hours": {
+        "type": "int",
+        "format": "compact",
+        "example": "1"
       }
     }
   },

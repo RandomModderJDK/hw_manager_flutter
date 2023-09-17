@@ -60,6 +60,10 @@ class UntisHelper {
   }
 
   Future<Subject?> searchSubject(String longName, [String? shortName]) async {
+    if (session == null) {
+      bool success = await loginWithPreferences();
+      if (!success) return null;
+    }
     if (shortName != null) {
       return (await session!.getSubjects())
           .where((element) => element.name.toLowerCase().trim().startsWith(shortName.toLowerCase().trim()))
