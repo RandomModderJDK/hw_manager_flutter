@@ -19,6 +19,10 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
   int page = 0;
   int pages = 1;
 
+  bool get isFirstPage => page != 0;
+
+  bool get isLastPage => page + 1 != pages;
+
   @override
   void initState() {
     super.initState();
@@ -41,53 +45,64 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
     _controller.value.setEntry(1, 3, -yTranslate);
   }
 
-  Widget? photoViewer() {
+  final List<Image> _images = [];
+
+  Widget _refreshImages(BuildContext context) {
+    if (kDebugMode) {
+      print("REFRESH IMAGES");
+    }
     return FutureBuilder(
-      future: (() async => await DBHelper().retrieveHWPage(widget.homework, page))(),
+      future: (() async => await DBHelper().retrieveHWPages(widget.homework))(),
       builder: (_, snap) {
         if (snap.hasData) {
-          if (snap.data == null) {
-            return const Text("There are no pages");
-          }
-          Image image = Image.memory(
-            snap.data!.data,
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.center,
-          );
-          DBHelper().countHWPages(widget.homework.id!).then((value) {
-            if (value == pages) return;
-            setState(() => pages = value);
-          });
-          if (kDebugMode) {
-            print("PAGES: $pages, CURRENT: $page");
-          }
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 3),
-              Align(
-                child: Text(AppLocalizations.of(context)!.pageDisplay(page + 1, pages)),
-              ),
-              Expanded(
-                child: InteractiveViewer(
-                    transformationController: _controller,
-                    minScale: 0.75,
-                    maxScale: 50,
-                    boundaryMargin: const EdgeInsets.symmetric(vertical: 200, horizontal: 700),
-                    clipBehavior: Clip.none,
-                    child: SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height,
-                        child: image)),
-              ),
-            ],
-          );
+          _images.clear();
+          _images.addAll(snap.data!.map((e) => Image.memory(
+                e.data,
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
+                gaplessPlayback: true,
+              )));
+          return _images[page];
         } else {
-          return const LinearProgressIndicator();
+          return const Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[CircularProgressIndicator(), Text('Loading images...')]));
         }
       },
+    );
+  }
+
+  Widget? photoViewer() {
+    if (kDebugMode) {
+      print("PAGES: $pages, CURRENT: $page");
+    }
+    DBHelper().countHWPages(widget.homework.id!).then((value) {
+      if (value == pages) return;
+      setState(() => pages = value);
+    });
+    return Column(
+      children: [
+        const SizedBox(height: 3),
+        Center(child: Text(AppLocalizations.of(context)!.pageDisplay(page + 1, pages))),
+        Expanded(
+          child: InteractiveViewer(
+              transformationController: _controller,
+              minScale: 0.75,
+              maxScale: 50,
+              boundaryMargin: const EdgeInsets.symmetric(vertical: 200, horizontal: 700),
+              clipBehavior: Clip.none,
+              child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Builder(
+                    builder: (context) {
+                      if (_images.isEmpty) return _refreshImages(context);
+                      return _images[page];
+                    },
+                  ))),
+        ),
+      ],
     );
   }
 
@@ -96,77 +111,78 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
     if (kDebugMode) {
       print("initState $page $pages");
     }
-    return FutureBuilder(
-        future: DBHelper().countHWPages(widget.homework.id ?? -1),
-        builder: (context, snap) {
-          if (snap.hasData) if (snap.data! != 0) pages = snap.data!;
-          return Scaffold(
-            appBar: AppBar(
-                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                actions: [
-                  IconButton(
-                      onPressed: () => showDialog(
-                            context: context,
-                            builder: (context) => DeleteFormDialog(widget.homework),
-                          ).then((value) {
-                            if (value == null) return;
-                            if (value == pages) return;
-                            setState(() {
-                              page = value - 1;
-                              pages = value;
-                            });
-                          }),
-                      tooltip: AppLocalizations.of(context)!.deletePagesTitle,
-                      icon: const Icon(Icons.delete_rounded)),
-                  IconButton(
-                    onPressed: () {
-                      pickAndAddImage(context, widget.homework).then((success) {
-                        if (success) setState(() => pages++);
-                      });
-                    },
-                    tooltip: AppLocalizations.of(context)!.takePhoto,
-                    icon: const Icon(Icons.add_a_photo_rounded),
-                  ),
-                  IconButton(
-                      icon: const Icon(Icons.reorder_rounded),
-                      tooltip: AppLocalizations.of(context)!.dialogHWEditTitle,
-                      onPressed: () => showDialog(
-                            context: context,
-                            builder: (context) => HomeworkFormDialog(
-                              homework: widget.homework,
-                              title: AppLocalizations.of(context)!.dialogHWEditTitle,
-                              submit: AppLocalizations.of(context)!.dialogHWEdit,
-                              cancel: AppLocalizations.of(context)!.dialogHWEditCancel,
-                            ),
-                          ).then((v) {
-                            if (v ?? false) setState(() {});
-                          })),
-                ],
-                title: Text(AppLocalizations.of(context)!.imageViewer)),
-            body: photoViewer(),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-            floatingActionButton: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              if (page != 0)
-                FloatingActionButton(
-                  onPressed: () => setState(() {
-                    page--;
-                    initTransCont();
-                  }),
-                  tooltip: AppLocalizations.of(context)!.previousPage,
-                  child: const Icon(Icons.navigate_before_rounded),
-                ),
-              if (page != 0 || page + 1 != pages) const SizedBox(width: 3),
-              if (page != pages - 1)
-                FloatingActionButton(
-                  onPressed: () => setState(() {
-                    page++;
-                    initTransCont();
-                  }),
-                  tooltip: AppLocalizations.of(context)!.nextPage,
-                  child: const Icon(Icons.navigate_next_rounded),
-                )
-            ]),
-          );
-        });
+    return Scaffold(
+      appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          actions: [
+            IconButton(
+                onPressed: () => showDialog(context: context, builder: (context) => DeleteFormDialog(widget.homework))
+                    .then(_removePage),
+                tooltip: AppLocalizations.of(context)!.deletePagesTitle,
+                icon: const Icon(Icons.delete_rounded)),
+            IconButton(
+              onPressed: () => pickAndAddImage(context, widget.homework).then(_addPage),
+              tooltip: AppLocalizations.of(context)!.takePhoto,
+              icon: const Icon(Icons.add_a_photo_rounded),
+            ),
+            IconButton(
+                icon: const Icon(Icons.reorder_rounded),
+                tooltip: AppLocalizations.of(context)!.dialogHWEditTitle,
+                onPressed: () => showDialog(
+                      context: context,
+                      builder: (context) => HomeworkFormDialog(
+                          homework: widget.homework,
+                          title: AppLocalizations.of(context)!.dialogHWEditTitle,
+                          submit: AppLocalizations.of(context)!.dialogHWEdit,
+                          cancel: AppLocalizations.of(context)!.dialogHWEditCancel),
+                    )),
+          ],
+          title: Text(AppLocalizations.of(context)!.imageViewer)),
+      body: photoViewer(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        if (isFirstPage)
+          FloatingActionButton(
+            onPressed: _previousPage,
+            tooltip: AppLocalizations.of(context)!.previousPage,
+            child: const Icon(Icons.navigate_before_rounded),
+          ),
+        if (isFirstPage || isLastPage) const SizedBox(width: 3),
+        if (isLastPage)
+          FloatingActionButton(
+            onPressed: _nextPage,
+            tooltip: AppLocalizations.of(context)!.nextPage,
+            child: const Icon(Icons.navigate_next_rounded),
+          )
+      ]),
+    );
+  }
+
+  void _nextPage() {
+    setState(() {
+      page++;
+      initTransCont();
+    });
+  }
+
+  void _previousPage() {
+    setState(() {
+      page--;
+      initTransCont();
+    });
+  }
+
+  void _addPage(success) {
+    if (success != true) return;
+    setState(() => pages++);
+  }
+
+  void _removePage(value) {
+    if (value == null) return;
+    if (value == pages) return;
+    setState(() {
+      if (page == value) page = value - 1;
+      pages = value;
+    });
   }
 }
