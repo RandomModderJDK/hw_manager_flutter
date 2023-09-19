@@ -38,24 +38,18 @@ class HWListItem extends StatelessWidget {
     return Dismissible(
       key: Key(homework.id!.toString()),
       onDismissed: onDeleted,
+      secondaryBackground: Container(
+        alignment: Alignment.centerRight,
+        color: Colors.red,
+        padding: const EdgeInsets.all(30),
+        child: const Icon(Icons.delete_rounded),
+      ),
       background: Container(
-          color: Colors.red,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.all(30),
-                child: const Icon(Icons.delete_forever),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.all(30),
-                child: const Icon(Icons.delete_forever),
-              )
-            ],
-          )),
+        alignment: Alignment.centerLeft,
+        color: Colors.red,
+        padding: const EdgeInsets.all(30),
+        child: const Icon(Icons.delete_rounded),
+      ),
       child: Card(
           margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
           shape: OutlineInputBorder(
