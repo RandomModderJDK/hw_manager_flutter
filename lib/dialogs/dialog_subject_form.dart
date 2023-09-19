@@ -36,14 +36,6 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
     if (widget.subject == null) return;
     _nameController.text = widget.subject!.name;
     _shortNameController.text = widget.subject!.shortName ?? "";
-    //TODO REIMPLEMENT
-    /*bool persisting = await Preferences.getDialogPersistence();
-    if (!persisting) {
-      setState(() {
-        _dateSelected = DateTime.now();
-        _userDated = false;
-      });
-    }*/
   }
 
   Future<void> _saveSubject(BuildContext context) async {
@@ -54,13 +46,9 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
 
     final DBHelper dbHelper = DBHelper();
     if (widget.subject != null) {
-      dbHelper.deleteSubject(
-        name,
-      ); // If this is in editing mode, delete subject beforehand
+      dbHelper.deleteSubject(name); // If this is in editing mode, delete subject beforehand
     }
-    dbHelper
-        .insertSubject(subject)
-        .then((value) => Navigator.pop(context, true));
+    dbHelper.insertSubject(subject).then((value) => Navigator.pop(context, true));
   }
 
   @override
@@ -115,16 +103,12 @@ class SubjectFormContent extends StatelessWidget {
         children: <Widget>[
           TextFormField(
             controller: nameController,
-            validator: (value) => value!.isEmpty
-                ? AppLocalizations.of(context)!.dialogSubjectFullNameValidator
-                : null,
+            validator: (value) => value!.isEmpty ? AppLocalizations.of(context)!.dialogSubjectFullNameValidator : null,
             decoration: InputDecoration(
               labelText: AppLocalizations.of(context)!.dialogSubjectFullName,
-              labelStyle:
-                  TextStyle(color: Theme.of(context).colorScheme.primary),
+              labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
               floatingLabelBehavior: FloatingLabelBehavior.always,
-              border: MaterialStateOutlineInputBorder.resolveWith(
-                  (Set<MaterialState> states) {
+              border: MaterialStateOutlineInputBorder.resolveWith((Set<MaterialState> states) {
                 final Color color = states.contains(MaterialState.error)
                     ? Color.alphaBlend(
                         Theme.of(context).colorScheme.primary.withAlpha(125),
@@ -135,14 +119,9 @@ class SubjectFormContent extends StatelessWidget {
               }),
               hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
               hintText: AppLocalizations.of(context)!.dialogSubjectFullNameHint,
-              errorStyle: TextStyle(
-                color: Theme.of(context).colorScheme.inversePrimary,
-              ),
-              errorBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.inversePrimary,
-                ),
-              ),
+              errorStyle: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
+              errorBorder:
+                  OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.inversePrimary)),
             ),
           ),
           const SizedBox(height: 10),
@@ -152,8 +131,7 @@ class SubjectFormContent extends StatelessWidget {
               labelText: AppLocalizations.of(context)!.dialogSubjectShortName,
               floatingLabelBehavior: FloatingLabelBehavior.always,
               hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
-              hintText:
-                  AppLocalizations.of(context)!.dialogSubjectShortNameHint,
+              hintText: AppLocalizations.of(context)!.dialogSubjectShortNameHint,
             ),
           ),
         ],

@@ -32,27 +32,18 @@ class SettingsRoute extends StatelessWidget {
             title: Text(AppLocalizations.of(context)!.settingsGeneral),
             tiles: [
               SettingsTile(
-                title: Text(
-                  AppLocalizations.of(context)!.settingsThemeModeTitle,
-                ),
+                title: Text(AppLocalizations.of(context)!.settingsThemeModeTitle),
                 leading: const Icon(Icons.dark_mode_outlined),
-                description: Text(
-                  AppLocalizations.of(context)!.settingsThemeModeDescription,
-                ),
+                description: Text(AppLocalizations.of(context)!.settingsThemeModeDescription),
                 onPressed: (context) =>
-                  Preferences.nextThemeMode().then((themeMode) => HWMApp.of(context).changeTheme(themeMode)),
+                    Preferences.nextThemeMode().then((themeMode) => HWMApp.of(context).changeTheme(themeMode)),
               ),
               SettingsTile(
                 title: Text(AppLocalizations.of(context)!.settingsSubjectsTitle),
                 leading: const Icon(Icons.subject),
-                description: Text(
-                  AppLocalizations.of(context)!.settingsSubjectsDescription,
-                ),
-                onPressed: (context) => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const SubjectRoute(),
-                  ),
-                ),
+                description: Text(AppLocalizations.of(context)!.settingsSubjectsDescription),
+                onPressed: (context) =>
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SubjectRoute())),
               ),
             ],
           ),
@@ -60,24 +51,17 @@ class SettingsRoute extends StatelessWidget {
             title: Text(AppLocalizations.of(context)!.settingsUntis),
             tiles: [
               SettingsTile(
-                title: Text(
-                  AppLocalizations.of(context)!.settingsUntisLoginTitle,
-                ),
+                title: Text(AppLocalizations.of(context)!.settingsUntisLoginTitle),
                 leading: const Icon(Icons.login_rounded),
                 description: Expandable(
                   backgroundColor: themeData.settingsListBackground!,
                   boxShadow: const [],
                   centralizeFirstChild: false,
-                  arrowWidget: const Icon(
-                    Icons.keyboard_arrow_up_rounded,
-                    size: 40.0,
-                  ),
+                  arrowWidget: const Icon(Icons.keyboard_arrow_up_rounded, size: 40.0),
                   firstChild: Expanded(
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: Text(
-                        AppLocalizations.of(context)!.settingsUntisLoginDescription,
-                      ),
+                      child: Text(AppLocalizations.of(context)!.settingsUntisLoginDescription),
                     ),
                   ),
                   secondChild: Column(
@@ -117,13 +101,9 @@ class SettingsRoute extends StatelessWidget {
                 ),
               ),
               SettingsTile(
-                title: Text(
-                  AppLocalizations.of(context)!.settingsUntisImportTitle,
-                ),
+                title: Text(AppLocalizations.of(context)!.settingsUntisImportTitle),
                 leading: const Icon(Icons.cloud_download_rounded),
-                description: Text(
-                  AppLocalizations.of(context)!.settingsUntisImportDescription,
-                ),
+                description: Text(AppLocalizations.of(context)!.settingsUntisImportDescription),
                 onPressed: (context) async {
                   final FToast fToast = FToast();
                   fToast.init(context);
@@ -133,10 +113,7 @@ class SettingsRoute extends StatelessWidget {
                   final List<untis.Subject> subjects = await UntisHelper().getCurrentSubjects();
                   if (subjects.isEmpty) {
                     final Widget toast = Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24.0,
-                        vertical: 12.0,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(25.0),
                         color: Colors.redAccent.withOpacity(0.8),
@@ -145,9 +122,7 @@ class SettingsRoute extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(Icons.sms_failed_rounded),
-                          const SizedBox(
-                            width: 12.0,
-                          ),
+                          const SizedBox(width: 12.0),
                           Text(failure),
                         ],
                       ),
@@ -156,18 +131,10 @@ class SettingsRoute extends StatelessWidget {
                     return;
                   }
                   for (final untis.Subject subject in subjects) {
-                    DBHelper().insertSubject(
-                      Subject(
-                        name: subject.longName,
-                        shortName: subject.name,
-                      ),
-                    );
+                    DBHelper().insertSubject(Subject(name: subject.longName, shortName: subject.name));
                   }
                   final Widget toast = Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0,
-                      vertical: 12.0,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(25.0),
                       color: Colors.greenAccent.withOpacity(0.8),
@@ -176,9 +143,7 @@ class SettingsRoute extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(Icons.check),
-                        const SizedBox(
-                          width: 12.0,
-                        ),
+                        const SizedBox(width: 12.0),
                         Text(success),
                       ],
                     ),
@@ -255,11 +220,7 @@ class _UntisTextFormFieldState extends State<UntisTextFormField> {
         hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
         hintText: widget.hintText,
         errorStyle: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
-        errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.inversePrimary,
-          ),
-        ),
+        errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.inversePrimary)),
       ),
       onChanged: widget.onChanged,
     );

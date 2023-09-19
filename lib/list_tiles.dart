@@ -16,13 +16,8 @@ class HWListItem extends StatelessWidget {
   final void Function() onEdit;
   final Function(DismissDirection) onDeleted;
 
-  DateTime _dateTimeToDate(DateTime dateTime) => dateTime.copyWith(
-        hour: 0,
-        minute: 0,
-        second: 0,
-        millisecond: 0,
-        microsecond: 0,
-      );
+  DateTime _dateTimeToDate(DateTime dateTime) =>
+      dateTime.copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
 
   String _formatDate(BuildContext context, DateTime date) {
     final Duration diff = _dateTimeToDate(date).difference(_dateTimeToDate(DateTime.now()));
@@ -69,10 +64,7 @@ class HWListItem extends StatelessWidget {
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
         shape: OutlineInputBorder(
-          borderSide: BorderSide(
-            width: 1.5,
-            color: Theme.of(context).colorScheme.inversePrimary,
-          ),
+          borderSide: BorderSide(width: 1.5, color: Theme.of(context).colorScheme.inversePrimary),
           borderRadius: const BorderRadius.all(Radius.circular(10.0)),
         ),
         child: Padding(
@@ -83,9 +75,7 @@ class HWListItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Expanded(
-                  child: _HomeworkDescription(homework),
-                ),
+                Expanded(child: _HomeworkDescription(homework)),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -109,14 +99,13 @@ class HWListItem extends StatelessWidget {
                                   } else {
                                     return const CircularProgressIndicator();
                                   }
+
                                   return hasPhotos!
                                       ? IconButton(
                                           onPressed: () => Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => ImageViewerRoute(
-                                                homework: homework,
-                                              ),
+                                              builder: (context) => ImageViewerRoute(homework: homework),
                                             ),
                                           ).then((value) => setState(() {})),
                                           tooltip: AppLocalizations.of(context)!.openImageViewer,
@@ -124,19 +113,14 @@ class HWListItem extends StatelessWidget {
                                         )
                                       : IconButton(
                                           onPressed: () {
-                                            pickAndAddImage(
-                                              context,
-                                              homework,
-                                            ).then((success) {
+                                            pickAndAddImage(context, homework).then((success) {
                                               if (success) {
                                                 setState(() {});
                                               }
                                             });
                                           },
                                           tooltip: AppLocalizations.of(context)!.takePhoto,
-                                          icon: const Icon(
-                                            Icons.add_a_photo_rounded,
-                                          ),
+                                          icon: const Icon(Icons.add_a_photo_rounded),
                                         );
                                 },
                               );
@@ -152,9 +136,7 @@ class HWListItem extends StatelessWidget {
                                     onPressed: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ImageViewerRoute(
-                                          homework: homework,
-                                        ),
+                                        builder: (context) => ImageViewerRoute(homework: homework),
                                       ),
                                     ).then((value) => setState(() {})),
                                     tooltip: AppLocalizations.of(context)!.openImageViewer,
@@ -167,21 +149,14 @@ class HWListItem extends StatelessWidget {
                                       });
                                     },
                                     tooltip: AppLocalizations.of(context)!.takePhoto,
-                                    icon: const Icon(
-                                      Icons.add_a_photo_rounded,
-                                    ),
+                                    icon: const Icon(Icons.add_a_photo_rounded),
                                   );
                           },
                         ),
                       ],
                     ),
                     const Spacer(),
-                    Text(
-                      _formatDate(
-                        context,
-                        homework.overdueTimestamp.toLocal(),
-                      ),
-                    ),
+                    Text(_formatDate(context, homework.overdueTimestamp.toLocal())),
                   ],
                 ),
               ],
@@ -209,11 +184,7 @@ class _HomeworkDescription extends StatelessWidget {
             homework.subject.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
           ),
         ),
         const Padding(padding: EdgeInsets.only(bottom: 0.8)),
@@ -277,10 +248,7 @@ class SubjectListItem extends StatelessWidget {
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
         shape: OutlineInputBorder(
-          borderSide: BorderSide(
-            width: 1.5,
-            color: Theme.of(context).colorScheme.inversePrimary,
-          ),
+          borderSide: BorderSide(width: 1.5, color: Theme.of(context).colorScheme.inversePrimary),
           borderRadius: const BorderRadius.all(Radius.circular(10.0)),
         ),
         child: Padding(
@@ -291,9 +259,7 @@ class SubjectListItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Expanded(
-                  child: _SubjectDescription(subject),
-                ),
+                Expanded(child: _SubjectDescription(subject)),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -329,11 +295,7 @@ class _SubjectDescription extends StatelessWidget {
             subject.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
           ),
         ),
         const Padding(padding: EdgeInsets.only(bottom: 0.8)),

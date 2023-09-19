@@ -55,20 +55,20 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
       builder: (_, snap) {
         if (snap.hasData) {
           _images.clear();
-          _images.addAll(snap.data!.map((e) => Image.memory(
-                e.data,
-                fit: BoxFit.scaleDown,
-                gaplessPlayback: true,
-              ),),);
+          _images.addAll(
+            snap.data!.map((e) => Image.memory(e.data, fit: BoxFit.scaleDown, gaplessPlayback: true)),
+          );
           return _images[page];
         } else {
           return const Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
                 CircularProgressIndicator(),
                 Text('Loading images...'),
-              ],),);
+              ],
+            ),
+          );
         }
       },
     );
@@ -85,26 +85,25 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
     return Column(
       children: [
         const SizedBox(height: 3),
-        Center(
-            child: Text(
-                AppLocalizations.of(context)!.pageDisplay(page + 1, pages),),),
+        Center(child: Text(AppLocalizations.of(context)!.pageDisplay(page + 1, pages))),
         Expanded(
           child: InteractiveViewer(
-              transformationController: _controller,
-              minScale: 0.75,
-              maxScale: 50,
-              boundaryMargin:
-                  const EdgeInsets.symmetric(vertical: 200, horizontal: 700),
-              clipBehavior: Clip.none,
-              child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: Builder(
-                    builder: (context) {
-                      if (_images.isEmpty) return _refreshImages(context);
-                      return _images[page];
-                    },
-                  ),),),
+            transformationController: _controller,
+            minScale: 0.75,
+            maxScale: 50,
+            boundaryMargin: const EdgeInsets.symmetric(vertical: 200, horizontal: 700),
+            clipBehavior: Clip.none,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Builder(
+                builder: (context) {
+                  if (_images.isEmpty) return _refreshImages(context);
+                  return _images[page];
+                },
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -117,36 +116,37 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
     }
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          actions: [
-            IconButton(
-                onPressed: () => showDialog<int>(
-                        context: context,
-                        builder: (context) => DeleteFormDialog(widget.homework),)
-                    .then(_removePage),
-                tooltip: AppLocalizations.of(context)!.deletePagesTitle,
-                icon: const Icon(Icons.delete_rounded),),
-            IconButton(
-              onPressed: () =>
-                  pickAndAddImage(context, widget.homework).then(_addPage),
-              tooltip: AppLocalizations.of(context)!.takePhoto,
-              icon: const Icon(Icons.add_a_photo_rounded),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          IconButton(
+            onPressed: () => showDialog<int>(
+              context: context,
+              builder: (context) => DeleteFormDialog(widget.homework),
+            ).then(_removePage),
+            tooltip: AppLocalizations.of(context)!.deletePagesTitle,
+            icon: const Icon(Icons.delete_rounded),
+          ),
+          IconButton(
+            onPressed: () => pickAndAddImage(context, widget.homework).then(_addPage),
+            tooltip: AppLocalizations.of(context)!.takePhoto,
+            icon: const Icon(Icons.add_a_photo_rounded),
+          ),
+          IconButton(
+            icon: const Icon(Icons.reorder_rounded),
+            tooltip: AppLocalizations.of(context)!.dialogHWEditTitle,
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => HomeworkFormDialog(
+                homework: widget.homework,
+                title: AppLocalizations.of(context)!.dialogHWEditTitle,
+                submit: AppLocalizations.of(context)!.dialogHWEdit,
+                cancel: AppLocalizations.of(context)!.dialogHWEditCancel,
+              ),
             ),
-            IconButton(
-                icon: const Icon(Icons.reorder_rounded),
-                tooltip: AppLocalizations.of(context)!.dialogHWEditTitle,
-                onPressed: () => showDialog(
-                      context: context,
-                      builder: (context) => HomeworkFormDialog(
-                          homework: widget.homework,
-                          title:
-                              AppLocalizations.of(context)!.dialogHWEditTitle,
-                          submit: AppLocalizations.of(context)!.dialogHWEdit,
-                          cancel:
-                              AppLocalizations.of(context)!.dialogHWEditCancel,),
-                    ),),
-          ],
-          title: Text(AppLocalizations.of(context)!.imageViewer),),
+          ),
+        ],
+        title: Text(AppLocalizations.of(context)!.imageViewer),
+      ),
       body: photoViewer(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Row(

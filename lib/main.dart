@@ -15,6 +15,7 @@ class HWMApp extends StatefulWidget {
   HWMAppState createState() => HWMAppState();
 
   /// InheritedWidget style accessor to our State object.
+  // ignore: unreachable_from_main
   static HWMAppState of(BuildContext context) => context.findAncestorStateOfType<HWMAppState>()!;
 }
 
@@ -38,20 +39,14 @@ class HWMAppState extends State<HWMApp> {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
-        dialogTheme: const DialogTheme(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-        ),
+        dialogTheme:
+            const DialogTheme(shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)))),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
-        dialogTheme: const DialogTheme(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-        ),
+        dialogTheme:
+            const DialogTheme(shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)))),
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.dark,
           seedColor: Colors.red.shade900,
@@ -65,6 +60,7 @@ class HWMAppState extends State<HWMApp> {
     );
   }
 
+  // ignore: unreachable_from_main
   void changeTheme(ThemeMode themeMode) {
     Preferences.setThemeMode(themeMode);
     setState(() {

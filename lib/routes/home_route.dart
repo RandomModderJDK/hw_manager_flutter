@@ -49,9 +49,7 @@ class HomeRouteState extends State<HomeRoute> {
                 setState(() {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
-                        AppLocalizations.of(context)!.deleteHWToast(hw.id!, hw.subject.name),
-                      ),
+                      content: Text(AppLocalizations.of(context)!.deleteHWToast(hw.id!, hw.subject.name)),
                       action: SnackBarAction(
                         label: AppLocalizations.of(context)!.deleteHWToastUndo,
                         onPressed: () => Future.wait([
@@ -102,13 +100,13 @@ class HomeRouteState extends State<HomeRoute> {
         title: Text(AppLocalizations.of(context)!.homeTitle),
         actions: <Widget>[
           IconButton(
+            icon: const Icon(Icons.cloud_sync_outlined),
+            // TODO: Implement
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsRoute())),
+          ),
+          IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SettingsRoute(),
-              ),
-            ),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsRoute())),
           ),
         ],
       ),

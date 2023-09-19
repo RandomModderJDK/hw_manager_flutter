@@ -15,13 +15,14 @@ class UntisHelper {
 
   Session? session;
 
-  Future<bool> login(
-    String server,
-    String school,
-    String username,
-    String password,
-  ) async {
-    print("$server $school $username $password");
+  Future<bool> login(String? server, String? school, String? username, String? password) async {
+    if (server == null) return false;
+    if (school == null) return false;
+    if (username == null) return false;
+    if (password == null) return false;
+    if (kDebugMode) {
+      print("$server $school $username $password");
+    }
     try {
       session = await Session.init(server, school, username, password);
     } on HttpException {
@@ -37,10 +38,6 @@ class UntisHelper {
     final String? school = await Preferences.getUntisSchool();
     final String? username = await Preferences.getUntisUsername();
     final String? password = await Preferences.getUntisPassword();
-    if (server == null) return false;
-    if (school == null) return false;
-    if (username == null) return false;
-    if (password == null) return false;
     return UntisHelper().login(server, school, username, password);
   }
 
@@ -58,10 +55,8 @@ class UntisHelper {
       if (!success) return [];
     }
     final List<Subject> subjects = await session!.getSubjects();
-    final List<Period> periods = await session!.getTimetable(
-      session!.userId!,
-      endDate: DateTime.now().add(const Duration(days: 128)),
-    );
+    final List<Period> periods =
+        await session!.getTimetable(session!.userId!, endDate: DateTime.now().add(const Duration(days: 128)));
     final Iterable<IdProvider> subjectIds = periods.expand((e) => e.subjectIds);
     return subjects.where((element) => subjectIds.contains(element.id)).toList();
   }
@@ -73,23 +68,15 @@ class UntisHelper {
     }
     if (shortName != null) {
       return (await session!.getSubjects())
-          .where(
-            (element) => element.name.toLowerCase().trim().startsWith(shortName.toLowerCase().trim()),
-          )
+          .where((element) => element.name.toLowerCase().trim().startsWith(shortName.toLowerCase().trim()))
           .firstOrNull;
     }
     return (await session!.getSubjects())
-        .where(
-          (element) => element.longName.toLowerCase().trim().contains(longName.toLowerCase().trim()),
-        )
+        .where((element) => element.longName.toLowerCase().trim().contains(longName.toLowerCase().trim()))
         .firstOrNull;
   }
 
-  Future<Period?> searchSubjectPeriod(
-    Subject subject, {
-    int maxSteps = 8,
-    int searchIntervalsInDays = 8,
-  }) async =>
+  Future<Period?> searchSubjectPeriod(Subject subject, {int maxSteps = 8, int searchIntervalsInDays = 8}) async =>
       (await searchSubjectPeriods(subject)).firstOrNull;
 
   Future<List<Period>> searchSubjectPeriods(
@@ -115,9 +102,7 @@ class UntisHelper {
       if (cancelled == false) {
         timetable = timetable.where((element) => element.isCancelled == false);
       }
-      foundPeriods.addAll(
-        timetable.where((element) => element.subjectIds.contains(subject.id)),
-      );
+      foundPeriods.addAll(timetable.where((element) => element.subjectIds.contains(subject.id)));
     }
     return foundPeriods;
   }

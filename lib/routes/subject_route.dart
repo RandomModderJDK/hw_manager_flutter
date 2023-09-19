@@ -53,10 +53,7 @@ class _SubjectRouteState extends State<SubjectRoute> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        AppLocalizations.of(context)!.deleteSubjectToast(
-                          subject.name,
-                          subject.shortName ?? "-",
-                        ),
+                        AppLocalizations.of(context)!.deleteSubjectToast(subject.name, subject.shortName ?? "-"),
                       ),
                       action: SnackBarAction(
                         label: AppLocalizations.of(context)!.deleteSubjectToastUndo,

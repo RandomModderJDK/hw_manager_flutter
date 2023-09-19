@@ -36,8 +36,8 @@ dependencies:
   intl: ^0.18.1
 
   # Preferences
-  shared_preferences: ^2.2.0
   settings_ui: ^2.0.2
+  shared_preferences: ^2.2.0
 
   # SQlite database
   sqflite_common_ffi: ^2.3.0
@@ -51,7 +51,6 @@ dependencies:
   photo_view: ^0.14.0
   image_picker: ^1.0.4
 
-  # TODO: Implement WebUntis API
   dart_webuntis:
     git:
       url: https://github.com/RandomModderJDK/dart-webuntis.git

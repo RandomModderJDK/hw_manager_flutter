@@ -26,10 +26,8 @@ Future<bool> pickAndAddImage(BuildContext context, Homework hw) async {
   return true;
 }
 
-// TODO: Fix that this doesnt work on iOS/iPadOS
-// TODO: Add permission_handler
 Future<ImageSource?> _openChooseSourceBar(BuildContext context) async {
-  return await showModalBottomSheet(
+  return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) => ListView(
@@ -40,14 +38,10 @@ Future<ImageSource?> _openChooseSourceBar(BuildContext context) async {
           children: [
             TextButton(
               style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 40.00,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 40.00),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero.copyWith(
-                    topLeft: const Radius.circular(30.0),
-                    topRight: const Radius.circular(30.0),
-                  ),
+                  borderRadius: BorderRadius.zero
+                      .copyWith(topLeft: const Radius.circular(30.0), topRight: const Radius.circular(30.0)),
                 ),
               ),
               child: Row(
@@ -68,9 +62,7 @@ Future<ImageSource?> _openChooseSourceBar(BuildContext context) async {
             ),
             TextButton(
               style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 40.00,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 40.00),
                 shape: const RoundedRectangleBorder(),
               ),
               child: Row(
@@ -116,9 +108,7 @@ class DBHelper {
     WidgetsFlutterBinding.ensureInitialized();
     final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
     if (kDebugMode) {
-      print(
-        "Saving/open database to/on ${join(appDocumentsDir.path, "hwm_databases", 'hw_database.db')}",
-      );
+      print("Saving/open database to/on ${join(appDocumentsDir.path, "hwm_databases", 'hw_database.db')}");
     }
     // Open the database and store the reference.
     db = await openDatabase(
@@ -127,29 +117,21 @@ class DBHelper {
       // constructed for each platform.
       join(appDocumentsDir.path, "hwm_databases", 'hw_database.db'),
       onUpgrade: (db, oldVersion, newVersion) async {
-        return await db.execute('CREATE TABLE imageBlobs('
-            'id TEXT PRIMARY KEY, '
-            'data BLOB NOT NULL'
-            ')');
+        return db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, '
+            'data BLOB NOT NULL)');
       },
       onCreate: (db, version) async {
-        await db.execute('CREATE TABLE imageBlobs('
-            'id TEXT PRIMARY KEY, '
-            'data BLOB NOT NULL'
-            ')');
-        await db.execute('CREATE TABLE subjects('
-            'name TEXT PRIMARY KEY, '
-            'shortName TEXT '
-            ')');
-        return db.execute('CREATE TABLE homeworks('
-            'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+        await db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, '
+            'data BLOB NOT NULL)');
+        await db.execute('CREATE TABLE subjects(name TEXT PRIMARY KEY, '
+            'shortName TEXT)');
+        return db.execute("CREATE TABLE homeworks(id INTEGER PRIMARY KEY AUTOINCREMENT, "
             'subject_short TEXT, '
             'subject TEXT NOT NULL, '
             'overdueDate TEXT NOT NULL, '
             'content TEXT NOT NULL, '
             'creationDate TEXT NOT NULL, '
-            'finished TEXT NOT NULL'
-            ')');
+            'finished TEXT NOT NULL)');
       },
       // VERSION 2 -- Added imageblobs table
       version: 2,
@@ -159,17 +141,11 @@ class DBHelper {
 
   /// Inserts or edits subject supplied into database
   Future<int> insertSubject(Subject subject) async {
-    return await db.insert(
-      'subjects',
-      subject.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    return db.insert('subjects', subject.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<Subject?> getSubject(String name) async {
-    return Subject.fromMap(
-      (await db.query('subjects', where: "name = ?", whereArgs: [name]))[0],
-    );
+    return Subject.fromMap((await db.query('subjects', where: "name = ?", whereArgs: [name]))[0]);
   }
 
   Future<List<Subject>> retrieveSubjects() async {
@@ -178,40 +154,26 @@ class DBHelper {
   }
 
   Future<void> deleteSubject(String name) async {
-    await db.delete(
-      'subjects',
-      where: "name = ?",
-      whereArgs: [name],
-    );
+    await db.delete('subjects', where: "name = ?", whereArgs: [name]);
   }
 
   /// Inserts or updates homework supplied into database
   Future<int> insertHomework(Homework hw) async {
-    return await db.insert(
-      'homeworks',
-      hw.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    return db.insert('homeworks', hw.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Homework>> retrieveHomeworks() async {
     final List<Map<String, Object?>> queryResult = await db.query('homeworks', orderBy: "overdueDate");
-    return queryResult.map((e) => Homework.fromMap(e)).toList();
+    return queryResult.map((e) => Homework.fromMap(e.map((key, value) => MapEntry(key, value.toString())))).toList();
   }
 
   // Deletes homework from database. If homework does not have id, nothing will be deleted
   Future<List<void>> deleteHomework(Homework hw) async {
-    return await Future.wait(
-      [deleteHomeworkById(hw.id ?? -1), deleteHWPagesByHW(hw)],
-    );
+    return Future.wait([deleteHomeworkById(hw.id ?? -1), deleteHWPagesByHW(hw)]);
   }
 
   Future<void> deleteHomeworkById(int id) async {
-    await db.delete(
-      'homeworks',
-      where: "id = ?",
-      whereArgs: [id],
-    );
+    await db.delete('homeworks', where: "id = ?", whereArgs: [id]);
   }
 
   /// Insert/update document with existing homework id
@@ -223,11 +185,7 @@ class DBHelper {
     if (kDebugMode) {
       print("INSERT AFTER REORDER: ${page.order}");
     }
-    return db.insert(
-      'imageBlobs',
-      await page.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    return db.insert('imageBlobs', await page.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<int>> insertHWPages(List<HWPage> pages) async {
@@ -235,32 +193,22 @@ class DBHelper {
   }
 
   Future<int> countHWPages(int hwId) async {
-    final List<Map<String, Object?>> queryResult = await db.query(
-      "imageBlobs",
-      columns: ["COUNT(id)"],
-      where: 'id LIKE ?',
-      whereArgs: ["$hwId+%"],
-    );
+    final List<Map<String, Object?>> queryResult =
+        await db.query("imageBlobs", columns: ["COUNT(id)"], where: 'id LIKE ?', whereArgs: ["$hwId+%"]);
     if (queryResult[0]["COUNT(id)"] == null) return 0;
     return queryResult[0]["COUNT(id)"]! as int;
   }
 
   Future<HWPage?> retrieveHWPage(Homework hw, int order) async {
-    final List<Map<String, Object?>> queryResult = await db.query(
-      'imageBlobs',
-      where: 'id = ?',
-      whereArgs: ["${hw.id ?? "NULL"}+$order"],
-    );
+    final List<Map<String, Object?>> queryResult =
+        await db.query('imageBlobs', where: 'id = ?', whereArgs: ["${hw.id ?? "NULL"}+$order"]);
     if (queryResult.isEmpty) return null;
     return queryResult.map((e) => HWPage.fromMap(e)).toList()[0];
   }
 
   Future<List<HWPage>> retrieveHWPages(Homework hw) async {
-    final List<Map<String, Object?>> queryResult = await db.query(
-      'imageBlobs',
-      where: 'id LIKE ?',
-      whereArgs: ["${hw.id ?? "NULL"}+%"],
-    );
+    final List<Map<String, Object?>> queryResult =
+        await db.query('imageBlobs', where: 'id LIKE ?', whereArgs: ["${hw.id ?? "NULL"}+%"]);
     if (queryResult.isEmpty) return [];
     final result = queryResult.map((e) => HWPage.fromMap(e)).toList();
     return result;
@@ -272,26 +220,15 @@ class DBHelper {
   }
 
   Future<int> deleteHWPagesByHW(Homework hw) async {
-    return db.delete(
-      'imageBlobs',
-      where: "id LIKE ?",
-      whereArgs: ["${hw.id}+%"],
-    );
+    return db.delete('imageBlobs', where: "id LIKE ?", whereArgs: ["${hw.id}+%"]);
   }
 
-  Future<List<void>> deleteHWPagesByHWOrder(
-    Homework hw,
-    List<int> order,
-  ) async {
+  Future<List<void>> deleteHWPagesByHWOrder(Homework hw, List<int> order) async {
     for (final int p in order) {
       if (kDebugMode) {
         print("DELET ${hw.id ?? -1}+$p");
       }
-      await db.delete(
-        'imageBlobs',
-        where: "id = ?",
-        whereArgs: ["${hw.id}+$p"],
-      );
+      await db.delete('imageBlobs', where: "id = ?", whereArgs: ["${hw.id}+$p"]);
     }
     return reorderHWPages(hw);
   }
@@ -300,11 +237,9 @@ class DBHelper {
     final List<HWPage> pages = await retrieveHWPages(hw);
     pages.sort((a, b) => a.order.compareTo(b.order));
     if (kDebugMode) {
-      print(
-        "These are the currently existing pages: ${pages.map((e) => e.order)}",
-      );
+      print("These are the currently existing pages: ${pages.map((e) => e.order)}");
     }
-    return await Future.wait([
+    return Future.wait([
       for (int i = 0; i < pages.length; i++)
         () async {
           final HWPage p = pages[i];
@@ -316,24 +251,12 @@ class DBHelper {
   }
 
   Future<int> deleteHWPageByHWOrder(Homework hw, int order) async {
-    return await db.delete(
-      'imageBlobs',
-      where: "id = ?+?",
-      whereArgs: [hw.id, order],
-    );
+    return db.delete('imageBlobs', where: "id = ?+?", whereArgs: [hw.id, order]);
   }
 
-  Future<int> deleteAllHWPages() async {
-    return await db.delete('imageBlobs');
-  }
+  Future<int> deleteAllHWPages() async => db.delete('imageBlobs');
 
-  Future<int> deleteHWPageByFullId(String id) async {
-    return await db.delete(
-      'imageBlobs',
-      where: "id = ?",
-      whereArgs: [id],
-    );
-  }
+  Future<int> deleteHWPageByFullId(String id) async => db.delete('imageBlobs', where: "id = ?", whereArgs: [id]);
 }
 
 class Homework {
@@ -355,6 +278,15 @@ class Homework {
   });
 
   /// Convert a Homework into a Map.
+  Homework.fromMap(Map<String, String?> map)
+      : id = int.parse(map["id"]!),
+        subject = Subject(name: map["subject"]!, shortName: map["subject_short"]),
+        overdueTimestamp = DateTime.parse(map["overdueDate"]!),
+        creationTimestamp = DateTime.parse(map["overdueDate"]!),
+        content = map["content"]!,
+        finished = bool.parse(map["finished"]!);
+
+  /// Convert a Homework into a Map.
   Map<String, Object?> toMap() {
     return {
       'id': id,
@@ -365,21 +297,6 @@ class Homework {
       'content': content,
       'finished': finished.toString(),
     };
-  }
-
-  /// Convert a Homework into a Map.
-  static Homework fromMap(Map<String, Object?> map) {
-    return Homework(
-      id: map["id"]! as int,
-      subject: Subject(
-        name: map["subject"]! as String,
-        shortName: map["subject_short"]! as String,
-      ),
-      overdueTimestamp: DateTime.parse(map["overdueDate"]! as String),
-      creationTimestamp: DateTime.parse(map["overdueDate"]! as String),
-      content: map["content"]! as String,
-      finished: bool.parse(map["finished"]! as String),
-    );
   }
 
   @override

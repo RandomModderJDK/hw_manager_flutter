@@ -47,14 +47,6 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
     _subjectController.text = widget.homework!.subject.name;
     _dateSelected = widget.homework!.overdueTimestamp;
     _userDated = true;
-    //TODO REIMPLEMENT
-    /*bool persisting = await Preferences.getDialogPersistence();
-    if (!persisting) {
-      setState(() {
-        _dateSelected = DateTime.now();
-        _userDated = false;
-      });
-    }*/
   }
 
   Future<void> _saveHomework(BuildContext context) async {
@@ -93,8 +85,7 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
           onPressed: () {
             if (_subjectController.text.isEmpty) {
               setState(
-                () => subjectErrorText =
-                    AppLocalizations.of(context)!.dialogHWSubjectValidator,
+                () => subjectErrorText = AppLocalizations.of(context)!.dialogHWSubjectValidator,
               );
             }
             if (!formKey.currentState!.validate()) return;
@@ -122,14 +113,12 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
             print("object: $s");
           }
           if (s == null) return;
-          final untis.Subject? subject =
-              await UntisHelper().searchSubject(s.name, s.shortName);
+          final untis.Subject? subject = await UntisHelper().searchSubject(s.name, s.shortName);
           if (kDebugMode) {
             print("object: $subject");
           }
           if (subject == null) return;
-          final untis.Period? period =
-              await UntisHelper().searchSubjectPeriod(subject);
+          final untis.Period? period = await UntisHelper().searchSubjectPeriod(subject);
           if (kDebugMode) {
             print("object: $period");
           }
@@ -195,14 +184,10 @@ class HomeworkFormContent extends StatelessWidget {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        border:
-                            MaterialStateOutlineInputBorder.resolveWith((_) {
+                        border: MaterialStateOutlineInputBorder.resolveWith((_) {
                           final Color color = isError
                               ? Color.alphaBlend(
-                                  Theme.of(context)
-                                      .colorScheme
-                                      .primary
-                                      .withAlpha(125),
+                                  Theme.of(context).colorScheme.primary.withAlpha(125),
                                   Theme.of(context).colorScheme.inversePrimary,
                                 )
                               : Theme.of(context).colorScheme.primary;
@@ -256,8 +241,7 @@ class HomeworkFormContent extends StatelessWidget {
             controller: contentController,
             labelText: AppLocalizations.of(context)!.dialogHWContent,
             hintText: AppLocalizations.of(context)!.dialogHWContentHint,
-            validatorMessage:
-                AppLocalizations.of(context)!.dialogHWContentValidator,
+            validatorMessage: AppLocalizations.of(context)!.dialogHWContentValidator,
             maxLines: 5,
           ),
         ],
@@ -296,10 +280,11 @@ class HWTextFormField extends StatelessWidget {
       initialValue: initValue,
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+        labelStyle: TextStyle(
+          color: Theme.of(context).colorScheme.primary,
+        ),
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        border: MaterialStateOutlineInputBorder.resolveWith(
-            (Set<MaterialState> states) {
+        border: MaterialStateOutlineInputBorder.resolveWith((Set<MaterialState> states) {
           final Color color = states.contains(MaterialState.error)
               ? Color.alphaBlend(
                   Theme.of(context).colorScheme.primary.withAlpha(125),
@@ -310,8 +295,9 @@ class HWTextFormField extends StatelessWidget {
         }),
         hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
         hintText: hintText,
-        errorStyle:
-            TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
+        errorStyle: TextStyle(
+          color: Theme.of(context).colorScheme.inversePrimary,
+        ),
         errorBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: Theme.of(context).colorScheme.inversePrimary,
