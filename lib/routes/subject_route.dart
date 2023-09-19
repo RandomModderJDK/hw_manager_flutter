@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hw_manager_flutter/dialogs/dialog_subject_form.dart';
+import 'package:hw_manager_flutter/list_tiles.dart';
 import 'package:hw_manager_flutter/my_listview.dart';
-
-import '../dialogs/dialog_subject_form.dart';
-import '../list_tiles.dart';
-import '../sqlite.dart';
+import 'package:hw_manager_flutter/sqlite.dart';
 
 class SubjectRoute extends StatefulWidget {
-  const SubjectRoute({Key? key}) : super(key: key);
+  const SubjectRoute({super.key});
 
   @override
   State<StatefulWidget> createState() => _SubjectRouteState();
@@ -28,66 +27,80 @@ class _SubjectRouteState extends State<SubjectRoute> {
 
   Widget? subjectList() {
     return FutureBuilder(
-        future: dbHelper.retrieveSubjects(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return FloatingButtonCardListView(
-                itemCount: snapshot.data!.length,
-                child: (position) => SubjectListItem(
-                    subject: snapshot.data![position],
-                    onEdit: () async => showDialog(
-                          context: context,
-                          builder: (context) => SubjectFormDialog(
-                            subject: snapshot.data![position],
-                            title: AppLocalizations.of(context)!.dialogSubjectEditTitle,
-                            submit: AppLocalizations.of(context)!.dialogSubjectEdit,
-                            cancel: AppLocalizations.of(context)!.dialogSubjectEditCancel,
-                          ),
-                        ).then((v) {
-                          if (v ?? false) setState(() {});
-                        }),
-                    onDeleted: (DismissDirection direction) async {
-                      Subject subject = snapshot.data![position];
-                      snapshot.data!.remove(subject);
-                      await DBHelper().deleteSubject(subject.name);
-                      setState(() {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(AppLocalizations.of(context)!
-                                .deleteSubjectToast(subject.name, subject.shortName ?? "-")),
-                            action: SnackBarAction(
-                                label: AppLocalizations.of(context)!.deleteSubjectToastUndo,
-                                onPressed: () => DBHelper().insertSubject(subject).then((value) => setState(() {}))),
-                          ),
-                        );
-                      });
-                    }));
-          } else {
-            return const Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[CircularProgressIndicator(), Text('Loading database...\nMaybe check logs?')]));
-          }
-        });
+      future: dbHelper.retrieveSubjects(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return FloatingButtonCardListView(
+            itemCount: snapshot.data!.length,
+            child: (position) => SubjectListItem(
+              subject: snapshot.data![position],
+              onEdit: () async => showDialog<bool>(
+                context: context,
+                builder: (context) => SubjectFormDialog(
+                  subject: snapshot.data![position],
+                  title: AppLocalizations.of(context)!.dialogSubjectEditTitle,
+                  submit: AppLocalizations.of(context)!.dialogSubjectEdit,
+                  cancel: AppLocalizations.of(context)!.dialogSubjectEditCancel,
+                ),
+              ).then((bool? v) {
+                if (v == true) setState(() {});
+              }),
+              onDeleted: (DismissDirection direction) async {
+                final Subject subject = snapshot.data![position];
+                snapshot.data!.remove(subject);
+                await DBHelper().deleteSubject(subject.name);
+                setState(() {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        AppLocalizations.of(context)!.deleteSubjectToast(
+                          subject.name,
+                          subject.shortName ?? "-",
+                        ),
+                      ),
+                      action: SnackBarAction(
+                        label: AppLocalizations.of(context)!.deleteSubjectToastUndo,
+                        onPressed: () => DBHelper().insertSubject(subject).then((value) => setState(() {})),
+                      ),
+                    ),
+                  );
+                });
+              },
+            ),
+          );
+        } else {
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                CircularProgressIndicator(),
+                Text('Loading database...\nMaybe check logs?'),
+              ],
+            ),
+          );
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(AppLocalizations.of(context)!.subjectsTitle)),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(AppLocalizations.of(context)!.subjectsTitle),
+      ),
       body: subjectList(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async => showDialog(
+        onPressed: () async => showDialog<bool>(
           context: context,
           builder: (context) => SubjectFormDialog(
             title: AppLocalizations.of(context)!.dialogSubjectAddTitle,
             submit: AppLocalizations.of(context)!.dialogSubjectAdd,
             cancel: AppLocalizations.of(context)!.dialogSubjectAddCancel,
           ),
-        ).then((v) {
-          if (v ?? false) setState(() {});
+        ).then((bool? v) {
+          if (v == true) setState(() {});
         }),
         tooltip: AppLocalizations.of(context)!.dialogSubjectAddTitle,
         child: const Icon(Icons.add),

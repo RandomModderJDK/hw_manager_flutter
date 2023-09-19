@@ -19,7 +19,6 @@ class HWMApp extends StatefulWidget {
 }
 
 class HWMAppState extends State<HWMApp> {
-  /// 1) our themeMode "state" field
   ThemeMode _themeMode = ThemeMode.system;
 
   @override
@@ -39,14 +38,20 @@ class HWMAppState extends State<HWMApp> {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
-        dialogTheme:
-            const DialogTheme(shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)))),
+        dialogTheme: const DialogTheme(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+        ),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
-        dialogTheme:
-            const DialogTheme(shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)))),
+        dialogTheme: const DialogTheme(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+        ),
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.dark,
           seedColor: Colors.red.shade900,
@@ -60,9 +65,6 @@ class HWMAppState extends State<HWMApp> {
     );
   }
 
-  /// 3) Call this to change theme from any context using "of" accessor
-  /// e.g.:
-  /// MyApp.of(context).changeTheme(ThemeMode.dark);
   void changeTheme(ThemeMode themeMode) {
     Preferences.setThemeMode(themeMode);
     setState(() {

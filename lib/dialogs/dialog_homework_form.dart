@@ -13,7 +13,13 @@ class HomeworkFormDialog extends StatefulWidget {
   final String cancel;
   final Homework? homework;
 
-  const HomeworkFormDialog({super.key, required this.title, required this.submit, required this.cancel, this.homework});
+  const HomeworkFormDialog({
+    super.key,
+    required this.title,
+    required this.submit,
+    required this.cancel,
+    this.homework,
+  });
 
   @override
   State<HomeworkFormDialog> createState() => _HomeworkFormDialogState();
@@ -51,17 +57,18 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
     }*/
   }
 
-  void _saveHomework(BuildContext context) async {
-    String content = _contentController.text.trim();
-    String subject = _subjectController.text.trim();
+  Future<void> _saveHomework(BuildContext context) async {
+    final String content = _contentController.text.trim();
+    final String subject = _subjectController.text.trim();
 
-    Homework hw = Homework(
-        id: widget.homework?.id,
-        subject: Subject(name: subject),
-        overdueTimestamp: _dateSelected,
-        creationTimestamp: DateTime.timestamp(),
-        content: content,
-        finished: false);
+    final Homework hw = Homework(
+      id: widget.homework?.id,
+      subject: Subject(name: subject),
+      overdueTimestamp: _dateSelected,
+      creationTimestamp: DateTime.timestamp(),
+      content: content,
+      finished: false,
+    );
     if (kDebugMode) {
       print(hw);
     }
@@ -85,7 +92,10 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
           style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade900),
           onPressed: () {
             if (_subjectController.text.isEmpty) {
-              setState(() => subjectErrorText = AppLocalizations.of(context)!.dialogHWSubjectValidator);
+              setState(
+                () => subjectErrorText =
+                    AppLocalizations.of(context)!.dialogHWSubjectValidator,
+              );
             }
             if (!formKey.currentState!.validate()) return;
             if (_subjectController.text.isEmpty) return;
@@ -95,53 +105,56 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
         ),
       ],
       content: HomeworkFormContent(
-          formKey: formKey,
-          contentController: _contentController,
-          subjectController: _subjectController,
-          subjectErrorText: subjectErrorText,
-          dateSelected: _dateSelected,
-          userDated: _userDated,
-          onDateSelected: (DateTime value) {
-            setState(() {
-              _dateSelected = value;
-              _userDated = true;
-            });
-          },
-          onSubjectSelected: (s) async {
-            if (kDebugMode) {
-              print("object: $s");
-            }
-            if (s == null) return;
-            untis.Subject? subject = await UntisHelper().searchSubject(s.name, s.shortName);
-            if (kDebugMode) {
-              print("object: $subject");
-            }
-            if (subject == null) return;
-            untis.Period? period = await UntisHelper().searchSubjectPeriod(subject);
-            if (kDebugMode) {
-              print("object: $period");
-            }
-            if (period == null) return;
-            setState(() {
-              _dateSelected = period.startTime;
-            });
-          }),
+        formKey: formKey,
+        contentController: _contentController,
+        subjectController: _subjectController,
+        subjectErrorText: subjectErrorText,
+        dateSelected: _dateSelected,
+        userDated: _userDated,
+        onDateSelected: (DateTime value) {
+          setState(() {
+            _dateSelected = value;
+            _userDated = true;
+          });
+        },
+        onSubjectSelected: (s) async {
+          if (kDebugMode) {
+            print("object: $s");
+          }
+          if (s == null) return;
+          final untis.Subject? subject =
+              await UntisHelper().searchSubject(s.name, s.shortName);
+          if (kDebugMode) {
+            print("object: $subject");
+          }
+          if (subject == null) return;
+          final untis.Period? period =
+              await UntisHelper().searchSubjectPeriod(subject);
+          if (kDebugMode) {
+            print("object: $period");
+          }
+          if (period == null) return;
+          setState(() {
+            _dateSelected = period.startTime;
+          });
+        },
+      ),
     );
   }
 }
 
 class HomeworkFormContent extends StatelessWidget {
-  const HomeworkFormContent(
-      {Key? key,
-      required this.formKey,
-      required this.contentController,
-      required this.subjectController,
-      required this.subjectErrorText,
-      required this.dateSelected,
-      required this.userDated,
-      required this.onDateSelected,
-      required this.onSubjectSelected})
-      : super(key: key);
+  const HomeworkFormContent({
+    super.key,
+    required this.formKey,
+    required this.contentController,
+    required this.subjectController,
+    required this.subjectErrorText,
+    required this.dateSelected,
+    required this.userDated,
+    required this.onDateSelected,
+    required this.onSubjectSelected,
+  });
 
   final TextEditingController contentController;
   final TextEditingController subjectController;
@@ -160,43 +173,70 @@ class HomeworkFormContent extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            Expanded(
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Expanded(
                 child: FutureBuilder(
-                    future: DBHelper().retrieveSubjects(),
-                    builder: (context, snapshot) {
-                      final bool isError = subjectErrorText != "";
-                      return DropdownMenu<Subject>(
-                          expandedInsets: EdgeInsets.zero,
-                          controller: subjectController,
-                          onSelected: onSubjectSelected,
-                          // TODO Implement untis date fetching here. NOTE: Check for user date selection
-                          enableSearch: true,
-                          errorText: subjectErrorText,
-                          requestFocusOnTap: true,
-                          label: Text(AppLocalizations.of(context)!.dialogHWSubject),
-                          inputDecorationTheme: InputDecorationTheme(
-                            labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            border: MaterialStateOutlineInputBorder.resolveWith((_) {
-                              final Color color = isError
-                                  ? Color.alphaBlend(Theme.of(context).colorScheme.primary.withAlpha(125),
-                                      Theme.of(context).colorScheme.inversePrimary)
-                                  : Theme.of(context).colorScheme.primary;
-                              return OutlineInputBorder(borderSide: BorderSide(color: color));
-                            }),
-                            errorStyle: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
-                            errorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: isError
-                                        ? Theme.of(context).colorScheme.inversePrimary
-                                        : Theme.of(context).colorScheme.primary)),
+                  future: DBHelper().retrieveSubjects(),
+                  builder: (context, snapshot) {
+                    final bool isError = subjectErrorText != "";
+                    return DropdownMenu<Subject>(
+                      expandedInsets: EdgeInsets.zero,
+                      controller: subjectController,
+                      onSelected: onSubjectSelected,
+                      errorText: subjectErrorText,
+                      requestFocusOnTap: true,
+                      label: Text(
+                        AppLocalizations.of(context)!.dialogHWSubject,
+                      ),
+                      inputDecorationTheme: InputDecorationTheme(
+                        labelStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border:
+                            MaterialStateOutlineInputBorder.resolveWith((_) {
+                          final Color color = isError
+                              ? Color.alphaBlend(
+                                  Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withAlpha(125),
+                                  Theme.of(context).colorScheme.inversePrimary,
+                                )
+                              : Theme.of(context).colorScheme.primary;
+                          return OutlineInputBorder(
+                            borderSide: BorderSide(color: color),
+                          );
+                        }),
+                        errorStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: isError
+                                ? Theme.of(context).colorScheme.inversePrimary
+                                : Theme.of(context).colorScheme.primary,
                           ),
-                          dropdownMenuEntries: snapshot.data != null
-                              ? snapshot.data!.map((s) => DropdownMenuEntry(value: s, label: s.name)).toList()
-                              : []);
-                    }))
-          ]),
+                        ),
+                      ),
+                      dropdownMenuEntries: snapshot.data != null
+                          ? snapshot.data!
+                              .map(
+                                (s) => DropdownMenuEntry(
+                                  value: s,
+                                  label: s.name,
+                                ),
+                              )
+                              .toList()
+                          : [],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 5),
           DateTimeField(
             onDateSelected: onDateSelected,
@@ -213,11 +253,13 @@ class HomeworkFormContent extends StatelessWidget {
           ),
           const SizedBox(height: 30),
           HWTextFormField(
-              controller: contentController,
-              labelText: AppLocalizations.of(context)!.dialogHWContent,
-              hintText: AppLocalizations.of(context)!.dialogHWContentHint,
-              validatorMessage: AppLocalizations.of(context)!.dialogHWContentValidator,
-              maxLines: 5),
+            controller: contentController,
+            labelText: AppLocalizations.of(context)!.dialogHWContent,
+            hintText: AppLocalizations.of(context)!.dialogHWContentHint,
+            validatorMessage:
+                AppLocalizations.of(context)!.dialogHWContentValidator,
+            maxLines: 5,
+          ),
         ],
       ),
     );
@@ -234,16 +276,16 @@ class HWTextFormField extends StatelessWidget {
   final String? initValue;
   final int maxLines;
 
-  const HWTextFormField(
-      {Key? key,
-      this.maxLines = 1,
-      this.controller,
-      this.validatorMessage,
-      required this.labelText,
-      required this.hintText,
-      this.initValue,
-      this.onChanged})
-      : super(key: key);
+  const HWTextFormField({
+    super.key,
+    this.maxLines = 1,
+    this.controller,
+    this.validatorMessage,
+    required this.labelText,
+    required this.hintText,
+    this.initValue,
+    this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -253,20 +295,29 @@ class HWTextFormField extends StatelessWidget {
       maxLines: maxLines,
       initialValue: initValue,
       decoration: InputDecoration(
-          labelText: labelText,
-          labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          border: MaterialStateOutlineInputBorder.resolveWith((Set<MaterialState> states) {
-            final Color color = states.contains(MaterialState.error)
-                ? Color.alphaBlend(
-                    Theme.of(context).colorScheme.primary.withAlpha(125), Theme.of(context).colorScheme.inversePrimary)
-                : Theme.of(context).colorScheme.primary;
-            return OutlineInputBorder(borderSide: BorderSide(color: color));
-          }),
-          hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
-          hintText: hintText,
-          errorStyle: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
-          errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.inversePrimary))),
+        labelText: labelText,
+        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        border: MaterialStateOutlineInputBorder.resolveWith(
+            (Set<MaterialState> states) {
+          final Color color = states.contains(MaterialState.error)
+              ? Color.alphaBlend(
+                  Theme.of(context).colorScheme.primary.withAlpha(125),
+                  Theme.of(context).colorScheme.inversePrimary,
+                )
+              : Theme.of(context).colorScheme.primary;
+          return OutlineInputBorder(borderSide: BorderSide(color: color));
+        }),
+        hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
+        hintText: hintText,
+        errorStyle:
+            TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
+        errorBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.inversePrimary,
+          ),
+        ),
+      ),
       onChanged: onChanged,
     );
   }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Preferences {
+mixin Preferences {
   static const themeStatus = "THEMESTATUS";
 
   static const untisServer = "UNTIS.SERVER";
@@ -33,14 +33,14 @@ class Preferences {
   /// 1 - Light
   /// 2 - Dark
   static Future<void> setThemeMode(ThemeMode mode) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(themeStatus, mode.name);
   }
 
   static Future<ThemeMode> getThemeMode() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String mName = (prefs.getString(themeStatus) ?? "system");
-    ThemeMode mode = ThemeMode.values.firstWhere((m) => m.name == mName);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String mName = prefs.getString(themeStatus) ?? "system";
+    final ThemeMode mode = ThemeMode.values.firstWhere((m) => m.name == mName);
     return mode;
   }
 

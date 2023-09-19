@@ -8,7 +8,13 @@ class SubjectFormDialog extends StatefulWidget {
   final String cancel;
   final Subject? subject;
 
-  const SubjectFormDialog({super.key, required this.title, required this.submit, required this.cancel, this.subject});
+  const SubjectFormDialog({
+    super.key,
+    required this.title,
+    required this.submit,
+    required this.cancel,
+    this.subject,
+  });
 
   @override
   State<SubjectFormDialog> createState() => _SubjectFormDialogState();
@@ -40,17 +46,21 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
     }*/
   }
 
-  void _saveSubject(BuildContext context) async {
-    String name = _nameController.text.trim();
-    String shortName = _shortNameController.text.trim();
+  Future<void> _saveSubject(BuildContext context) async {
+    final String name = _nameController.text.trim();
+    final String shortName = _shortNameController.text.trim();
 
-    Subject subject = Subject(name: name, shortName: shortName);
+    final Subject subject = Subject(name: name, shortName: shortName);
 
-    DBHelper dbHelper = DBHelper();
+    final DBHelper dbHelper = DBHelper();
     if (widget.subject != null) {
-      dbHelper.deleteSubject(name); // If this is in editing mode, delete subject beforehand
+      dbHelper.deleteSubject(
+        name,
+      ); // If this is in editing mode, delete subject beforehand
     }
-    dbHelper.insertSubject(subject).then((value) => Navigator.pop(context, true));
+    dbHelper
+        .insertSubject(subject)
+        .then((value) => Navigator.pop(context, true));
   }
 
   @override
@@ -85,11 +95,11 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
 
 class SubjectFormContent extends StatelessWidget {
   const SubjectFormContent({
-    Key? key,
+    super.key,
     required this.formKey,
     required this.nameController,
     required this.shortNameController,
-  }) : super(key: key);
+  });
 
   final TextEditingController nameController;
   final TextEditingController shortNameController;
@@ -105,36 +115,47 @@ class SubjectFormContent extends StatelessWidget {
         children: <Widget>[
           TextFormField(
             controller: nameController,
-            validator: (value) => value!.isEmpty ? AppLocalizations.of(context)!.dialogSubjectFullNameValidator : null,
-            maxLines: 1,
+            validator: (value) => value!.isEmpty
+                ? AppLocalizations.of(context)!.dialogSubjectFullNameValidator
+                : null,
             decoration: InputDecoration(
               labelText: AppLocalizations.of(context)!.dialogSubjectFullName,
-              labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+              labelStyle:
+                  TextStyle(color: Theme.of(context).colorScheme.primary),
               floatingLabelBehavior: FloatingLabelBehavior.always,
-              border: MaterialStateOutlineInputBorder.resolveWith((Set<MaterialState> states) {
+              border: MaterialStateOutlineInputBorder.resolveWith(
+                  (Set<MaterialState> states) {
                 final Color color = states.contains(MaterialState.error)
-                    ? Color.alphaBlend(Theme.of(context).colorScheme.primary.withAlpha(125),
-                        Theme.of(context).colorScheme.inversePrimary)
+                    ? Color.alphaBlend(
+                        Theme.of(context).colorScheme.primary.withAlpha(125),
+                        Theme.of(context).colorScheme.inversePrimary,
+                      )
                     : Theme.of(context).colorScheme.primary;
                 return OutlineInputBorder(borderSide: BorderSide(color: color));
               }),
               hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
               hintText: AppLocalizations.of(context)!.dialogSubjectFullNameHint,
-              errorStyle: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
-              errorBorder:
-                  OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.inversePrimary)),
+              errorStyle: TextStyle(
+                color: Theme.of(context).colorScheme.inversePrimary,
+              ),
+              errorBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 10),
           TextFormField(
-              controller: shortNameController,
-              maxLines: 1,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.dialogSubjectShortName,
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
-                hintText: AppLocalizations.of(context)!.dialogSubjectShortNameHint,
-              )),
+            controller: shortNameController,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.dialogSubjectShortName,
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
+              hintText:
+                  AppLocalizations.of(context)!.dialogSubjectShortNameHint,
+            ),
+          ),
         ],
       ),
     );

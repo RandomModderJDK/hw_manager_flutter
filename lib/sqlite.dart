@@ -19,9 +19,9 @@ Future<bool> pickAndAddImage(BuildContext context, Homework hw) async {
     if (imageSource == null) return false;
   }
 
-  XFile? xFile = await ImagePicker().pickImage(source: imageSource);
+  final XFile? xFile = await ImagePicker().pickImage(source: imageSource);
   if (xFile == null) return false;
-  HWPage page = await HWPage.readXFile(hw.id!, xFile);
+  final HWPage page = await HWPage.readXFile(hw.id!, xFile);
   DBHelper().insertHWPage(page, orderIn: true);
   return true;
 }
@@ -32,51 +32,67 @@ Future<ImageSource?> _openChooseSourceBar(BuildContext context) async {
   return await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    builder: (BuildContext context) => ListView(shrinkWrap: true, children: <Widget>[
-      Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          TextButton(
-            style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 40.00),
+    builder: (BuildContext context) => ListView(
+      shrinkWrap: true,
+      children: <Widget>[
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            TextButton(
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 40.00,
+                ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero
-                      .copyWith(topLeft: const Radius.circular(30.0), topRight: const Radius.circular(30.0)),
-                )),
-            child: Row(
-              children: [
-                const SizedBox(width: 70),
-                const Icon(size: 50, Icons.add_a_photo_rounded),
-                Expanded(
+                  borderRadius: BorderRadius.zero.copyWith(
+                    topLeft: const Radius.circular(30.0),
+                    topRight: const Radius.circular(30.0),
+                  ),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const SizedBox(width: 70),
+                  const Icon(size: 50, Icons.add_a_photo_rounded),
+                  Expanded(
                     child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                            style: const TextStyle(fontSize: 25.0), AppLocalizations.of(context)!.photoOptionCamera)))
-              ],
+                      child: Text(
+                        style: const TextStyle(fontSize: 25.0),
+                        AppLocalizations.of(context)!.photoOptionCamera,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              onPressed: () => Navigator.pop(context, ImageSource.camera),
             ),
-            onPressed: () => Navigator.pop(context, ImageSource.camera),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 40.00),
-                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
-            child: Row(
-              children: [
-                const SizedBox(width: 70),
-                const Icon(size: 50, Icons.add_photo_alternate_rounded),
-                Expanded(
+            TextButton(
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 40.00,
+                ),
+                shape: const RoundedRectangleBorder(),
+              ),
+              child: Row(
+                children: [
+                  const SizedBox(width: 70),
+                  const Icon(size: 50, Icons.add_photo_alternate_rounded),
+                  Expanded(
                     child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                            style: const TextStyle(fontSize: 25.0), AppLocalizations.of(context)!.photoOptionGallery)))
-              ],
+                      child: Text(
+                        style: const TextStyle(fontSize: 25.0),
+                        AppLocalizations.of(context)!.photoOptionGallery,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              onPressed: () => Navigator.pop(context, ImageSource.gallery),
             ),
-            onPressed: () => Navigator.pop(context, ImageSource.gallery),
-          ),
-        ],
-      )
-    ]),
+          ],
+        ),
+      ],
+    ),
   );
 }
 
@@ -84,13 +100,13 @@ Future<ImageSource?> _openChooseSourceBar(BuildContext context) async {
 class DBHelper {
   static final DBHelper _dbHelper = DBHelper._();
 
-  DBHelper._();
-
-  late Database db;
-
   factory DBHelper() {
     return _dbHelper;
   }
+
+  DBHelper._();
+
+  late Database db;
 
   Future<bool> initDBs() async {
     sqfliteFfiInit();
@@ -100,7 +116,9 @@ class DBHelper {
     WidgetsFlutterBinding.ensureInitialized();
     final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
     if (kDebugMode) {
-      print("Saving/open database to/on ${join(appDocumentsDir.path, "hwm_databases", 'hw_database.db')}");
+      print(
+        "Saving/open database to/on ${join(appDocumentsDir.path, "hwm_databases", 'hw_database.db')}",
+      );
     }
     // Open the database and store the reference.
     db = await openDatabase(
@@ -149,7 +167,9 @@ class DBHelper {
   }
 
   Future<Subject?> getSubject(String name) async {
-    return Subject.fromMap((await db.query('subjects', where: "name = ?", whereArgs: [name]))[0]);
+    return Subject.fromMap(
+      (await db.query('subjects', where: "name = ?", whereArgs: [name]))[0],
+    );
   }
 
   Future<List<Subject>> retrieveSubjects() async {
@@ -181,7 +201,9 @@ class DBHelper {
 
   // Deletes homework from database. If homework does not have id, nothing will be deleted
   Future<List<void>> deleteHomework(Homework hw) async {
-    return await Future.wait([deleteHomeworkById(hw.id ?? -1), deleteHWPagesByHW(hw)]);
+    return await Future.wait(
+      [deleteHomeworkById(hw.id ?? -1), deleteHWPagesByHW(hw)],
+    );
   }
 
   Future<void> deleteHomeworkById(int id) async {
@@ -201,7 +223,7 @@ class DBHelper {
     if (kDebugMode) {
       print("INSERT AFTER REORDER: ${page.order}");
     }
-    return await db.insert(
+    return db.insert(
       'imageBlobs',
       await page.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -209,46 +231,59 @@ class DBHelper {
   }
 
   Future<List<int>> insertHWPages(List<HWPage> pages) async {
-    return await Future.wait([for (HWPage page in pages) insertHWPage(page)]);
+    return Future.wait([for (final HWPage page in pages) insertHWPage(page)]);
   }
 
   Future<int> countHWPages(int hwId) async {
-    final List<Map<String, Object?>> queryResult =
-        await db.query("imageBlobs", columns: ["COUNT(id)"], where: 'id LIKE ?', whereArgs: ["$hwId+%"]);
+    final List<Map<String, Object?>> queryResult = await db.query(
+      "imageBlobs",
+      columns: ["COUNT(id)"],
+      where: 'id LIKE ?',
+      whereArgs: ["$hwId+%"],
+    );
     if (queryResult[0]["COUNT(id)"] == null) return 0;
-    return queryResult[0]["COUNT(id)"] as int;
+    return queryResult[0]["COUNT(id)"]! as int;
   }
 
   Future<HWPage?> retrieveHWPage(Homework hw, int order) async {
-    final List<Map<String, Object?>> queryResult =
-        await db.query('imageBlobs', where: 'id = ?', whereArgs: ["${hw.id ?? "NULL"}+$order"]);
+    final List<Map<String, Object?>> queryResult = await db.query(
+      'imageBlobs',
+      where: 'id = ?',
+      whereArgs: ["${hw.id ?? "NULL"}+$order"],
+    );
     if (queryResult.isEmpty) return null;
     return queryResult.map((e) => HWPage.fromMap(e)).toList()[0];
   }
 
   Future<List<HWPage>> retrieveHWPages(Homework hw) async {
-    final List<Map<String, Object?>> queryResult =
-        await db.query('imageBlobs', where: 'id LIKE ?', whereArgs: ["${hw.id ?? "NULL"}+%"]);
+    final List<Map<String, Object?>> queryResult = await db.query(
+      'imageBlobs',
+      where: 'id LIKE ?',
+      whereArgs: ["${hw.id ?? "NULL"}+%"],
+    );
     if (queryResult.isEmpty) return [];
-    var result = queryResult.map((e) => HWPage.fromMap(e)).toList();
+    final result = queryResult.map((e) => HWPage.fromMap(e)).toList();
     return result;
   }
 
   /// Deletes HWPage from database. If HWPage does not have id, nothing will be deleted
   Future<int> deleteHWPage(HWPage page) async {
-    return await deleteHWPageByFullId("${page.hwId}+${page.order}");
+    return deleteHWPageByFullId("${page.hwId}+${page.order}");
   }
 
   Future<int> deleteHWPagesByHW(Homework hw) async {
-    return await db.delete(
+    return db.delete(
       'imageBlobs',
       where: "id LIKE ?",
       whereArgs: ["${hw.id}+%"],
     );
   }
 
-  Future<List<void>> deleteHWPagesByHWOrder(Homework hw, List<int> order) async {
-    for (int p in order) {
+  Future<List<void>> deleteHWPagesByHWOrder(
+    Homework hw,
+    List<int> order,
+  ) async {
+    for (final int p in order) {
       if (kDebugMode) {
         print("DELET ${hw.id ?? -1}+$p");
       }
@@ -258,23 +293,25 @@ class DBHelper {
         whereArgs: ["${hw.id}+$p"],
       );
     }
-    return await reorderHWPages(hw);
+    return reorderHWPages(hw);
   }
 
   Future<List<void>> reorderHWPages(Homework hw) async {
-    List<HWPage> pages = await retrieveHWPages(hw);
+    final List<HWPage> pages = await retrieveHWPages(hw);
     pages.sort((a, b) => a.order.compareTo(b.order));
     if (kDebugMode) {
-      print("These are the currently existing pages: ${pages.map((e) => e.order)}");
+      print(
+        "These are the currently existing pages: ${pages.map((e) => e.order)}",
+      );
     }
     return await Future.wait([
       for (int i = 0; i < pages.length; i++)
         () async {
-          HWPage p = pages[i];
+          final HWPage p = pages[i];
           await deleteHWPage(p);
           p.order = i;
-          await insertHWPage(p, orderIn: false);
-        }()
+          await insertHWPage(p);
+        }(),
     ]);
   }
 
@@ -308,13 +345,14 @@ class Homework {
   final bool finished;
 
   // DateTime needs DateTime.tryParse(isoString);
-  const Homework(
-      {this.id,
-      required this.subject,
-      required this.overdueTimestamp,
-      required this.creationTimestamp,
-      required this.content,
-      required this.finished});
+  const Homework({
+    this.id,
+    required this.subject,
+    required this.overdueTimestamp,
+    required this.creationTimestamp,
+    required this.content,
+    required this.finished,
+  });
 
   /// Convert a Homework into a Map.
   Map<String, Object?> toMap() {
@@ -330,14 +368,18 @@ class Homework {
   }
 
   /// Convert a Homework into a Map.
-  static Homework fromMap(Map<String, dynamic> map) {
+  static Homework fromMap(Map<String, Object?> map) {
     return Homework(
-        id: map["id"],
-        subject: Subject(name: map["subject"], shortName: map["subject_short"]),
-        overdueTimestamp: DateTime.parse(map["overdueDate"]),
-        creationTimestamp: DateTime.parse(map["overdueDate"]),
-        content: map["content"],
-        finished: bool.parse(map["finished"]));
+      id: map["id"]! as int,
+      subject: Subject(
+        name: map["subject"]! as String,
+        shortName: map["subject_short"]! as String,
+      ),
+      overdueTimestamp: DateTime.parse(map["overdueDate"]! as String),
+      creationTimestamp: DateTime.parse(map["overdueDate"]! as String),
+      content: map["content"]! as String,
+      finished: bool.parse(map["finished"]! as String),
+    );
   }
 
   @override
@@ -353,16 +395,16 @@ class Subject {
   const Subject({required this.name, this.shortName});
 
   /// Convert a Subject into a Map.
+  Subject.fromMap(Map<String, Object?> map)
+      : name = map["name"].toString(),
+        shortName = map["shortName"].toString();
+
+  /// Convert a Subject into a Map.
   Map<String, Object?> toMap() {
     return {
       'name': name,
       'shortName': shortName,
     };
-  }
-
-  /// Convert a Subject into a Map.
-  static Subject fromMap(Map<String, dynamic> map) {
-    return Subject(name: map["name"], shortName: map["shortName"]);
   }
 }
 
@@ -379,19 +421,27 @@ class HWPage {
   }
 
   /// Convert a HWPage into a Map.
+  HWPage.fromMap(Map<String, Object?> map)
+      : hwId = getHwIdFromId(map["id"].toString()),
+        order = getOrderFromId(map["id"].toString()),
+        data = map["data"]! as Uint8List;
+
+  static int getHwIdFromId(String hwPageId) {
+    final List<String> id = hwPageId.split("+");
+    return int.parse(id[0]);
+  }
+
+  static int getOrderFromId(String hwPageId) {
+    final List<String> id = hwPageId.split("+");
+    return int.parse(id[1]);
+  }
+
+  /// Convert a HWPage into a Map.
   Future<Map<String, Object?>> toMap() async {
     return {
       'id': "$hwId+$order",
       'data': data,
     };
-  }
-
-  /// Convert a HWPage into a Map.
-  static HWPage fromMap(Map<String, Object?> map) {
-    List<String> id = map["id"]!.toString().split("+");
-    int hwID = int.parse(id[0]);
-    int order = int.parse(id[1]);
-    return HWPage(hwID, map["data"]! as Uint8List, order: order);
   }
 
   @override

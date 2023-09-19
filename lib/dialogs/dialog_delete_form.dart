@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import '../sqlite.dart';
+import 'package:hw_manager_flutter/sqlite.dart';
 
 class DeleteFormDialog extends StatefulWidget {
   final Homework hw;
@@ -20,14 +19,18 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
   @override
   void initState() {
     super.initState();
-    DBHelper().countHWPages(widget.hw.id ?? -1).then((value) => setState(() => pages = value));
+    DBHelper()
+        .countHWPages(widget.hw.id ?? -1)
+        .then((value) => setState(() => pages = value));
   }
 
-  void _deletePages(BuildContext context) async {
+  Future<void> _deletePages(BuildContext context) async {
     if (kDebugMode) {
       print(_tempSelectedPages);
     }
-    DBHelper().deleteHWPagesByHWOrder(widget.hw, _tempSelectedPages).then((value) {
+    DBHelper()
+        .deleteHWPagesByHWOrder(widget.hw, _tempSelectedPages)
+        .then((value) {
       if (pages - _tempSelectedPages.length > 0) {
         return Navigator.pop(context, pages - _tempSelectedPages.length);
       }
@@ -43,85 +46,104 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Flexible(
-              fit: FlexFit.loose,
-              child: SingleChildScrollView(
-                  child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                    // TITLE HERE
-                    Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  // TITLE HERE
+                  Row(
+                    children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.only(left: 24.0, top: 24.0, right: 24.0, bottom: 0.0),
+                        padding: const EdgeInsets.only(
+                          left: 24.0,
+                          top: 24.0,
+                          right: 24.0,
+                        ),
                         child: DefaultTextStyle(
-                          style: DialogTheme.of(context).titleTextStyle ?? Theme.of(context).textTheme.titleLarge!,
+                          style: DialogTheme.of(context).titleTextStyle ??
+                              Theme.of(context).textTheme.titleLarge!,
                           textAlign: TextAlign.center,
                           child: Semantics(
                             // For iOS platform, the focus always lands on the title.
                             // Set nameRoute to false to avoid title being announce twice.
                             namesRoute: true,
                             container: true,
-                            child: Text(AppLocalizations.of(context)!.deletePagesTitle),
+                            child: Text(
+                              AppLocalizations.of(context)!.deletePagesTitle,
+                            ),
                           ),
                         ),
                       ),
-                    ]),
-                    // CONTENT STARTING HERE
-                    Padding(
-                      padding: const EdgeInsets.only(left: 24.0, top: 16.0, right: 24.0, bottom: 24.0),
-                      child: DefaultTextStyle(
-                        style: DialogTheme.of(context).contentTextStyle ?? Theme.of(context).textTheme.bodyMedium!,
-                        child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: pages,
-                          itemBuilder: (BuildContext context, int index) {
-                            final checkboxName = AppLocalizations.of(context)!.deletePagesEntry(index + 1);
-                            return CheckboxListTile(
-                                title: Text(checkboxName),
-                                value: _tempSelectedPages.contains(index),
-                                onChanged: (bool? value) {
-                                  if (value ?? true) {
-                                    if (!_tempSelectedPages.contains(index)) {
-                                      setState(() {
-                                        _tempSelectedPages.add(index);
-                                      });
-                                    }
-                                  } else {
-                                    if (_tempSelectedPages.contains(index)) {
-                                      setState(() {
-                                        _tempSelectedPages.removeWhere((int i) => i == index);
-                                      });
-                                    }
-                                  }
-                                });
+                    ],
+                  ),
+                  // CONTENT STARTING HERE
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 24.0,
+                      top: 16.0,
+                      right: 24.0,
+                      bottom: 24.0,
+                    ),
+                    child: DefaultTextStyle(
+                      style: DialogTheme.of(context).contentTextStyle ??
+                          Theme.of(context).textTheme.bodyMedium!,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: pages,
+                        itemBuilder: (BuildContext context, int index) =>
+                            CheckboxListTile(
+                          title: Text(
+                            AppLocalizations.of(context)!
+                                .deletePagesEntry(index + 1),
+                          ),
+                          value: _tempSelectedPages.contains(index),
+                          onChanged: (bool? value) {
+                            if (value ?? true) {
+                              if (_tempSelectedPages.contains(index)) return;
+                              setState(() => _tempSelectedPages.add(index));
+                            } else {
+                              if (!_tempSelectedPages.contains(index)) return;
+                              setState(
+                                () => _tempSelectedPages
+                                    .removeWhere((i) => i == index),
+                              );
+                            }
                           },
                         ),
                       ),
-                    )
-                  ]))),
-          // ACTIONS STARTING HERE
-          Padding(
-              padding: const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 24.0),
-              child: OverflowBar(
-                alignment: MainAxisAlignment.end,
-                spacing: 8,
-                overflowAlignment: OverflowBarAlignment.end,
-                overflowDirection: VerticalDirection.down,
-                overflowSpacing: 0,
-                children: <Widget>[
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade900),
-                    onPressed: () => Navigator.pop(context, pages),
-                    child: Text(AppLocalizations.of(context)!.deletePagesCancel),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade900),
-                    onPressed: () => _deletePages(context),
-                    child: Text(AppLocalizations.of(context)!.deletePagesTitle),
+                    ),
                   ),
                 ],
-              )),
+              ),
+            ),
+          ),
+          // ACTIONS STARTING HERE
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 24.0),
+            child: OverflowBar(
+              alignment: MainAxisAlignment.end,
+              spacing: 8,
+              overflowAlignment: OverflowBarAlignment.end,
+              children: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red.shade900,
+                  ),
+                  onPressed: () => Navigator.pop(context, pages),
+                  child: Text(AppLocalizations.of(context)!.deletePagesCancel),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red.shade900,
+                  ),
+                  onPressed: () => _deletePages(context),
+                  child: Text(AppLocalizations.of(context)!.deletePagesTitle),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
