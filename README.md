@@ -1,3 +1,5 @@
+[![style: lint](https://img.shields.io/badge/style-lint-4BC0F5.svg)](https://pub.dev/packages/lint)
+
 # hw_manager_flutter
 
 Manage your homework, with untis fetching and taking photos
