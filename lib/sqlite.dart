@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 /// Pick and add image to database for the specified homework
 /// Return true on success, otherwise false
@@ -101,8 +102,13 @@ class DBHelper {
   late Database db;
 
   Future<bool> initDBs() async {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
+    if (kIsWeb) {
+      // Change default factory on the web
+      databaseFactory = databaseFactoryFfiWeb;
+    } else {
+      sqfliteFfiInit();
+      databaseFactory = databaseFactoryFfi;
+    }
     // Avoid errors caused by flutter upgrade.
     // Importing 'package:flutter/widgets.dart' is required.
     WidgetsFlutterBinding.ensureInitialized();
