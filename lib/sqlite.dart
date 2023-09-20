@@ -112,8 +112,8 @@ class DBHelper {
     // Avoid errors caused by flutter upgrade.
     // Importing 'package:flutter/widgets.dart' is required.
     WidgetsFlutterBinding.ensureInitialized();
-    final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
     if (kDebugMode) {
+      final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
       print("Saving/open database to/on ${join(appDocumentsDir.path, "hwm_databases", 'hw_database.db')}");
     }
     // Open the database and store the reference.
@@ -121,7 +121,9 @@ class DBHelper {
       // Set the path to the database. Note: Using the `join` function from the
       // `path` package is best practice to ensure the path is correctly
       // constructed for each platform.
-      join(appDocumentsDir.path, "hwm_databases", 'hw_database.db'),
+      kIsWeb
+          ? "hw_database.db"
+          : join((await getApplicationDocumentsDirectory()).path, "hwm_databases", 'hw_database.db'),
       onUpgrade: (db, oldVersion, newVersion) async {
         return db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, '
             'data BLOB NOT NULL)');
