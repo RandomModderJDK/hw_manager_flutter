@@ -65,7 +65,6 @@ jobs:
       - name: Build ios xcarchive
         run: |
           flutter pub get
-          dart run flutter_launcher_icons:main
           flutter build ipa --release --no-codesign
       - name: Package xcarchive to ipa
         run: |
