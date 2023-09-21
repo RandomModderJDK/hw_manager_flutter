@@ -30,6 +30,7 @@ jobs:
           architecture: x64
           channel: beta
       - run: flutter pub get
+      - run: flutter create .
       - run: dart run flutter_launcher_icons:main
       - run: dart run sqflite_common_ffi_web:setup
       - uses: bluefireteam/flutter-gh-pages@v7
