@@ -30,17 +30,12 @@ jobs:
     needs: do_tests
     steps:
       - uses: actions/checkout@v3
-        with:
-          sparse-checkout: |
-            assets
-            lib
-            scripts
-            web
       - uses: subosito/flutter-action@v2
         with:
           channel: beta
       - run: flutter pub get
-      - run: dart run sqflite_common_ffi_web:setup
+
+      # Implement this troguh other action - run: dart run sqflite_common_ffi_web:setup
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
           baseHref: /${{ github.event.repository.name }}/
@@ -53,6 +48,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            assets
+            lib
+            scripts
+            ios
       - uses: subosito/flutter-action@v2
         with:
           channel: beta
