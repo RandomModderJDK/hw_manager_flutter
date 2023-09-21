@@ -30,6 +30,7 @@ jobs:
           architecture: x64
           channel: beta
       - run: flutter pub get
+      - run: dart run flutter_launcher_icons:main
       - run: dart run sqflite_common_ffi_web:setup
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
@@ -50,6 +51,7 @@ jobs:
       - name: Build ios xcarchive
         run: |
           flutter pub get
+          dart run flutter_launcher_icons:main
           flutter build ipa --release --no-codesign
       - name: Package xcarchive to ipa
         run: |
