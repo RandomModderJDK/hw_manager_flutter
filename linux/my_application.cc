@@ -50,14 +50,14 @@ static void my_application_activate(GApplication* application) {
   gtk_window_set_default_size(window, 1280, 720);
   gtk_widget_show(GTK_WIDGET(window));
 
+  g_autoptr(FlDartProject) project = fl_dart_project_new();
 
-  if (g_file_test("assets", G_FILE_TEST_IS_DIR)) {
-    gtk_window_set_icon_from_file(window, "assets/linux-48x48.png", NULL); // For debug mode
-  } else {
-    gtk_window_set_icon_from_file(window, "data/flutter_assets/assets/linux-48x48.png", NULL); // For release mode
+  g_autoptr(GError) error = nullptr;
+  gtk_window_set_icon_from_file(window, g_strconcat(fl_dart_project_get_assets_path(project), "/assets/foreground-bold.svg", NULL), &error);
+  if (error != nullptr) {
+    g_warning("Failed to set icon: %s", error->message);
   }
 
-  g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);
 
   FlView* view = fl_view_new(project);

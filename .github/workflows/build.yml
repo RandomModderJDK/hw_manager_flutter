@@ -2,19 +2,18 @@ name: "Build all flutter archs"
 on:
   workflow_dispatch:
   release:
-    types: [created]
+    types: [ created ]
 
 jobs:
   do_tests:
     name: Flutter Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repositoriy
+      - name: Checkout repository
         uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          architecture: x64
-          channel: 'beta'
+          channel: beta
       - name: Download dependencies
         run: flutter pub get
       - name: Run tests
@@ -25,13 +24,15 @@ jobs:
     needs: do_tests
     steps:
       - uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            lib
+            scripts
+            web
       - uses: subosito/flutter-action@v2
         with:
-          architecture: x64
           channel: beta
       - run: flutter pub get
-      - run: flutter create .
-      - run: dart run flutter_launcher_icons:main
       - run: dart run sqflite_common_ffi_web:setup
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
@@ -43,11 +44,15 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout repositoriy
+      - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            lib
+            scripts
+            ios
       - uses: subosito/flutter-action@v2
         with:
-          architecture: x64
           channel: beta
       - name: Build ios xcarchive
         run: |
@@ -63,17 +68,18 @@ jobs:
         id: date
         run: echo "date={$(date +'%Y-%m-%d')}" >> $GITHUB_ENV
       - name: Push artifact
+        if: github.event_name != 'release'
         uses: actions/upload-artifact@v3.1.2
         with:
           name: HW-manager-${{ env.date }}.ipa
           path: ./hw_manager_flutter.ipa
-   
+
       - name: Upload files to a GitHub release
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
-        env: 
-           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:  
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_name: hw-manager-${{ github.ref_name }}.ipa
           asset_path: ./hw_manager_flutter.ipa
