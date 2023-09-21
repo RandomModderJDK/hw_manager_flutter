@@ -79,7 +79,7 @@ flutter_launcher_icons:
 
   web:
     generate: true
-    image_path: "assets/foreground-alpha.png"
+    image_path: "assets/foreground-alpha-borderless.png"
     background_color: "#808080"
     theme_color: "#808080"
   windows:
