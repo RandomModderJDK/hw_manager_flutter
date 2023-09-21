@@ -64,6 +64,30 @@ dev_dependencies:
     sdk: flutter
 
   lint: ^2.0.0
+  flutter_launcher_icons:
+    git:
+      url: https://github.com/fluttercommunity/flutter_launcher_icons.git
+
+flutter_launcher_icons:
+  image_path: "assets/foreground-bold.png"
+
+  ios: true
+  remove_alpha_ios: true
+
+  android: true
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_foreground: "assets/foreground-bold.png"
+  adaptive_icon_background: "#ed1e79"
+
+  web:
+    generate: true
+    image_path: "assets/foreground-bold.png"
+    background_color: "#ed1e79"
+    theme_color: "#ed1e79"
+#  windows:
+#    generate: true
+#    image_path: "path/to/image.png"
+#    icon_size: 48 # min:48, max:256, default: 48
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -82,6 +106,8 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/linux-48x48.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

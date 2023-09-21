@@ -112,7 +112,7 @@ class DBHelper {
     // Avoid errors caused by flutter upgrade.
     // Importing 'package:flutter/widgets.dart' is required.
     WidgetsFlutterBinding.ensureInitialized();
-    if (kDebugMode) {
+    if (kDebugMode && !kIsWeb) {
       final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
       print("Saving/open database to/on ${join(appDocumentsDir.path, "hwm_databases", 'hw_database.db')}");
     }
