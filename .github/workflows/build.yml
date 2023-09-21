@@ -84,7 +84,6 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ github.event.release.upload_url }}
           asset_name: hw-manager-${{ github.ref_name }}.ipa
           file: ./hw_manager_flutter.ipa
           tag: ${{ github.ref }}
