@@ -53,19 +53,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          sparse-checkout: |
-            assets
-            lib
-            scripts
-            ios
       - uses: subosito/flutter-action@v2
         with:
           channel: beta
+      - name: Gathering dependencies
+        run: flutter pub get
       - name: Build ios xcarchive
-        run: |
-          flutter pub get
-          flutter build ipa --release --no-codesign
+        run: flutter build ipa --release --no-codesign
       - name: Package xcarchive to ipa
         run: |
           brew install ldid
