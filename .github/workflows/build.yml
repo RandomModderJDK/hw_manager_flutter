@@ -19,6 +19,21 @@ jobs:
         run: flutter pub get
       - name: Run tests
         run: flutter test
+  build_web:
+    name: Build & publish for gh-pages
+    runs-on: ubuntu-latest
+    needs: do_tests
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v2
+        with:
+          architecture: x64
+          channel: beta
+      - run: flutter pub get
+      - run: flutter test
+      - uses: bluefireteam/flutter-gh-pages@v7
+        with:
+          baseHref: /${{ github.event.repository.name }}/
   build_ios:
     name: Build iOS ipa
     needs: do_tests
@@ -32,7 +47,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           architecture: x64
-          channel: 'beta'
+          channel: beta
       - name: Build ios xcarchive
         run: |
           flutter pub get
