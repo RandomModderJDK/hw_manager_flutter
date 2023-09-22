@@ -110,7 +110,6 @@ jobs:
         id: date
         run: echo "date={$(date +'%Y-%m-%d')}" >> $GITHUB_ENV
       - name: Push artifact
-        if: github.event_name != 'release'
         uses: actions/upload-artifact@v3.1.2
         with:
           name: HW-manager-${{ env.date }}.ipa
