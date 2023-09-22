@@ -1,0 +1,33 @@
+name: "Update web sqlite3 wasm version"
+on:
+  schedule:
+    - cron: '0 0 23 * *'
+  workflow_dispatch:
+
+jobs:
+  update_wasm:
+    name: Update web sqlite version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - run: |
+          COMMITS=$(curl -s "https://api.github.com/repos/tekartik/sqflite/commits?path=packages_web%2Fsqflite_common_ffi_web%2Flib%2Fsrc%2Fsetup&page=1&per_page=1")
+          exit $(echo $COMMITS | jq -r "((now - (.[0].commit.committer.date | fromdateiso8601) )  / (60*60*24*31)  | trunc)")
+      - uses: subosito/flutter-action@v2
+        if: ${{ success() }}
+        with:
+          cache: true
+          channel: beta
+      - name: Run sqlite_common_ffi_web setup
+        if: ${{ success() }}
+        run: dart run sqflite_common_ffi_web:setup --force
+      # Commit all changed files back to the repository
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        if: ${{ success() }}
+        with:
+          commit_message: Updated web sqlite
+          file_pattern: '*.js *.wasm'
