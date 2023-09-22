@@ -51,14 +51,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          sparse-checkout: |
-            assets
-            lib
-            scripts
-            ios
-            web
-            windows
+        #with:
+        #  sparse-checkout: |
+        #    assets
+        #    lib
+        #    scripts
+        #    ios
       - uses: subosito/flutter-action@v2
         with:
           cache: true
