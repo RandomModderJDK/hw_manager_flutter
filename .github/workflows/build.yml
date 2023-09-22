@@ -56,6 +56,7 @@ jobs:
         if: steps.assets.output.days == 0
         with:
           commit_message: Generated icon files
+          file_pattern: '*.xml *.json *.png'
   build_web:
     name: Build & publish for gh-pages
     if: github.event_name == 'release'
