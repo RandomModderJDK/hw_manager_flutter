@@ -75,13 +75,13 @@ flutter_launcher_icons:
   android: true
   min_sdk_android: 21 # android min sdk min:16, default 21
   adaptive_icon_foreground: "assets/foreground-alpha.png"
-  adaptive_icon_background: "#808080"
+  adaptive_icon_background: "#909090"
 
   web:
     generate: true
     image_path: "assets/foreground-alpha-borderless.png"
-    background_color: "#808080"
-    theme_color: "#808080"
+    background_color: "#909090"
+    theme_color: "#909090"
   windows:
     generate: true
     image_path: "assets/foreground-alpha.png"
