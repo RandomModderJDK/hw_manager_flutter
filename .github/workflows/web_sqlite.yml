@@ -20,21 +20,23 @@ jobs:
           COMMITS=$(curl -s "https://api.github.com/repos/tekartik/sqflite/commits?path=packages_web%2Fsqflite_common_ffi_web%2Flib%2Fsrc%2Fsetup&page=1&per_page=1")
           echo "name=$(echo $COMMITS | jq -r '.[0].commit.author.name')" >> $GITHUB_OUTPUT
           echo "mail=$(echo $COMMITS | jq -r '.[0].commit.author.email')" >> $GITHUB_OUTPUT
+          MONTHS=0
           if ${{ github.event_name == 'schedule' }}
           then 
-            exit $(echo $COMMITS | jq -r "((now - (.[0].commit.committer.date | fromdateiso8601) )  / (60*60*24*31)  | trunc)")
+             MONTHS=$(echo $COMMITS | jq -r "((now - (.[0].commit.committer.date | fromdateiso8601) )  / (60*60*24*31)  | trunc)")
           fi
+          echo "months=$MONTHS" >> $GITHUB_OUTPUT
       - uses: subosito/flutter-action@v2
-        if: success()
+        if: steps.commit.output.months == 0
         with:
           cache: true
           channel: beta
       - name: Run sqlite_common_ffi_web setup
-        if: success()
+        if: steps.commit.output.months == 0
         run: dart run sqflite_common_ffi_web:setup --force
       # Commit all changed files back to the repository
       - uses: stefanzweifel/git-auto-commit-action@v4
-        if: success()
+        if: steps.commit.output.months == 0
         with:
           commit_message: Updated web sqlite
           commit_author: ${{ steps.commit.outputs.name }} <${{ steps.commit.outputs.mail }}>
