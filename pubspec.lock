@@ -134,8 +134,8 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: e60ee0d0be0f0dcba0d65ce2d48c2349ce626abe
-      url: "https://github.com/RandomModderJDK/dart-webuntis.git"
+      resolved-ref: "73ead44ac20244f1be6a25d3bb2725944e496bd2"
+      url: "https://github.com/IsAvaible/dart-webuntis.git"
     source: git
     version: "1.0.0"
   date_field:

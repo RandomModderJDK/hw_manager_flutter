@@ -54,7 +54,7 @@ dependencies:
 
   dart_webuntis:
     git:
-      url: https://github.com/RandomModderJDK/dart-webuntis.git
+      url: https://github.com/IsAvaible/dart-webuntis.git
       ref: main
   flutter_secure_storage: ^9.0.0
   fluttertoast: ^8.2.2
