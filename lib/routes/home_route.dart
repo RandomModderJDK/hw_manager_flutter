@@ -5,6 +5,7 @@ import 'package:hw_manager_flutter/dialogs/dialog_homework_form.dart';
 import 'package:hw_manager_flutter/list_tiles.dart';
 import 'package:hw_manager_flutter/my_listview.dart';
 import 'package:hw_manager_flutter/routes/settings_route.dart';
+//import 'package:hw_manager_flutter/routes/synchronize_route.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +13,8 @@ import 'package:intl/intl.dart';
 class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key});
 
-  static HomeRouteState? of(BuildContext context) => context.findAncestorStateOfType<HomeRouteState>();
+  static HomeRouteState? of(BuildContext context) =>
+      context.findAncestorStateOfType<HomeRouteState>();
 
   @override
   State<HomeRoute> createState() => HomeRouteState();
@@ -49,7 +51,10 @@ class HomeRouteState extends State<HomeRoute> {
                 setState(() {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(AppLocalizations.of(context)!.deleteHWToast(hw.id!, hw.subject.name)),
+                      content: Text(
+                        AppLocalizations.of(context)!
+                            .deleteHWToast(hw.id!, hw.subject.name),
+                      ),
                       action: SnackBarAction(
                         label: AppLocalizations.of(context)!.deleteHWToastUndo,
                         onPressed: () => Future.wait([
@@ -99,14 +104,21 @@ class HomeRouteState extends State<HomeRoute> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(AppLocalizations.of(context)!.homeTitle),
         actions: <Widget>[
-          IconButton(
+          /*IconButton(
             icon: const Icon(Icons.cloud_sync_outlined),
-            // TODO: Implement
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsRoute())),
-          ),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SynchronizeRoute(),
+              ),
+            ),
+          ),*/
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsRoute())),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SettingsRoute()),
+            ),
           ),
         ],
       ),

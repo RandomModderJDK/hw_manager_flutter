@@ -3,6 +3,7 @@ import 'package:expandable_widgets/expandable_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hw_manager_flutter/custom_settings_tile.dart';
 import 'package:hw_manager_flutter/main.dart';
 import 'package:hw_manager_flutter/routes/subject_route.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
@@ -31,27 +32,32 @@ class SettingsRoute extends StatelessWidget {
           SettingsSection(
             title: Text(AppLocalizations.of(context)!.settingsGeneral),
             tiles: [
-              SettingsTile(
-                title:
-                    Text(AppLocalizations.of(context)!.settingsThemeModeTitle),
-                leading: const Icon(Icons.dark_mode_outlined),
-                description: Text(
-                  AppLocalizations.of(context)!.settingsThemeModeDescription,
-                ),
-                onPressed: (context) => Preferences.nextThemeMode().then(
-                  (themeMode) => HWMApp.of(context).changeTheme(themeMode),
+              CustomSettingsTile(
+                child: MySettingsTile(
+                  title: Text(
+                    AppLocalizations.of(context)!.settingsThemeModeTitle,
+                  ),
+                  leading: const Icon(Icons.dark_mode_outlined),
+                  description: Text(
+                    AppLocalizations.of(context)!.settingsThemeModeDescription,
+                  ),
+                  onPressed: (context) => Preferences.nextThemeMode().then(
+                    (themeMode) => HWMApp.of(context).changeTheme(themeMode),
+                  ),
                 ),
               ),
-              SettingsTile(
-                title:
-                    Text(AppLocalizations.of(context)!.settingsSubjectsTitle),
-                leading: const Icon(Icons.subject),
-                description: Text(
-                  AppLocalizations.of(context)!.settingsSubjectsDescription,
-                ),
-                onPressed: (context) => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const SubjectRoute(),
+              CustomSettingsTile(
+                child: MySettingsTile(
+                  title:
+                      Text(AppLocalizations.of(context)!.settingsSubjectsTitle),
+                  leading: const Icon(Icons.subject),
+                  description: Text(
+                    AppLocalizations.of(context)!.settingsSubjectsDescription,
+                  ),
+                  onPressed: (context) => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const SubjectRoute(),
+                    ),
                   ),
                 ),
               ),
@@ -60,90 +66,126 @@ class SettingsRoute extends StatelessWidget {
           SettingsSection(
             title: Text(AppLocalizations.of(context)!.settingsUntis),
             tiles: [
-              SettingsTile(
-                title:
-                    Text(AppLocalizations.of(context)!.settingsUntisLoginTitle),
-                leading: const Icon(Icons.login_rounded),
-                description: Expandable(
-                  backgroundColor: themeData.settingsListBackground!,
-                  boxShadow: const [],
-                  centralizeFirstChild: false,
-                  arrowWidget:
-                      const Icon(Icons.keyboard_arrow_up_rounded, size: 40.0),
-                  firstChild: Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        AppLocalizations.of(context)!
-                            .settingsUntisLoginDescription,
+              CustomSettingsTile(
+                child: MySettingsTile(
+                  title: Text(
+                    AppLocalizations.of(context)!.settingsUntisLoginTitle,
+                  ),
+                  leading: const Icon(Icons.login_rounded),
+                  description: Expandable(
+                    backgroundColor: themeData.settingsListBackground!,
+                    boxShadow: const [],
+                    centralizeFirstChild: false,
+                    arrowWidget:
+                        const Icon(Icons.keyboard_arrow_up_rounded, size: 40.0),
+                    firstChild: Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          AppLocalizations.of(context)!
+                              .settingsUntisLoginDescription,
+                        ),
                       ),
                     ),
-                  ),
-                  secondChild: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 10),
-                      UntisTextFormField(
-                        labelText: AppLocalizations.of(context)!
-                            .settingsUntisLoginServer,
-                        hintText: AppLocalizations.of(context)!
-                            .settingsUntisLoginServerHint,
-                        initValue: Preferences.getUntisServer(),
-                        onChanged: (s) => Preferences.saveUntisServer(s ?? ""),
-                      ),
-                      const SizedBox(height: 10),
-                      UntisTextFormField(
-                        labelText: AppLocalizations.of(context)!
-                            .settingsUntisLoginSchool,
-                        hintText: AppLocalizations.of(context)!
-                            .settingsUntisLoginSchoolHint,
-                        initValue: Preferences.getUntisSchool(),
-                        onChanged: (s) => Preferences.saveUntisSchool(s ?? ""),
-                      ),
-                      const SizedBox(height: 10),
-                      UntisTextFormField(
-                        labelText: AppLocalizations.of(context)!
-                            .settingsUntisLoginUsername,
-                        hintText: AppLocalizations.of(context)!
-                            .settingsUntisLoginUsernameHint,
-                        initValue: Preferences.getUntisUsername(),
-                        onChanged: (s) =>
-                            Preferences.saveUntisUsername(s ?? ""),
-                      ),
-                      const SizedBox(height: 10),
-                      UntisTextFormField(
-                        passwordStyle: true,
-                        labelText: AppLocalizations.of(context)!
-                            .settingsUntisLoginPassword,
-                        hintText: AppLocalizations.of(context)!
-                            .settingsUntisLoginPasswordHint,
-                        initValue: Preferences.getUntisPassword(),
-                        onChanged: (s) =>
-                            Preferences.saveUntisPassword(s ?? ""),
-                      ),
-                    ],
+                    secondChild: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        UntisTextFormField(
+                          labelText: AppLocalizations.of(context)!
+                              .settingsUntisLoginServer,
+                          hintText: AppLocalizations.of(context)!
+                              .settingsUntisLoginServerHint,
+                          initValue: Preferences.getUntisServer(),
+                          onChanged: (s) =>
+                              Preferences.saveUntisServer(s ?? ""),
+                        ),
+                        const SizedBox(height: 10),
+                        UntisTextFormField(
+                          labelText: AppLocalizations.of(context)!
+                              .settingsUntisLoginSchool,
+                          hintText: AppLocalizations.of(context)!
+                              .settingsUntisLoginSchoolHint,
+                          initValue: Preferences.getUntisSchool(),
+                          onChanged: (s) =>
+                              Preferences.saveUntisSchool(s ?? ""),
+                        ),
+                        const SizedBox(height: 10),
+                        UntisTextFormField(
+                          labelText: AppLocalizations.of(context)!
+                              .settingsUntisLoginUsername,
+                          hintText: AppLocalizations.of(context)!
+                              .settingsUntisLoginUsernameHint,
+                          initValue: Preferences.getUntisUsername(),
+                          onChanged: (s) =>
+                              Preferences.saveUntisUsername(s ?? ""),
+                        ),
+                        const SizedBox(height: 10),
+                        UntisTextFormField(
+                          passwordStyle: true,
+                          labelText: AppLocalizations.of(context)!
+                              .settingsUntisLoginPassword,
+                          hintText: AppLocalizations.of(context)!
+                              .settingsUntisLoginPasswordHint,
+                          initValue: Preferences.getUntisPassword(),
+                          onChanged: (s) =>
+                              Preferences.saveUntisPassword(s ?? ""),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-              SettingsTile(
-                title: Text(
-                  AppLocalizations.of(context)!.settingsUntisImportTitle,
-                ),
-                leading: const Icon(Icons.cloud_download_rounded),
-                description: Text(
-                  AppLocalizations.of(context)!.settingsUntisImportDescription,
-                ),
-                onPressed: (context) async {
-                  final FToast fToast = FToast();
-                  fToast.init(context);
-                  final String failure =
-                      AppLocalizations.of(context)!.settingsUntisImportFailure;
-                  final String success =
-                      AppLocalizations.of(context)!.settingsUntisImportSuccess;
+              CustomSettingsTile(
+                child: MySettingsTile(
+                  title: Text(
+                    AppLocalizations.of(context)!.settingsUntisImportTitle,
+                  ),
+                  leading: const Icon(Icons.cloud_download_rounded),
+                  description: Text(
+                    AppLocalizations.of(context)!
+                        .settingsUntisImportDescription,
+                  ),
+                  onPressed: (context) async {
+                    final FToast fToast = FToast();
+                    fToast.init(context);
+                    final String failure = AppLocalizations.of(context)!
+                        .settingsUntisImportFailure;
+                    final String success = AppLocalizations.of(context)!
+                        .settingsUntisImportSuccess;
 
-                  final List<UntisSubject> subjects =
-                      await UntisHelper().getCurrentUntisSubjects();
-                  if (subjects.isEmpty) {
+                    final List<UntisSubject> subjects =
+                        await UntisHelper().getCurrentUntisSubjects();
+                    if (subjects.isEmpty) {
+                      final Widget toast = Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 12.0,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25.0),
+                          color: Colors.redAccent.withOpacity(0.8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.sms_failed_rounded),
+                            const SizedBox(width: 12.0),
+                            Text(failure),
+                          ],
+                        ),
+                      );
+                      fToast.showToast(child: toast);
+                      return;
+                    }
+                    for (final UntisSubject subject in subjects) {
+                      DBHelper().insertSubject(
+                        Subject(
+                          name: subject.longName,
+                          shortName: subject.name,
+                        ),
+                      );
+                    }
                     final Widget toast = Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24.0,
@@ -151,48 +193,20 @@ class SettingsRoute extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(25.0),
-                        color: Colors.redAccent.withOpacity(0.8),
+                        color: Colors.greenAccent.withOpacity(0.8),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.sms_failed_rounded),
+                          const Icon(Icons.check),
                           const SizedBox(width: 12.0),
-                          Text(failure),
+                          Text(success),
                         ],
                       ),
                     );
                     fToast.showToast(child: toast);
-                    return;
-                  }
-                  for (final UntisSubject subject in subjects) {
-                    DBHelper().insertSubject(
-                      Subject(
-                        name: subject.longName,
-                        shortName: subject.name,
-                      ),
-                    );
-                  }
-                  final Widget toast = Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0,
-                      vertical: 12.0,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25.0),
-                      color: Colors.greenAccent.withOpacity(0.8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.check),
-                        const SizedBox(width: 12.0),
-                        Text(success),
-                      ],
-                    ),
-                  );
-                  fToast.showToast(child: toast);
-                },
+                  },
+                ),
               ),
             ],
           ),
