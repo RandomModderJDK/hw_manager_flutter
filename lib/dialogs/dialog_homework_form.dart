@@ -1,4 +1,4 @@
-import 'package:dart_webuntis/untis.dart' as untis;
+import 'package:dart_untis_mobile/dart_untis_mobile.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +85,8 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
           onPressed: () {
             if (_subjectController.text.isEmpty) {
               setState(
-                () => subjectErrorText = AppLocalizations.of(context)!.dialogHWSubjectValidator,
+                () => subjectErrorText =
+                    AppLocalizations.of(context)!.dialogHWSubjectValidator,
               );
             }
             if (!formKey.currentState!.validate()) return;
@@ -113,18 +114,20 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
             print("object: $s");
           }
           if (s == null) return;
-          final untis.Subject? subject = await UntisHelper().searchSubject(s.name, s.shortName);
+          final UntisSubject? subject =
+              await UntisHelper().searchUntisSubject(s.name, s.shortName);
           if (kDebugMode) {
             print("object: $subject");
           }
           if (subject == null) return;
-          final untis.Period? period = await UntisHelper().searchSubjectPeriod(subject);
+          final UntisPeriod? period =
+              await UntisHelper().searchUntisSubjectUntisPeriod(subject);
           if (kDebugMode) {
             print("object: $period");
           }
           if (period == null) return;
           setState(() {
-            _dateSelected = period.startTime;
+            _dateSelected = period.startDateTime;
           });
         },
       ),
@@ -184,10 +187,14 @@ class HomeworkFormContent extends StatelessWidget {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        border: MaterialStateOutlineInputBorder.resolveWith((_) {
+                        border:
+                            MaterialStateOutlineInputBorder.resolveWith((_) {
                           final Color color = isError
                               ? Color.alphaBlend(
-                                  Theme.of(context).colorScheme.primary.withAlpha(125),
+                                  Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withAlpha(125),
                                   Theme.of(context).colorScheme.inversePrimary,
                                 )
                               : Theme.of(context).colorScheme.primary;
@@ -241,7 +248,8 @@ class HomeworkFormContent extends StatelessWidget {
             controller: contentController,
             labelText: AppLocalizations.of(context)!.dialogHWContent,
             hintText: AppLocalizations.of(context)!.dialogHWContentHint,
-            validatorMessage: AppLocalizations.of(context)!.dialogHWContentValidator,
+            validatorMessage:
+                AppLocalizations.of(context)!.dialogHWContentValidator,
             maxLines: 5,
           ),
         ],
@@ -284,7 +292,8 @@ class HWTextFormField extends StatelessWidget {
           color: Theme.of(context).colorScheme.primary,
         ),
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        border: MaterialStateOutlineInputBorder.resolveWith((Set<MaterialState> states) {
+        border: MaterialStateOutlineInputBorder.resolveWith(
+            (Set<MaterialState> states) {
           final Color color = states.contains(MaterialState.error)
               ? Color.alphaBlend(
                   Theme.of(context).colorScheme.primary.withAlpha(125),

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dart_webuntis/untis.dart';
+import 'package:dart_untis_mobile/dart_untis_mobile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
 
@@ -13,9 +13,14 @@ class UntisHelper {
 
   UntisHelper._();
 
-  Session? session;
+  UntisSession? session;
 
-  Future<bool> login(String? server, String? school, String? username, String? password) async {
+  Future<bool> login(
+    String? server,
+    String? school,
+    String? username,
+    String? password,
+  ) async {
     if (server == null) return false;
     if (school == null) return false;
     if (username == null) return false;
@@ -24,13 +29,12 @@ class UntisHelper {
       print("$server $school $username $password");
     }
     try {
-      session = await Session.init(server, school, username, password);
+      session = await UntisSession.init(server, school, username, password);
     } on HttpException {
       return false;
     }
     if (session == null) return false;
-    final IdProvider? myID = session!.userId;
-    return myID != null;
+    return true;
   }
 
   Future<bool> loginWithPreferences() async {
@@ -41,69 +45,81 @@ class UntisHelper {
     return UntisHelper().login(server, school, username, password);
   }
 
-  Future<List<Subject>> getSubjects() async {
+  Future<List<UntisSubject>> getUntisSubjects() async {
     if (session == null) {
       final bool success = await loginWithPreferences();
       if (!success) return [];
     }
-    return session!.getSubjects();
+    return session!.subjects;
   }
 
-  Future<List<Subject>> getCurrentSubjects() async {
-    if (session == null) {
-      final bool success = await loginWithPreferences();
-      if (!success) return [];
-    }
-    final List<Subject> subjects = await session!.getSubjects();
-    final List<Period> periods =
-        await session!.getTimetable(session!.userId!, endDate: DateTime.now().add(const Duration(days: 128)));
-    final Iterable<IdProvider> subjectIds = periods.expand((e) => e.subjectIds);
-    return subjects.where((element) => subjectIds.contains(element.id)).toList();
-  }
+  Future<List<UntisSubject>> getCurrentUntisSubjects() =>
+      session!.getCurrentSubjects();
 
-  Future<Subject?> searchSubject(String longName, [String? shortName]) async {
+  Future<UntisSubject?> searchUntisSubject(
+    String longName, [
+    String? shortName,
+  ]) async {
     if (session == null) {
       final bool success = await loginWithPreferences();
       if (!success) return null;
     }
     if (shortName != null) {
-      return (await session!.getSubjects())
-          .where((element) => element.name.toLowerCase().trim().startsWith(shortName.toLowerCase().trim()))
+      return (await session!.subjects)
+          .where(
+            (element) => element.name
+                .toLowerCase()
+                .trim()
+                .startsWith(shortName.toLowerCase().trim()),
+          )
           .firstOrNull;
     }
-    return (await session!.getSubjects())
-        .where((element) => element.longName.toLowerCase().trim().contains(longName.toLowerCase().trim()))
+    return (await session!.subjects)
+        .where(
+          (element) => element.longName
+              .toLowerCase()
+              .trim()
+              .contains(longName.toLowerCase().trim()),
+        )
         .firstOrNull;
   }
 
-  Future<Period?> searchSubjectPeriod(Subject subject, {int maxSteps = 8, int searchIntervalsInDays = 8}) async =>
-      (await searchSubjectPeriods(subject)).firstOrNull;
+  Future<UntisPeriod?> searchUntisSubjectUntisPeriod(
+    UntisSubject subject, {
+    int maxSteps = 8,
+    int searchIntervalsInDays = 8,
+  }) async =>
+      (await searchUntisSubjectUntisPeriods(subject)).firstOrNull;
 
-  Future<List<Period>> searchSubjectPeriods(
-    Subject subject, {
+  Future<List<UntisPeriod>> searchUntisSubjectUntisPeriods(
+    UntisSubject subject, {
     bool cancelled = false,
     int maxAmount = 1,
     int maxSteps = 8,
     int searchIntervalsInDays = 8,
   }) async {
-    final List<Period> foundPeriods = [];
-    for (int i = 0; i < maxSteps && foundPeriods.length < maxAmount; i++) {
+    final List<UntisPeriod> foundUntisPeriods = [];
+    for (int i = 0; i < maxSteps && foundUntisPeriods.length < maxAmount; i++) {
       if (kDebugMode) {
         print("Step $i");
       }
-      Iterable<Period> timetable = await session!.getTimetable(
-        session!.userId!,
+      Iterable<UntisPeriod> timetable = (await session!.getTimetable(
+        id: (await session!.studentData).id,
         startDate: i == 0
             ? DateTime.now().add(const Duration(days: 1))
             : DateTime.now().add(Duration(days: searchIntervalsInDays * i)),
-        endDate: DateTime.now().add(Duration(days: searchIntervalsInDays * (i + 1))),
-      );
-      timetable = timetable.where((element) => element.subjectIds.isNotEmpty);
+        endDate:
+            DateTime.now().add(Duration(days: searchIntervalsInDays * (i + 1))),
+      ))
+          .periods;
+      timetable = timetable.where((element) => element.subjects.isNotEmpty);
       if (cancelled == false) {
         timetable = timetable.where((element) => element.isCancelled == false);
       }
-      foundPeriods.addAll(timetable.where((element) => element.subjectIds.contains(subject.id)));
+      foundUntisPeriods.addAll(
+        timetable.where((element) => element.subjects.contains(subject)),
+      );
     }
-    return foundPeriods;
+    return foundUntisPeriods;
   }
 }

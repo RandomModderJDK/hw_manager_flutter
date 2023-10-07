@@ -52,10 +52,7 @@ dependencies:
   photo_view: ^0.14.0
   image_picker: ^1.0.4
 
-  dart_webuntis:
-    git:
-      url: https://github.com/IsAvaible/dart-webuntis.git
-      ref: main
+  dart_untis_mobile: ^1.0.1
   flutter_secure_storage: ^9.0.0
   fluttertoast: ^8.2.2
 
