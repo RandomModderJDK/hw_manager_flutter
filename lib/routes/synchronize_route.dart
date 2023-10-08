@@ -54,7 +54,9 @@ class _SynchronizeRouteState extends State<SynchronizeRoute> {
                     SnackBar(
                       content: Text(
                         AppLocalizations.of(context)!.deleteSubjectToast(
-                            subject.name, subject.shortName ?? "-"),
+                          subject.name,
+                          subject.shortName ?? "-",
+                        ),
                       ),
                       action: SnackBarAction(
                         label: AppLocalizations.of(context)!
