@@ -29,6 +29,7 @@
   "untisLoginSuccess": "Anmeldung erfolgreich",
   "settingsDiscordRelationsTitle": "Discord-Verbindungen verwalten",
   "settingsDiscordRelationsDescription": "Entferne, ergänze oder editiere die Verbindungen zwischen dem Discord-Kanalnamen und dem zugehörigem Webhook",
+  "settingsDiscordRelationsBotToken": "Bot Token zum Abrufen von Nachrichten",
   "discordRelationsTitle": "Discord-Verbindungen",
   "deleteDiscordRelationToast": "{longName} ({shortName}) entfernt",
   "deleteDiscordRelationToastUndo": "Rückgängig",

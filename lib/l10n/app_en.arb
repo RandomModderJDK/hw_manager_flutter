@@ -129,6 +129,10 @@
   "@settingsDiscordRelationsDescription": {
     "description": "Description for discord relations management route"
   },
+  "settingsDiscordRelationsBotToken": "Bot Token for message fetching",
+  "@settingsDiscordRelationsBotToken": {
+    "description": "The label for the bot token text box"
+  },
   "discordRelationsTitle": "Discord relations",
   "@discordRelationsTitle": {
     "description": "Shows title text of the discord relations route"

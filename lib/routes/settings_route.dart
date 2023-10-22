@@ -74,28 +74,28 @@ class SettingsRoute extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 10),
-                      UntisTextFormField(
+                      SettingsTextFormField(
                         labelText: context.locals.settingsUntisLoginServer,
                         hintText: context.locals.settingsUntisLoginServerHint,
                         initValue: Preferences.getUntisServer(),
                         onChanged: (s) => Preferences.saveUntisServer(s ?? ""),
                       ),
                       const SizedBox(height: 10),
-                      UntisTextFormField(
+                      SettingsTextFormField(
                         labelText: context.locals.settingsUntisLoginSchool,
                         hintText: context.locals.settingsUntisLoginSchoolHint,
                         initValue: Preferences.getUntisSchool(),
                         onChanged: (s) => Preferences.saveUntisSchool(s ?? ""),
                       ),
                       const SizedBox(height: 10),
-                      UntisTextFormField(
+                      SettingsTextFormField(
                         labelText: context.locals.settingsUntisLoginUsername,
                         hintText: context.locals.settingsUntisLoginUsernameHint,
                         initValue: Preferences.getUntisUsername(),
                         onChanged: (s) => Preferences.saveUntisUsername(s ?? ""),
                       ),
                       const SizedBox(height: 10),
-                      UntisTextFormField(
+                      SettingsTextFormField(
                         passwordStyle: true,
                         labelText: context.locals.settingsUntisLoginPassword,
                         hintText: context.locals.settingsUntisLoginPasswordHint,
@@ -151,6 +151,15 @@ class SettingsRoute extends StatelessWidget {
                   ),
                 ),
               ),
+              HWMSettingsTile(
+                title: SettingsTextFormField(
+                  labelText: context.locals.settingsDiscordRelationsBotToken,
+                  hintText: "OPdhu29hawopuhnUOUWE9awofhou.awdawdh34WDGGHH-Wawdsghj",
+                  initValue: Preferences.getDiscordToken(),
+                  onChanged: (s) => Preferences.saveDiscordToken(s ?? ""),
+                ),
+                leading: const Icon(Icons.login_rounded),
+              ),
             ],
           ),
         ],
@@ -159,7 +168,7 @@ class SettingsRoute extends StatelessWidget {
   }
 }
 
-class UntisTextFormField extends StatefulWidget {
+class SettingsTextFormField extends StatefulWidget {
   final TextEditingController? controller;
   final void Function(String?)? onChanged;
 
@@ -171,7 +180,7 @@ class UntisTextFormField extends StatefulWidget {
 
   final bool passwordStyle;
 
-  const UntisTextFormField({
+  const SettingsTextFormField({
     super.key,
     this.maxLines = 1,
     this.controller,
@@ -184,10 +193,10 @@ class UntisTextFormField extends StatefulWidget {
   });
 
   @override
-  State<UntisTextFormField> createState() => _UntisTextFormFieldState();
+  State<SettingsTextFormField> createState() => _SettingsTextFormFieldState();
 }
 
-class _UntisTextFormFieldState extends State<UntisTextFormField> {
+class _SettingsTextFormFieldState extends State<SettingsTextFormField> {
   TextEditingController? _controller;
 
   @override

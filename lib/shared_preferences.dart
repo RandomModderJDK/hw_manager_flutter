@@ -10,6 +10,8 @@ mixin Preferences {
   static const untisUsername = "UNTIS.USERNAME";
   static const untisPassword = "UNTIS.PASSWORD";
 
+  static const discordBotToken = "DISCORD.TOKEN";
+
   static AndroidOptions _getAndroidOptions() => const AndroidOptions(encryptedSharedPreferences: true);
   static final FlutterSecureStorage _storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
 
@@ -28,6 +30,10 @@ mixin Preferences {
   static Future<String?> getUntisUsername() => _storage.read(key: untisUsername);
 
   static Future<String?> getUntisPassword() => _storage.read(key: untisPassword);
+
+  static Future<void> saveDiscordToken(String token) => _storage.write(key: discordBotToken, value: token);
+
+  static Future<String> getDiscordToken() async => await _storage.read(key: discordBotToken) ?? "";
 
   /// 0 - Automatic (System)
   /// 1 - Light

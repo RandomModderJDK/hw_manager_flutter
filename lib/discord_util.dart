@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:hw_manager_flutter/shared_preferences.dart';
 import 'package:nyxx/nyxx.dart';
 
 class DiscordHelper {
@@ -10,14 +11,12 @@ class DiscordHelper {
 
   DiscordHelper._();
 
-  static const String _token = "YOUROWN";
-
   NyxxGateway? client;
 
   Future<bool> login() async {
     try {
       client = await Nyxx.connectGateway(
-        _token,
+        await Preferences.getDiscordToken(),
         GatewayIntents.allUnprivileged | GatewayIntents.guildMessages,
         options: GatewayClientOptions(plugins: [logging, cliIntegration]),
       );
