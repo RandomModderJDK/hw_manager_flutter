@@ -169,6 +169,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.5"
+  eterl:
+    dependency: transitive
+    description:
+      name: eterl
+      sha256: "8669e5e766e6a1cb5593a0bee6ede7085c1a103056f1ea55cc227ee1ff32f6f7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   expandable_widgets:
     dependency: "direct main"
     description:
@@ -525,6 +533,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
+  nyxx:
+    dependency: "direct main"
+    description:
+      name: nyxx
+      sha256: c11ac9c36618a5096a9bd35da3aeb7eb4a5a214d88e92e9bd1015293ce1187d8
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.0-dev.3"
+  oauth2:
+    dependency: transitive
+    description:
+      name: oauth2
+      sha256: c4013ef62be37744efdc0861878fd9e9285f34db1f9e331cc34100d7674feb42
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.2"
   package_config:
     dependency: transitive
     description:
@@ -653,6 +677,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  retry:
+    dependency: transitive
+    description:
+      name: retry
+      sha256: "822e118d5b3aafed083109c72d5f484c6dc66707885e07c0fbcb8b986bba7efc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.2"
+  runtime_type:
+    dependency: transitive
+    description:
+      name: runtime_type
+      sha256: "3dcaf80cc98447a7b7b04e1f125fff805af796e7c5fc9d8d956933573d3a7eb1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   settings_ui:
     dependency: "direct main"
     description:

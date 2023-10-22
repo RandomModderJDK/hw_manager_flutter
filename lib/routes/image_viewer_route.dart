@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/dialogs/dialog_delete_form.dart';
 import 'package:hw_manager_flutter/dialogs/dialog_homework_form.dart';
+import 'package:hw_manager_flutter/general_util.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 
 class ImageViewerRoute extends StatefulWidget {
@@ -85,7 +85,7 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
     return Column(
       children: [
         const SizedBox(height: 3),
-        Center(child: Text(AppLocalizations.of(context)!.pageDisplay(page + 1, pages))),
+        Center(child: Text(context.locals.pageDisplay(page + 1, pages))),
         Expanded(
           child: InteractiveViewer(
             transformationController: _controller,
@@ -116,36 +116,36 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
     }
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: context.inversePrimaryColor,
         actions: [
           IconButton(
             onPressed: () => showDialog<int>(
               context: context,
               builder: (context) => DeleteFormDialog(widget.homework),
             ).then(_removePage),
-            tooltip: AppLocalizations.of(context)!.deletePagesTitle,
+            tooltip: context.locals.deletePagesTitle,
             icon: const Icon(Icons.delete_rounded),
           ),
           IconButton(
             onPressed: () => pickAndAddImage(context, widget.homework).then(_addPage),
-            tooltip: AppLocalizations.of(context)!.takePhoto,
+            tooltip: context.locals.takePhoto,
             icon: const Icon(Icons.add_a_photo_rounded),
           ),
           IconButton(
             icon: const Icon(Icons.reorder_rounded),
-            tooltip: AppLocalizations.of(context)!.dialogHWEditTitle,
+            tooltip: context.locals.dialogHWEditTitle,
             onPressed: () => showDialog(
               context: context,
               builder: (context) => HomeworkFormDialog(
                 homework: widget.homework,
-                title: AppLocalizations.of(context)!.dialogHWEditTitle,
-                submit: AppLocalizations.of(context)!.dialogHWEdit,
-                cancel: AppLocalizations.of(context)!.dialogHWEditCancel,
+                title: context.locals.dialogHWEditTitle,
+                submit: context.locals.dialogHWEdit,
+                cancel: context.locals.dialogHWEditCancel,
               ),
             ),
           ),
         ],
-        title: Text(AppLocalizations.of(context)!.imageViewer),
+        title: Text(context.locals.imageViewer),
       ),
       body: photoViewer(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -155,14 +155,14 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
           if (isFirstPage)
             FloatingActionButton(
               onPressed: _previousPage,
-              tooltip: AppLocalizations.of(context)!.previousPage,
+              tooltip: context.locals.previousPage,
               child: const Icon(Icons.navigate_before_rounded),
             ),
           if (isFirstPage || isLastPage) const SizedBox(width: 3),
           if (isLastPage)
             FloatingActionButton(
               onPressed: _nextPage,
-              tooltip: AppLocalizations.of(context)!.nextPage,
+              tooltip: context.locals.nextPage,
               child: const Icon(Icons.navigate_next_rounded),
             ),
         ],

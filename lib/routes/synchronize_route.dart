@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/dialogs/dialog_subject_form.dart';
+import 'package:hw_manager_flutter/general_util.dart';
 import 'package:hw_manager_flutter/list_tiles.dart';
 import 'package:hw_manager_flutter/my_listview.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
@@ -38,9 +38,9 @@ class _SynchronizeRouteState extends State<SynchronizeRoute> {
                 context: context,
                 builder: (context) => SubjectFormDialog(
                   subject: snapshot.data![position],
-                  title: AppLocalizations.of(context)!.dialogSubjectEditTitle,
-                  submit: AppLocalizations.of(context)!.dialogSubjectEdit,
-                  cancel: AppLocalizations.of(context)!.dialogSubjectEditCancel,
+                  title: context.locals.dialogSubjectEditTitle,
+                  submit: context.locals.dialogSubjectEdit,
+                  cancel: context.locals.dialogSubjectEditCancel,
                 ),
               ).then((bool? v) {
                 if (v == true) setState(() {});
@@ -53,17 +53,14 @@ class _SynchronizeRouteState extends State<SynchronizeRoute> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        AppLocalizations.of(context)!.deleteSubjectToast(
+                        context.locals.deleteSubjectToast(
                           subject.name,
                           subject.shortName ?? "-",
                         ),
                       ),
                       action: SnackBarAction(
-                        label: AppLocalizations.of(context)!
-                            .deleteSubjectToastUndo,
-                        onPressed: () => DBHelper()
-                            .insertSubject(subject)
-                            .then((value) => setState(() {})),
+                        label: context.locals.deleteSubjectToastUndo,
+                        onPressed: () => DBHelper().insertSubject(subject).then((value) => setState(() {})),
                       ),
                     ),
                   );
@@ -91,21 +88,21 @@ class _SynchronizeRouteState extends State<SynchronizeRoute> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(AppLocalizations.of(context)!.subjectsTitle),
+        title: Text(context.locals.subjectsTitle),
       ),
       body: subjectList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () async => showDialog<bool>(
           context: context,
           builder: (context) => SubjectFormDialog(
-            title: AppLocalizations.of(context)!.dialogSubjectAddTitle,
-            submit: AppLocalizations.of(context)!.dialogSubjectAdd,
-            cancel: AppLocalizations.of(context)!.dialogSubjectAddCancel,
+            title: context.locals.dialogSubjectAddTitle,
+            submit: context.locals.dialogSubjectAdd,
+            cancel: context.locals.dialogSubjectAddCancel,
           ),
         ).then((bool? v) {
           if (v == true) setState(() {});
         }),
-        tooltip: AppLocalizations.of(context)!.dialogSubjectAddTitle,
+        tooltip: context.locals.dialogSubjectAddTitle,
         child: const Icon(Icons.add),
       ),
     );

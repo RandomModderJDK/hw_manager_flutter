@@ -31,10 +31,10 @@ class UntisHelper {
     try {
       session = await UntisSession.init(server, school, username, password);
     } on HttpException {
+      session = null;
       return false;
     }
-    if (session == null) return false;
-    return true;
+    return session?.isLoggedIn == true;
   }
 
   Future<bool> loginWithPreferences() async {
@@ -48,13 +48,21 @@ class UntisHelper {
   Future<List<UntisSubject>> getUntisSubjects() async {
     if (session == null) {
       final bool success = await loginWithPreferences();
-      if (!success) return [];
+      if (!success) {
+        session = null;
+        return [];
+      }
     }
     return session!.subjects;
   }
 
-  Future<List<UntisSubject>> getCurrentUntisSubjects() =>
-      session!.getCurrentSubjects();
+  Future<List<UntisSubject>> getCurrentUntisSubjects() async {
+    if (session == null) {
+      final bool success = await loginWithPreferences();
+      if (!success) return [];
+    }
+    return session!.getCurrentSubjects();
+  }
 
   Future<UntisSubject?> searchUntisSubject(
     String longName, [
@@ -67,19 +75,13 @@ class UntisHelper {
     if (shortName != null) {
       return (await session!.subjects)
           .where(
-            (element) => element.name
-                .toLowerCase()
-                .trim()
-                .startsWith(shortName.toLowerCase().trim()),
+            (element) => element.name.toLowerCase().trim().startsWith(shortName.toLowerCase().trim()),
           )
           .firstOrNull;
     }
     return (await session!.subjects)
         .where(
-          (element) => element.longName
-              .toLowerCase()
-              .trim()
-              .contains(longName.toLowerCase().trim()),
+          (element) => element.longName.toLowerCase().trim().contains(longName.toLowerCase().trim()),
         )
         .firstOrNull;
   }
@@ -108,8 +110,7 @@ class UntisHelper {
         startDate: i == 0
             ? DateTime.now().add(const Duration(days: 1))
             : DateTime.now().add(Duration(days: searchIntervalsInDays * i)),
-        endDate:
-            DateTime.now().add(Duration(days: searchIntervalsInDays * (i + 1))),
+        endDate: DateTime.now().add(Duration(days: searchIntervalsInDays * (i + 1))),
       ))
           .periods;
       timetable = timetable.where((element) => element.subjects.isNotEmpty);

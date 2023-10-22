@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hw_manager_flutter/general_util.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -53,7 +53,7 @@ Future<ImageSource?> _openChooseSourceBar(BuildContext context) async {
                     child: Align(
                       child: Text(
                         style: const TextStyle(fontSize: 25.0),
-                        AppLocalizations.of(context)!.photoOptionCamera,
+                        context.locals.photoOptionCamera,
                       ),
                     ),
                   ),
@@ -74,7 +74,7 @@ Future<ImageSource?> _openChooseSourceBar(BuildContext context) async {
                     child: Align(
                       child: Text(
                         style: const TextStyle(fontSize: 25.0),
-                        AppLocalizations.of(context)!.photoOptionGallery,
+                        context.locals.photoOptionGallery,
                       ),
                     ),
                   ),
@@ -112,9 +112,11 @@ class DBHelper {
     // Avoid errors caused by flutter upgrade.
     // Importing 'package:flutter/widgets.dart' is required.
     WidgetsFlutterBinding.ensureInitialized();
-    if (kDebugMode && !kIsWeb) {
-      final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
-      print("Saving/open database to/on ${join(appDocumentsDir.path, "hwm_databases", 'hw_database.db')}");
+    if (!kIsWeb) {
+      if (kDebugMode) {
+        final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
+        print("Saving/open database to/on ${join(appDocumentsDir.path, "hwm_databases", 'hw_database.db')}");
+      }
     }
     // Open the database and store the reference.
     db = await openDatabase(
@@ -125,14 +127,14 @@ class DBHelper {
           ? "hw_database.db"
           : join((await getApplicationDocumentsDirectory()).path, "hwm_databases", 'hw_database.db'),
       onUpgrade: (db, oldVersion, newVersion) async {
-        return db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, '
-            'data BLOB NOT NULL)');
+        await db.execute('CREATE TABLE discordRelations(channel TEXT PRIMARY KEY, webhook TEXT)');
+        await db.execute("ALTER TABLE subjects ADD COLUMN discordChannel TEXT");
+        if (oldVersion == 1) await db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, data BLOB NOT NULL)');
       },
       onCreate: (db, version) async {
-        await db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, '
-            'data BLOB NOT NULL)');
-        await db.execute('CREATE TABLE subjects(name TEXT PRIMARY KEY, '
-            'shortName TEXT)');
+        await db.execute('CREATE TABLE discordRelations(channel TEXT PRIMARY KEY, webhook TEXT)');
+        await db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, data BLOB NOT NULL)');
+        await db.execute('CREATE TABLE subjects(name TEXT PRIMARY KEY, shortName TEXT, discordChannel TEXT)');
         return db.execute("CREATE TABLE homeworks(id INTEGER PRIMARY KEY AUTOINCREMENT, "
             'subject_short TEXT, '
             'subject TEXT NOT NULL, '
@@ -142,7 +144,8 @@ class DBHelper {
             'finished TEXT NOT NULL)');
       },
       // VERSION 2 -- Added imageblobs table
-      version: 2,
+      // VERSION 3 -- Added discord table
+      version: 3,
     );
     return true;
   }
@@ -163,6 +166,27 @@ class DBHelper {
 
   Future<void> deleteSubject(String name) async {
     await db.delete('subjects', where: "name = ?", whereArgs: [name]);
+  }
+
+  /// Inserts or replaces discord relation supplied into database
+  Future<int> insertDiscordRelation(DiscordRelation dr) async {
+    return db.insert('discordRelations', dr.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<DiscordRelation?> getDiscordRelation(String channelName) async {
+    return DiscordRelation.fromMap(
+      (await db.query('discordRelations', where: "channel = ?", whereArgs: [channelName]))[0]
+          .map((k, v) => MapEntry(k, v.toString())),
+    );
+  }
+
+  Future<List<DiscordRelation>> retrieveDiscordRelations() async {
+    final List<Map<String, Object?>> queryResult = await db.query('discordRelations', orderBy: "channel");
+    return queryResult.map((e) => DiscordRelation.fromMap(e.map((k, v) => MapEntry(k, v.toString())))).toList();
+  }
+
+  Future<void> deleteDiscordRelation(String channelName) async {
+    await db.delete('discordRelations', where: "channel = ?", whereArgs: [channelName]);
   }
 
   /// Inserts or updates homework supplied into database
@@ -316,19 +340,42 @@ class Homework {
 class Subject {
   final String name;
   final String? shortName;
+  final String? discordChannel;
 
-  const Subject({required this.name, this.shortName});
+  const Subject({required this.name, this.shortName, this.discordChannel});
 
   /// Convert a Subject into a Map.
   Subject.fromMap(Map<String, Object?> map)
       : name = map["name"].toString(),
-        shortName = map["shortName"].toString();
+        shortName = map["shortName"].toString(),
+        discordChannel = map["discordChannel"].toString();
 
   /// Convert a Subject into a Map.
   Map<String, Object?> toMap() {
     return {
       'name': name,
       'shortName': shortName,
+      'discordChannel': discordChannel,
+    };
+  }
+}
+
+class DiscordRelation {
+  final String channelName;
+  final String? webhookUrl;
+
+  const DiscordRelation({required this.channelName, this.webhookUrl});
+
+  /// Convert a DiscordRelation into a Map.
+  DiscordRelation.fromMap(Map<String, String?> map)
+      : channelName = map["channel"]!,
+        webhookUrl = map["webhook"];
+
+  /// Convert a DiscordRelation into a Map.
+  Map<String, Object?> toMap() {
+    return {
+      'channel': channelName,
+      'webhook': webhookUrl,
     };
   }
 }

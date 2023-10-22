@@ -93,21 +93,63 @@
   "@settingsUntisLoginPasswordHint": {
     "description": "Untis login password hint"
   },
+  "settingsUntisTestLoginTitle": "Test login",
+  "@settingsUntisTestLoginTitle": {
+    "description": "Title for testing the login for Untis"
+  },
+  "settingsUntisTestLoginDescription": "Test, if the credentials are valid and you can log in",
+  "@settingsUntisTestLoginDescription": {
+    "description": "Description for testing the login for Untis"
+  },
   "settingsUntisImportTitle": "Import subjects",
   "@settingsUntisImportTitle": {
-    "description": "Title for fetching and importing subjects from WebUntis"
+    "description": "Title for fetching and importing subjects from Untis"
   },
-  "settingsUntisImportDescription": "Fetch subjects from WebUntis",
+  "settingsUntisImportDescription": "Fetch subjects from Untis",
   "@settingsUntisImportDescription": {
-    "description": "Description for fetching and importing subjects from WebUntis"
-  },
-  "settingsUntisImportFailure": "Failed to log in",
-  "@settingsUntisImportFailure": {
-    "description": "Toast notification, when WebUntis login failed"
+    "description": "Description for fetching and importing subjects from Untis"
   },
   "settingsUntisImportSuccess": "Imported untis subjects",
   "@settingsUntisImportSuccess": {
     "description": "Toast notification, when WebUntis login succeeded"
+  },
+  "untisLoginFailure": "Failed to log in",
+  "@untisLoginFailure": {
+    "description": "Toast notification, when WebUntis login failed"
+  },
+  "untisLoginSuccess": "Login success",
+  "@untisLoginSuccess": {
+    "description": "Toast notification, when WebUntis login succeeded"
+  },
+  "settingsDiscordRelationsTitle": "Discord relation overview",
+  "@settingsDiscordRelationsTitle": {
+    "description": "Title for discord relations management route"
+  },
+  "settingsDiscordRelationsDescription": "Delete, insert or edit the relations between discord channel name and corresponding webhook",
+  "@settingsDiscordRelationsDescription": {
+    "description": "Description for discord relations management route"
+  },
+  "discordRelationsTitle": "Discord relations",
+  "@discordRelationsTitle": {
+    "description": "Shows title text of the discord relations route"
+  },
+  "deleteDiscordRelationToast": "Deleted {longName} ({shortName})",
+  "@deleteDiscordRelationToast": {
+    "description": "Text popping up from bottom when deleting discord relations",
+    "placeholders": {
+      "longName": {
+        "type": "String",
+        "example": "Mathematics"
+      },
+      "shortName": {
+        "type": "String",
+        "example": "Ma"
+      }
+    }
+  },
+  "deleteDiscordRelationToastUndo": "UNDO",
+  "@deleteDiscordRelationToastUndo": {
+    "description": "Button to undo deleting discord relation"
   },
   "datePassed": "Passed already since {date}{hours, plural, =0{} other{ at {time}}}",
   "@datePassed": {
@@ -234,6 +276,50 @@
   "@dateTimeFieldLabel": {
     "description": "Completes to e.g Until the 12. of June"
   },
+  "dialogDiscordRelationAddTitle": "Add discord relation",
+  "@dialogDiscordRelationAddTitle": {
+    "description": "Title/tooltip of add relation dialog"
+  },
+  "dialogDiscordRelationAdd": "Add",
+  "@dialogDiscordRelationAdd": {
+    "description": "Submit button of add relation dialog"
+  },
+  "dialogDiscordRelationAddCancel": "Cancel",
+  "@dialogDiscordRelationAddCancel": {
+    "description": "Cancel button of add relation dialog"
+  },
+  "dialogDiscordRelationEditTitle": "Edit relation",
+  "@dialogDiscordRelationEditTitle": {
+    "description": "Title/tooltip of edit relation dialog"
+  },
+  "dialogDiscordRelationEdit": "Edit",
+  "@dialogDiscordRelationEdit": {
+    "description": "Submit button of edit relation dialog"
+  },
+  "dialogDiscordRelationEditCancel": "Cancel",
+  "@dialogDiscordRelationEditCancel": {
+    "description": "Cancel button of edit relation dialog"
+  },
+  "dialogDiscordRelationChannelName": "Channel name",
+  "@dialogDiscordRelationChannelName": {
+    "description": "The label of the subject's full name entered"
+  },
+  "dialogDiscordRelationChannelNameHint": "Klasse12.3",
+  "@dialogDiscordRelationChannelNameHint": {
+    "description": "A hint what you can write into relation's channel field"
+  },
+  "dialogDiscordRelationChannelNameValidator": "Enter a valid channel name!",
+  "@dialogDiscordRelationChannelNameValidator": {
+    "description": "The text appearing when nothing is entered in relation edit/add dialog"
+  },
+  "dialogDiscordRelationUrl": "Webhook url",
+  "@dialogDiscordRelationUrl": {
+    "description": "The url of the relation's webhook"
+  },
+  "dialogDiscordRelationUrlHint": "https://discord.com/api/webhooks/8689847212939485983/D0dwgzujWHderrIjdIIPOikjdkwwO038jqQIa0dijdWdwDwgfGHxVS0PIUghU0i0auwJ",
+  "@dialogDiscordRelationUrlHint": {
+    "description": "A hint what url type this is"
+  },
   "dialogSubjectAddTitle": "Add subject",
   "@dialogSubjectAddTitle": {
     "description": "Title/tooltip of add subject dialog"
@@ -266,7 +352,7 @@
   "@dialogSubjectFullNameHint": {
     "description": "A hint what you can write into subject's full name field"
   },
-  "dialogSubjectFullNameValidator": "Enter subject name!",
+  "dialogSubjectFullNameValidator": "Enter a valid subject name!",
   "@dialogSubjectValidator": {
     "description": "The text appearing when nothing is entered in subject edit/add dialog"
   },
@@ -277,6 +363,14 @@
   "dialogSubjectShortNameHint": "Ma (useful for untis)",
   "@dialogSubjectShortNameHint": {
     "description": "A hint what you can write into subject's short name field"
+  },
+  "dialogSubjectChannelName": "Channel name",
+  "@dialogSubjectChannelName": {
+    "description": "The label of the subject's channel name"
+  },
+  "dialogSubjectChannelNameHint": "Klasse12.3",
+  "@dialogSubjectChannelNameHint": {
+    "description": "A hint what you can write into subjects' channel field"
   },
   "dialogHWSubject": "Subject",
   "@dialogHWSubject": {

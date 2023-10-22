@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hw_manager_flutter/general_util.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 
 class DeleteFormDialog extends StatefulWidget {
@@ -37,7 +37,7 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: context.backgroundColor,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -60,7 +60,7 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
                             // Set nameRoute to false to avoid title being announce twice.
                             namesRoute: true,
                             container: true,
-                            child: Text(AppLocalizations.of(context)!.deletePagesTitle),
+                            child: Text(context.locals.deletePagesTitle),
                           ),
                         ),
                       ),
@@ -75,7 +75,7 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
                         shrinkWrap: true,
                         itemCount: pages,
                         itemBuilder: (BuildContext context, int index) => CheckboxListTile(
-                          title: Text(AppLocalizations.of(context)!.deletePagesEntry(index + 1)),
+                          title: Text(context.locals.deletePagesEntry(index + 1)),
                           value: _tempSelectedPages.contains(index),
                           onChanged: (bool? value) {
                             if (value ?? true) {
@@ -103,14 +103,12 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
               overflowAlignment: OverflowBarAlignment.end,
               children: <Widget>[
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade900),
                   onPressed: () => Navigator.pop(context, pages),
-                  child: Text(AppLocalizations.of(context)!.deletePagesCancel),
+                  child: Text(context.locals.deletePagesCancel),
                 ),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade900),
                   onPressed: () => _deletePages(context),
-                  child: Text(AppLocalizations.of(context)!.deletePagesTitle),
+                  child: Text(context.locals.deletePagesTitle),
                 ),
               ],
             ),

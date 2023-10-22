@@ -35,32 +35,36 @@ dependencies:
     sdk: flutter
   intl: ^0.18.1
 
-  # Preferences
-  settings_ui: ^2.0.2
-  shared_preferences: ^2.2.0
-
   # SQlite database
+  path: ^1.8.3
+  path_provider: ^2.1.1
   sqflite_common_ffi: ^2.3.0
   sqflite_common_ffi_web: ^0.4.0
   sqlite3_flutter_libs: ^0.5.15
-  path_provider: ^2.1.1
-  path: ^1.8.3
+
+  # Preferences
+  settings_ui: ^2.0.2
+  shared_preferences: ^2.2.0
 
   # General UI components
   date_field: ^3.0.5
   expandable_widgets: ^1.0.3+1
   photo_view: ^0.14.0
   image_picker: ^1.0.4
-
-  dart_untis_mobile: ^1.0.1
-  flutter_secure_storage: ^9.0.0
   fluttertoast: ^8.2.2
 
+  # Untis Integration
+  dart_untis_mobile: ^1.0.1
+  flutter_secure_storage: ^9.0.0
+
+  # Discord Integration
+  nyxx: ^6.0.0-dev.3
+
 dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
   flutter_test:
     sdk: flutter
 
-  flutter_launcher_icons: ^0.13.1
   lint: ^2.0.0
 
 flutter_launcher_icons:

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hw_manager_flutter/general_util.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 
 class SubjectFormDialog extends StatefulWidget {
@@ -23,6 +23,7 @@ class SubjectFormDialog extends StatefulWidget {
 class _SubjectFormDialogState extends State<SubjectFormDialog> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _shortNameController = TextEditingController();
+  final TextEditingController _dChannelController = TextEditingController();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -36,17 +37,19 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
     if (widget.subject == null) return;
     _nameController.text = widget.subject!.name;
     _shortNameController.text = widget.subject!.shortName ?? "";
+    _dChannelController.text = widget.subject!.discordChannel ?? "";
   }
 
   Future<void> _saveSubject(BuildContext context) async {
     final String name = _nameController.text.trim();
     final String shortName = _shortNameController.text.trim();
+    final String dChannel = _dChannelController.text.trim();
 
-    final Subject subject = Subject(name: name, shortName: shortName);
+    final Subject subject = Subject(name: name, shortName: shortName, discordChannel: dChannel);
 
     final DBHelper dbHelper = DBHelper();
     if (widget.subject != null) {
-      dbHelper.deleteSubject(name); // If this is in editing mode, delete subject beforehand
+      dbHelper.deleteSubject(widget.subject!.name); // If this is in editing mode, delete subject beforehand
     }
     dbHelper.insertSubject(subject).then((value) => Navigator.pop(context, true));
   }
@@ -58,13 +61,8 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
       title: Text(widget.title),
       backgroundColor: Theme.of(context).colorScheme.background,
       actions: [
+        ElevatedButton(onPressed: () => Navigator.of(context).pop(false), child: Text(widget.cancel)),
         ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade900),
-          onPressed: () => Navigator.of(context).pop(false),
-          child: Text(widget.cancel),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade900),
           onPressed: () {
             if (!formKey.currentState!.validate()) return;
             _saveSubject(context);
@@ -76,6 +74,7 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
         formKey: formKey,
         nameController: _nameController,
         shortNameController: _shortNameController,
+        dChannelController: _dChannelController,
       ),
     );
   }
@@ -87,10 +86,12 @@ class SubjectFormContent extends StatelessWidget {
     required this.formKey,
     required this.nameController,
     required this.shortNameController,
+    required this.dChannelController,
   });
 
   final TextEditingController nameController;
   final TextEditingController shortNameController;
+  final TextEditingController dChannelController;
   final GlobalKey<FormState> formKey;
 
   @override
@@ -103,35 +104,26 @@ class SubjectFormContent extends StatelessWidget {
         children: <Widget>[
           TextFormField(
             controller: nameController,
-            validator: (value) => value!.isEmpty ? AppLocalizations.of(context)!.dialogSubjectFullNameValidator : null,
+            validator: (value) => value!.isEmpty ? context.locals.dialogSubjectFullNameValidator : null,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context)!.dialogSubjectFullName,
-              labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              border: MaterialStateOutlineInputBorder.resolveWith((Set<MaterialState> states) {
-                final Color color = states.contains(MaterialState.error)
-                    ? Color.alphaBlend(
-                        Theme.of(context).colorScheme.primary.withAlpha(125),
-                        Theme.of(context).colorScheme.inversePrimary,
-                      )
-                    : Theme.of(context).colorScheme.primary;
-                return OutlineInputBorder(borderSide: BorderSide(color: color));
-              }),
-              hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
-              hintText: AppLocalizations.of(context)!.dialogSubjectFullNameHint,
-              errorStyle: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
-              errorBorder:
-                  OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.inversePrimary)),
+              labelText: context.locals.dialogSubjectFullName,
+              hintText: context.locals.dialogSubjectFullNameHint,
             ),
           ),
           const SizedBox(height: 10),
           TextFormField(
             controller: shortNameController,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context)!.dialogSubjectShortName,
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
-              hintText: AppLocalizations.of(context)!.dialogSubjectShortNameHint,
+              labelText: context.locals.dialogSubjectShortName,
+              hintText: context.locals.dialogSubjectShortNameHint,
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: dChannelController,
+            decoration: InputDecoration(
+              labelText: context.locals.dialogSubjectChannelName,
+              hintText: context.locals.dialogSubjectChannelNameHint,
             ),
           ),
         ],

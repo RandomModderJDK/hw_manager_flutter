@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 
-class MySettingsTile extends StatelessWidget {
-  MySettingsTile({
+class HWMSettingsTile extends AbstractSettingsTile {
+  HWMSettingsTile({
     this.leading,
     required this.title,
     this.description,
@@ -35,9 +35,8 @@ class MySettingsTile extends StatelessWidget {
     final theme = SettingsTheme.of(context);
     final TextScaler scaleFactor = MediaQuery.of(context).textScaler;
 
-    final cantShowAnimation = tileType == SettingsTileType.switchTile
-        ? onToggle == null && onPressed == null
-        : onPressed == null;
+    final cantShowAnimation =
+        tileType == SettingsTileType.switchTile ? onToggle == null && onPressed == null : onPressed == null;
 
     return IgnorePointer(
       ignoring: !enabled,
@@ -61,9 +60,7 @@ class MySettingsTile extends StatelessWidget {
                   padding: const EdgeInsetsDirectional.only(start: 24),
                   child: IconTheme(
                     data: IconTheme.of(context).copyWith(
-                      color: enabled
-                          ? theme.themeData.leadingIconsColor
-                          : theme.themeData.inactiveTitleColor,
+                      color: enabled ? theme.themeData.leadingIconsColor : theme.themeData.inactiveTitleColor,
                     ),
                     child: leading!,
                   ),
@@ -81,9 +78,7 @@ class MySettingsTile extends StatelessWidget {
                     children: [
                       DefaultTextStyle(
                         style: TextStyle(
-                          color: enabled
-                              ? theme.themeData.settingsTileTextColor
-                              : theme.themeData.inactiveTitleColor,
+                          color: enabled ? theme.themeData.settingsTileTextColor : theme.themeData.inactiveTitleColor,
                           fontSize: 18,
                           fontWeight: FontWeight.w400,
                         ),
@@ -133,9 +128,7 @@ class MySettingsTile extends StatelessWidget {
                   child: Switch.adaptive(
                     value: initialValue,
                     onChanged: onToggle,
-                    activeColor: enabled
-                        ? activeSwitchColor
-                        : theme.themeData.inactiveTitleColor,
+                    activeColor: enabled ? activeSwitchColor : theme.themeData.inactiveTitleColor,
                   ),
                 ),
             ],

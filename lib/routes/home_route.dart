@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hw_manager_flutter/dialogs/dialog_homework_form.dart';
+import 'package:hw_manager_flutter/general_util.dart';
 import 'package:hw_manager_flutter/list_tiles.dart';
 import 'package:hw_manager_flutter/my_listview.dart';
 import 'package:hw_manager_flutter/routes/settings_route.dart';
@@ -13,8 +14,7 @@ import 'package:intl/intl.dart';
 class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key});
 
-  static HomeRouteState? of(BuildContext context) =>
-      context.findAncestorStateOfType<HomeRouteState>();
+  static HomeRouteState? of(BuildContext context) => context.findAncestorStateOfType<HomeRouteState>();
 
   @override
   State<HomeRoute> createState() => HomeRouteState();
@@ -36,9 +36,9 @@ class HomeRouteState extends State<HomeRoute> {
                 context: context,
                 builder: (context) => HomeworkFormDialog(
                   homework: snapshot.data![position],
-                  title: AppLocalizations.of(context)!.dialogHWEditTitle,
-                  submit: AppLocalizations.of(context)!.dialogHWEdit,
-                  cancel: AppLocalizations.of(context)!.dialogHWEditCancel,
+                  title: context.locals.dialogHWEditTitle,
+                  submit: context.locals.dialogHWEdit,
+                  cancel: context.locals.dialogHWEditCancel,
                 ),
               ).then((v) {
                 if (v == true) setState(() {});
@@ -52,11 +52,10 @@ class HomeRouteState extends State<HomeRoute> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        AppLocalizations.of(context)!
-                            .deleteHWToast(hw.id!, hw.subject.name),
+                        context.locals.deleteHWToast(hw.id!, hw.subject.name),
                       ),
                       action: SnackBarAction(
-                        label: AppLocalizations.of(context)!.deleteHWToastUndo,
+                        label: context.locals.deleteHWToastUndo,
                         onPressed: () => Future.wait([
                           DBHelper().insertHomework(hw),
                           DBHelper().insertHWPages(pages),
@@ -94,15 +93,18 @@ class HomeRouteState extends State<HomeRoute> {
 
   @override
   Widget build(BuildContext context) {
+    final FToast fToast = FToast();
+    fToast.init(context);
     Intl.defaultLocale = Localizations.localeOf(context).languageCode;
     initializeDateFormatting();
+    initLocals(context); // Init AppLocalizations variable in general_util.dart
     if (kDebugMode) {
       print("REBUILD");
     }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(AppLocalizations.of(context)!.homeTitle),
+        title: Text(context.locals.homeTitle),
         actions: <Widget>[
           /*IconButton(
             icon: const Icon(Icons.cloud_sync_outlined),
@@ -127,14 +129,14 @@ class HomeRouteState extends State<HomeRoute> {
         onPressed: () async => showDialog(
           context: context,
           builder: (context) => HomeworkFormDialog(
-            title: AppLocalizations.of(context)!.dialogHWAddTitle,
-            submit: AppLocalizations.of(context)!.dialogHWAdd,
-            cancel: AppLocalizations.of(context)!.dialogHWAddCancel,
+            title: context.locals.dialogHWAddTitle,
+            submit: context.locals.dialogHWAdd,
+            cancel: context.locals.dialogHWAddCancel,
           ),
         ).then((dynamic v) {
           if (v == true) setState(() {});
         }),
-        tooltip: AppLocalizations.of(context)!.dialogHWAddTitle,
+        tooltip: context.locals.dialogHWAddTitle,
         child: const Icon(Icons.add),
       ),
     );

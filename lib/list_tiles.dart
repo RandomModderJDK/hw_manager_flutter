@@ -1,6 +1,6 @@
 import 'package:expandable_widgets/expandable_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hw_manager_flutter/general_util.dart';
 import 'package:hw_manager_flutter/routes/image_viewer_route.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 
@@ -25,22 +25,24 @@ class HWListItem extends StatelessWidget {
     if (_dateTimeToDate(date).hour == 0) diffWithTime = diff;
 
     if (diffWithTime.isNegative || diffWithTime == Duration.zero) {
-      return AppLocalizations.of(context)!.datePassed(date, date, date.hour);
+      return context.locals.datePassed(date, date, date.hour);
     }
-    if (diff.inDays == 0) {
-      return AppLocalizations.of(context)!.dateToday(date, date.hour);
+    switch (diff.inDays) {
+      case 0:
+        return context.locals.dateToday(date, date.hour);
+      case 1:
+        return context.locals.dateTomorrow(date, date.hour);
     }
-    if (diff.inDays == 1) {
-      return AppLocalizations.of(context)!.dateTomorrow(date, date.hour);
-    }
+    if (diff.inDays == 0) {}
+    if (diff.inDays == 1) {}
     if (diff.inDays < 6) {
-      return AppLocalizations.of(context)!.dateThisWeek(date, date, date.hour);
+      return context.locals.dateThisWeek(date, date, date.hour);
     }
     if (diff.inDays >= 6 && diff.inDays < 13) {
-      return AppLocalizations.of(context)!.dateNextWeek(date, date, date.hour);
+      return context.locals.dateNextWeek(date, date, date.hour);
     }
 
-    return AppLocalizations.of(context)!.dateAnywhereElse(date, date, date, date.hour);
+    return context.locals.dateAnywhereElse(date, date, date, date.hour);
   }
 
   @override
@@ -85,7 +87,7 @@ class HWListItem extends StatelessWidget {
                       children: [
                         IconButton(
                           onPressed: () => onEdit(),
-                          tooltip: AppLocalizations.of(context)!.dialogHWEditTitle,
+                          tooltip: context.locals.dialogHWEditTitle,
                           icon: const Icon(Icons.edit),
                         ),
                         StatefulBuilder(
@@ -108,7 +110,7 @@ class HWListItem extends StatelessWidget {
                                               builder: (context) => ImageViewerRoute(homework: homework),
                                             ),
                                           ).then((value) => setState(() {})),
-                                          tooltip: AppLocalizations.of(context)!.openImageViewer,
+                                          tooltip: context.locals.openImageViewer,
                                           icon: const Icon(Icons.photo_album),
                                         )
                                       : IconButton(
@@ -119,7 +121,7 @@ class HWListItem extends StatelessWidget {
                                               }
                                             });
                                           },
-                                          tooltip: AppLocalizations.of(context)!.takePhoto,
+                                          tooltip: context.locals.takePhoto,
                                           icon: const Icon(Icons.add_a_photo_rounded),
                                         );
                                 },
@@ -135,11 +137,9 @@ class HWListItem extends StatelessWidget {
                                 ? IconButton(
                                     onPressed: () => Navigator.push(
                                       context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ImageViewerRoute(homework: homework),
-                                      ),
+                                      MaterialPageRoute(builder: (context) => ImageViewerRoute(homework: homework)),
                                     ).then((value) => setState(() {})),
-                                    tooltip: AppLocalizations.of(context)!.openImageViewer,
+                                    tooltip: context.locals.openImageViewer,
                                     icon: const Icon(Icons.photo_album),
                                   )
                                 : IconButton(
@@ -148,7 +148,7 @@ class HWListItem extends StatelessWidget {
                                         if (success) setState(() {});
                                       });
                                     },
-                                    tooltip: AppLocalizations.of(context)!.takePhoto,
+                                    tooltip: context.locals.takePhoto,
                                     icon: const Icon(Icons.add_a_photo_rounded),
                                   );
                           },
@@ -191,13 +191,13 @@ class _HomeworkDescription extends StatelessWidget {
         Expanded(
           child: SelectionArea(
             child: ExpandableText(
-              backgroundColor: Theme.of(context).colorScheme.surface,
+              backgroundColor: Theme.of(context).brightness == Brightness.light
+                  ? const Color(0xfffbeff3)
+                  : Theme.of(context).colorScheme.background,
+              // I don't know how to achieve the matching color in white mode, temporary solution, until I find a proper one
               boxShadow: const [],
               animationDuration: const Duration(milliseconds: 1),
-              helperTextList: [
-                AppLocalizations.of(context)!.showMore,
-                AppLocalizations.of(context)!.showLess,
-              ],
+              helperTextList: [context.locals.showMore, context.locals.showLess],
               padding: EdgeInsets.zero,
               helper: Helper.text,
               helperTextStyle: TextStyle(
@@ -264,7 +264,7 @@ class SubjectListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     IconButton(
-                      tooltip: AppLocalizations.of(context)!.dialogSubjectEditTitle,
+                      tooltip: context.locals.dialogSubjectEditTitle,
                       onPressed: () => onEdit(),
                       icon: const Icon(Icons.edit),
                     ),
@@ -298,11 +298,114 @@ class _SubjectDescription extends StatelessWidget {
             style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
           ),
         ),
+        SelectionArea(
+          child: Text(
+            subject.shortName ?? "",
+            maxLines: 2,
+            style: TextStyle(
+              overflow: TextOverflow.clip,
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.inverseSurface,
+            ),
+          ),
+        ),
+        SelectionArea(
+          child: Text(
+            "${context.locals.dialogSubjectChannelName}: ${subject.discordChannel == null || subject.discordChannel == "" ? "-" : subject.discordChannel}",
+            maxLines: 2,
+            style: TextStyle(
+              overflow: TextOverflow.clip,
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.inverseSurface,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class DiscordRelationListItem extends StatelessWidget {
+  const DiscordRelationListItem({
+    super.key,
+    required this.dr,
+    required this.onEdit,
+    required this.onDeleted,
+  });
+
+  final DiscordRelation dr;
+  final void Function() onEdit;
+  final Function(DismissDirection) onDeleted;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+      key: Key(dr.channelName),
+      onDismissed: onDeleted,
+      background: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.all(30),
+        child: const Icon(Icons.delete_forever),
+      ),
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
+        shape: OutlineInputBorder(
+          borderSide: BorderSide(width: 1.5, color: Theme.of(context).colorScheme.inversePrimary),
+          borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Expanded(child: _DiscordRelationDescription(dr)),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      tooltip: context.locals.dialogSubjectEditTitle,
+                      onPressed: () => onEdit(),
+                      icon: const Icon(Icons.edit),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DiscordRelationDescription extends StatelessWidget {
+  const _DiscordRelationDescription(this.dr);
+
+  final DiscordRelation dr;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SelectionArea(
+          child: Text(
+            dr.channelName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+          ),
+        ),
         const Padding(padding: EdgeInsets.only(bottom: 0.8)),
         Expanded(
           child: SelectionArea(
             child: Text(
-              subject.shortName ?? "",
+              dr.webhookUrl ?? "",
               maxLines: 2,
               style: TextStyle(
                 overflow: TextOverflow.clip,
