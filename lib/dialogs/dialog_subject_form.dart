@@ -37,7 +37,7 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
     if (widget.subject == null) return;
     _nameController.text = widget.subject!.name;
     _shortNameController.text = widget.subject!.shortName ?? "";
-    _dChannelController.text = widget.subject!.discordChannel ?? "";
+    _dChannelController.text = widget.subject!.discordChannel?.channelName ?? "";
   }
 
   Future<void> _saveSubject(BuildContext context) async {
@@ -45,7 +45,8 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
     final String shortName = _shortNameController.text.trim();
     final String dChannel = _dChannelController.text.trim();
 
-    final Subject subject = Subject(name: name, shortName: shortName, discordChannel: dChannel);
+    final Subject subject =
+        Subject(name: name, shortName: shortName, discordChannel: DiscordRelation(channelName: dChannel));
 
     final DBHelper dbHelper = DBHelper();
     if (widget.subject != null) {
@@ -119,12 +120,21 @@ class SubjectFormContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          TextFormField(
-            controller: dChannelController,
-            decoration: InputDecoration(
-              labelText: context.locals.dialogSubjectChannelName,
-              hintText: context.locals.dialogSubjectChannelNameHint,
-            ),
+          FutureBuilder(
+            future: DBHelper().retrieveDiscordRelations(),
+            builder: (context, snapshot) {
+              return DropdownMenu<DiscordRelation>(
+                menuHeight: 250,
+                inputDecorationTheme: Theme.of(context).inputDecorationTheme,
+                expandedInsets: EdgeInsets.zero,
+                controller: dChannelController,
+                hintText: context.locals.dialogSubjectChannelNameHint,
+                label: Text(context.locals.dialogSubjectChannelName),
+                dropdownMenuEntries: snapshot.data != null
+                    ? snapshot.data!.map((s) => DropdownMenuEntry(value: s, label: s.channelName)).toList()
+                    : [],
+              );
+            },
           ),
         ],
       ),

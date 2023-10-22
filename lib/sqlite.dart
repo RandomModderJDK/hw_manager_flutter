@@ -127,16 +127,16 @@ class DBHelper {
           ? "hw_database.db"
           : join((await getApplicationDocumentsDirectory()).path, "hwm_databases", 'hw_database.db'),
       onUpgrade: (db, oldVersion, newVersion) async {
-        await db.execute('CREATE TABLE discordRelations(channel TEXT PRIMARY KEY, webhook TEXT)');
-        await db.execute("ALTER TABLE subjects ADD COLUMN discordChannel TEXT");
         if (oldVersion == 1) await db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, data BLOB NOT NULL)');
+        if (oldVersion < 3) await db.execute('CREATE TABLE discordRelations(channel TEXT PRIMARY KEY, webhook TEXT)');
+        if (oldVersion < 3) await db.execute("ALTER TABLE subjects ADD COLUMN discordChannel TEXT");
+        if (oldVersion < 4) await db.execute("ALTER TABLE homeworks DROP COLUMN subject_short");
       },
       onCreate: (db, version) async {
         await db.execute('CREATE TABLE discordRelations(channel TEXT PRIMARY KEY, webhook TEXT)');
         await db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, data BLOB NOT NULL)');
         await db.execute('CREATE TABLE subjects(name TEXT PRIMARY KEY, shortName TEXT, discordChannel TEXT)');
         return db.execute("CREATE TABLE homeworks(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            'subject_short TEXT, '
             'subject TEXT NOT NULL, '
             'overdueDate TEXT NOT NULL, '
             'content TEXT NOT NULL, '
@@ -145,7 +145,8 @@ class DBHelper {
       },
       // VERSION 2 -- Added imageblobs table
       // VERSION 3 -- Added discord table
-      version: 3,
+      // VERSION 4 -- Modified homeworks table
+      version: 4,
     );
     return true;
   }
@@ -156,12 +157,16 @@ class DBHelper {
   }
 
   Future<Subject?> getSubject(String name) async {
-    return Subject.fromMap((await db.query('subjects', where: "name = ?", whereArgs: [name]))[0]);
+    final Map<String, Object?>? queryResult =
+        (await db.query('subjects', where: "name = ?", whereArgs: [name])).firstOrNull;
+    return queryResult != null
+        ? Subject.fromMap(queryResult.map((key, value) => MapEntry(key, value.toString())))
+        : null;
   }
 
   Future<List<Subject>> retrieveSubjects() async {
     final List<Map<String, Object?>> queryResult = await db.query('subjects', orderBy: "name");
-    return queryResult.map((e) => Subject.fromMap(e)).toList();
+    return Future.wait(queryResult.map((e) => Subject.fromMap(e.map((key, value) => MapEntry(key, value.toString())))));
   }
 
   Future<void> deleteSubject(String name) async {
@@ -196,7 +201,10 @@ class DBHelper {
 
   Future<List<Homework>> retrieveHomeworks() async {
     final List<Map<String, Object?>> queryResult = await db.query('homeworks', orderBy: "overdueDate");
-    return queryResult.map((e) => Homework.fromMap(e.map((key, value) => MapEntry(key, value.toString())))).toList();
+    final List<Homework> hws = await Future.wait(
+      queryResult.map((e) => Homework.fromMap(e.map((key, value) => MapEntry(key, value.toString())))),
+    );
+    return hws;
   }
 
   // Deletes homework from database. If homework does not have id, nothing will be deleted
@@ -310,19 +318,22 @@ class Homework {
   });
 
   /// Convert a Homework into a Map.
-  Homework.fromMap(Map<String, String?> map)
-      : id = int.parse(map["id"]!),
-        subject = Subject(name: map["subject"]!, shortName: map["subject_short"]),
-        overdueTimestamp = DateTime.parse(map["overdueDate"]!),
-        creationTimestamp = DateTime.parse(map["overdueDate"]!),
-        content = map["content"]!,
-        finished = bool.parse(map["finished"]!);
+  static Future<Homework> fromMap(Map<String, String?> map) async {
+    final Homework hw = Homework(
+      id: int.parse(map["id"]!),
+      subject: await DBHelper().getSubject(map["subject"]!) ?? Subject(name: map["subject"]!),
+      overdueTimestamp: DateTime.parse(map["overdueDate"]!),
+      creationTimestamp: DateTime.parse(map["overdueDate"]!),
+      content: map["content"]!,
+      finished: bool.parse(map["finished"]!),
+    );
+    return hw;
+  }
 
   /// Convert a Homework into a Map.
   Map<String, Object?> toMap() {
     return {
       'id': id,
-      'subject_short': subject.shortName,
       'subject': subject.name,
       'overdueDate': overdueTimestamp.toIso8601String(),
       'creationDate': creationTimestamp.toIso8601String(),
@@ -340,15 +351,21 @@ class Homework {
 class Subject {
   final String name;
   final String? shortName;
-  final String? discordChannel;
+  final DiscordRelation? discordChannel;
 
   const Subject({required this.name, this.shortName, this.discordChannel});
 
   /// Convert a Subject into a Map.
-  Subject.fromMap(Map<String, Object?> map)
-      : name = map["name"].toString(),
-        shortName = map["shortName"].toString(),
-        discordChannel = map["discordChannel"].toString();
+  static Future<Subject> fromMap(Map<String, String?> map) async {
+    return Subject(
+      name: map["name"]!,
+      shortName: map["shortName"],
+      discordChannel: map["discordChannel"] != null
+          ? await DBHelper().getDiscordRelation(map["discordChannel"]!) ??
+              DiscordRelation(channelName: map["discordChannel"]!)
+          : null,
+    );
+  }
 
   /// Convert a Subject into a Map.
   Map<String, Object?> toMap() {

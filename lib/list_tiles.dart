@@ -90,6 +90,12 @@ class HWListItem extends StatelessWidget {
                           tooltip: context.locals.dialogHWEditTitle,
                           icon: const Icon(Icons.edit),
                         ),
+                        if (homework.subject.discordChannel?.webhookUrl != null)
+                          IconButton(
+                            onPressed: () => onEdit(),
+                            tooltip: context.locals.dialogHWEditTitle,
+                            icon: const Icon(Icons.edit),
+                          ),
                         StatefulBuilder(
                           builder: (context, setState) {
                             if (hasPhotos == null) {

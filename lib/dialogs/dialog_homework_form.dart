@@ -166,35 +166,28 @@ class HomeworkFormContent extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: FutureBuilder(
-                  future: DBHelper().retrieveSubjects(),
-                  builder: (context, snapshot) {
-                    return FormField<String>(
-                      validator: (s) => s == null ? context.locals.dialogHWSubjectValidator : null,
-                      builder: (FormFieldState<String> field) {
-                        subjectController.addListener(() => field.didChange(subjectController.text));
-                        return DropdownMenu<Subject>(
-                          errorText: field.hasError ? field.errorText : null,
-                          menuHeight: 250,
-                          inputDecorationTheme: Theme.of(context).inputDecorationTheme,
-                          expandedInsets: EdgeInsets.zero,
-                          controller: subjectController,
-                          onSelected: onSubjectSelected,
-                          label: Text(context.locals.dialogHWSubject),
-                          dropdownMenuEntries: snapshot.data != null
-                              ? snapshot.data!.map((s) => DropdownMenuEntry(value: s, label: s.name)).toList()
-                              : [],
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
+          FutureBuilder(
+            future: DBHelper().retrieveSubjects(),
+            builder: (context, snapshot) {
+              return FormField<String>(
+                validator: (s) => s == null || s.isEmpty ? context.locals.dialogHWSubjectValidator : null,
+                builder: (FormFieldState<String> field) {
+                  subjectController.addListener(() => field.didChange(subjectController.text));
+                  return DropdownMenu<Subject>(
+                    errorText: field.hasError ? field.errorText : null,
+                    menuHeight: 250,
+                    inputDecorationTheme: Theme.of(context).inputDecorationTheme,
+                    expandedInsets: EdgeInsets.zero,
+                    controller: subjectController,
+                    onSelected: onSubjectSelected,
+                    label: Text(context.locals.dialogHWSubject),
+                    dropdownMenuEntries: snapshot.data != null
+                        ? snapshot.data!.map((s) => DropdownMenuEntry(value: s, label: s.name)).toList()
+                        : [],
+                  );
+                },
+              );
+            },
           ),
           const SizedBox(height: 20),
           DateTimeField(
