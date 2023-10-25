@@ -39,7 +39,7 @@ class _DiscordRelationFormDialogState extends State<DiscordRelationFormDialog> {
     if (widget.dr == null) return;
     _channelNameController.text = widget.dr!.channelName;
     _webhookUrlController.text = widget.dr!.webhookUrl ?? "";
-    final names = (await DBHelper().retrieveDiscordRelations()).map((s) => s.channelName);
+    final names = (await DBHelper.retrieveDiscordRelations()).map((s) => s.channelName);
     setState(() {
       cDRNames.clear();
       cDRNames.addAll(names);
@@ -52,11 +52,10 @@ class _DiscordRelationFormDialogState extends State<DiscordRelationFormDialog> {
 
     final DiscordRelation dr = DiscordRelation(channelName: name, webhookUrl: shortName);
 
-    final DBHelper dbHelper = DBHelper();
     if (widget.dr != null) {
-      dbHelper.deleteDiscordRelation(widget.dr!.channelName); // If this is in editing mode, delete dr beforehand
+      DBHelper.deleteDiscordRelation(widget.dr!.channelName); // If this is in editing mode, delete dr beforehand
     }
-    dbHelper.insertDiscordRelation(dr).then((value) => Navigator.pop(context, true));
+    DBHelper.insertDiscordRelation(dr).then((value) => Navigator.pop(context, true));
   }
 
   @override
@@ -120,18 +119,8 @@ class DiscordRelationFormContent extends StatelessWidget {
                 : null,
             decoration: InputDecoration(
               labelText: context.locals.dialogDiscordRelationChannelName,
-              labelStyle: TextStyle(color: context.primaryColor),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              border: MaterialStateOutlineInputBorder.resolveWith((Set<MaterialState> states) {
-                final Color color = states.contains(MaterialState.error)
-                    ? Color.alphaBlend(context.primaryColor.withAlpha(125), context.inversePrimaryColor)
-                    : context.primaryColor;
-                return OutlineInputBorder(borderSide: BorderSide(color: color));
-              }),
               hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
               hintText: context.locals.dialogDiscordRelationChannelNameHint,
-              errorStyle: TextStyle(color: context.inversePrimaryColor),
-              errorBorder: OutlineInputBorder(borderSide: BorderSide(color: context.inversePrimaryColor)),
             ),
           ),
           const SizedBox(height: 10),
@@ -139,7 +128,6 @@ class DiscordRelationFormContent extends StatelessWidget {
             controller: webhookUrlController,
             decoration: InputDecoration(
               labelText: context.locals.dialogDiscordRelationUrl,
-              floatingLabelBehavior: FloatingLabelBehavior.always,
               hintStyle: TextStyle(color: Colors.grey.withOpacity(0.40)),
               hintText: context.locals.dialogDiscordRelationUrlHint,
             ),

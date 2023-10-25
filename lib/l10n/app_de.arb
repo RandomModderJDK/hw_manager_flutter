@@ -40,7 +40,7 @@
   "dateNextWeek": "{date}{hours, plural, =0{} other{ um {time}}}, nächste Woche",
   "dateAnywhereElse": "{weekday}, {date}",
   "dateTimeFieldLabel": "Bis zum",
-  "dialogDiscordRelationAddTitle": "Füge Discord-Verbindung",
+  "dialogDiscordRelationAddTitle": "Füge eine Discord-Verbindung hinzu",
   "dialogDiscordRelationAdd": "Hinzufügen",
   "dialogDiscordRelationAddCancel": "Abbrechen",
   "dialogDiscordRelationEditTitle": "Bearbeite Verbindung",

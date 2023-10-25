@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:expandable_widgets/expandable_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:hw_manager_flutter/discord_util.dart';
 import 'package:hw_manager_flutter/general_util.dart';
 import 'package:hw_manager_flutter/routes/image_viewer_route.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
@@ -85,22 +88,18 @@ class HWListItem extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        if (homework.subject.discordChannel?.webhookUrl != null)
+                          _HomeworkSendButton(homework: homework),
                         IconButton(
                           onPressed: () => onEdit(),
                           tooltip: context.locals.dialogHWEditTitle,
                           icon: const Icon(Icons.edit),
                         ),
-                        if (homework.subject.discordChannel?.webhookUrl != null)
-                          IconButton(
-                            onPressed: () => onEdit(),
-                            tooltip: context.locals.dialogHWEditTitle,
-                            icon: const Icon(Icons.edit),
-                          ),
                         StatefulBuilder(
                           builder: (context, setState) {
                             if (hasPhotos == null) {
                               return FutureBuilder(
-                                future: DBHelper().countHWPages(homework.id ?? -1),
+                                future: DBHelper.countHWPages(homework.id ?? -1),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
                                     hasPhotos = snapshot.data! > 0;
@@ -133,7 +132,7 @@ class HWListItem extends StatelessWidget {
                                 },
                               );
                             } else {
-                              DBHelper().countHWPages(homework.id ?? -1).then((value) {
+                              DBHelper.countHWPages(homework.id ?? -1).then((value) {
                                 if (hasPhotos == value > 0) return;
                                 setState(() => hasPhotos = value > 0);
                               });
@@ -170,6 +169,64 @@ class HWListItem extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _HomeworkSendButton extends StatefulWidget {
+  final Homework homework;
+
+  const _HomeworkSendButton({required this.homework});
+
+  @override
+  State<StatefulWidget> createState() => _HomeworkSendButtonState();
+}
+
+class _HomeworkSendButtonState extends State<_HomeworkSendButton> {
+  // State 0 is not used, state 1 is delivery, state 2 is success, state 3 failure
+  int state = 0;
+
+  Timer? timer;
+
+  @override
+  Widget build(BuildContext context) {
+    bool isDisabled = false;
+    Widget? icon;
+    switch (state) {
+      case 0:
+        icon = const RotatedBox(quarterTurns: 3, child: Icon(Icons.send_rounded));
+      case 1: // On it's way
+        isDisabled = true;
+        timer = Timer(const Duration(seconds: 15), () => setState(() => isDisabled = false));
+        icon = const Icon(Icons.delivery_dining_outlined);
+      case 2: // Success
+        timer = Timer(const Duration(seconds: 2), () => setState(() => state = 0));
+        icon = const Icon(Icons.check_outlined);
+      case 3: // Failure
+        timer = Timer(const Duration(seconds: 2), () => setState(() => state = 0));
+        icon = const Icon(Icons.error_outline_outlined);
+    }
+    return IconButton(
+      onPressed: isDisabled
+          ? null
+          : () {
+              timer?.cancel(); // Cancel any pending displaying task
+              final String url = widget.homework.subject.discordChannel!.webhookUrl!;
+              DiscordHelper().sendWebhook(url, widget.homework).then(
+                (v) => setState(() => state = v ? 2 : 3),
+                onError: (obj, trace) {
+                  if (obj is FormatException) {
+                    ErrorToast(text: obj.message).show();
+                  } else {
+                    ErrorToast(text: obj.toString()).show();
+                  }
+                  setState(() => state = 3);
+                },
+              );
+              setState(() => state = 1);
+            },
+      tooltip: context.locals.dialogHWEditTitle,
+      icon: icon ?? const Icon(Icons.error_outline_outlined),
     );
   }
 }
@@ -317,7 +374,7 @@ class _SubjectDescription extends StatelessWidget {
         ),
         SelectionArea(
           child: Text(
-            "${context.locals.dialogSubjectChannelName}: ${subject.discordChannel == null || subject.discordChannel == "" ? "-" : subject.discordChannel}",
+            "${context.locals.dialogSubjectChannelName}: ${subject.discordChannel?.channelName == null || subject.discordChannel?.channelName == "" ? "-" : subject.discordChannel!.channelName}",
             maxLines: 2,
             style: TextStyle(
               overflow: TextOverflow.clip,

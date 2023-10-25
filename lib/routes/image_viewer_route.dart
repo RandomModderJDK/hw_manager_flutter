@@ -51,7 +51,7 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
       print("REFRESH IMAGES");
     }
     return FutureBuilder(
-      future: (() async => DBHelper().retrieveHWPages(widget.homework))(),
+      future: (() async => DBHelper.retrieveHWPages(widget.homework))(),
       builder: (_, snap) {
         if (snap.hasData) {
           _images.clear();
@@ -78,7 +78,7 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
     if (kDebugMode) {
       print("PAGES: $pages, CURRENT: $page");
     }
-    DBHelper().countHWPages(widget.homework.id!).then((value) {
+    DBHelper.countHWPages(widget.homework.id!).then((value) {
       if (value == pages) return;
       setState(() => pages = value);
     });

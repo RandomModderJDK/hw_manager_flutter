@@ -48,11 +48,10 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
     final Subject subject =
         Subject(name: name, shortName: shortName, discordChannel: DiscordRelation(channelName: dChannel));
 
-    final DBHelper dbHelper = DBHelper();
     if (widget.subject != null) {
-      dbHelper.deleteSubject(widget.subject!.name); // If this is in editing mode, delete subject beforehand
+      DBHelper.deleteSubject(widget.subject!.name); // If this is in editing mode, delete subject beforehand
     }
-    dbHelper.insertSubject(subject).then((value) => Navigator.pop(context, true));
+    DBHelper.insertSubject(subject).then((value) => Navigator.pop(context, true));
   }
 
   @override
@@ -121,10 +120,11 @@ class SubjectFormContent extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           FutureBuilder(
-            future: DBHelper().retrieveDiscordRelations(),
+            future: DBHelper.retrieveDiscordRelations(),
             builder: (context, snapshot) {
               return DropdownMenu<DiscordRelation>(
                 menuHeight: 250,
+                requestFocusOnTap: true,
                 inputDecorationTheme: Theme.of(context).inputDecorationTheme,
                 expandedInsets: EdgeInsets.zero,
                 controller: dChannelController,

@@ -13,21 +13,9 @@ class DiscordRoute extends StatefulWidget {
 }
 
 class _DiscordRouteState extends State<DiscordRoute> {
-  late DBHelper dbHelper;
-
-  @override
-  void initState() {
-    super.initState();
-    dbHelper = DBHelper();
-    // No need for db initialization, because home route loads inits it
-    /*dbHelper.initDBs().whenComplete(() async {
-      setState(() {});
-    });*/
-  }
-
   Widget? discordRelationList() {
     return FutureBuilder(
-      future: dbHelper.retrieveDiscordRelations(),
+      future: DBHelper.retrieveDiscordRelations(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return FloatingButtonCardListView(
@@ -48,14 +36,14 @@ class _DiscordRouteState extends State<DiscordRoute> {
               onDeleted: (DismissDirection direction) async {
                 final DiscordRelation dr = snapshot.data![position];
                 snapshot.data!.remove(dr);
-                await DBHelper().deleteDiscordRelation(dr.channelName);
+                await DBHelper.deleteDiscordRelation(dr.channelName);
                 setState(() {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(context.locals.deleteDiscordRelationToast(dr.channelName, dr.webhookUrl ?? "-")),
                       action: SnackBarAction(
                         label: context.locals.deleteDiscordRelationToastUndo,
-                        onPressed: () => DBHelper().insertDiscordRelation(dr).then((value) => setState(() {})),
+                        onPressed: () => DBHelper.insertDiscordRelation(dr).then((value) => setState(() {})),
                       ),
                     ),
                   );

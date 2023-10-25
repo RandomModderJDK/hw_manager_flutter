@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:dart_untis_mobile/dart_untis_mobile.dart';
 import 'package:flutter/foundation.dart';
@@ -30,7 +29,7 @@ class UntisHelper {
     }
     try {
       session = await UntisSession.init(server, school, username, password);
-    } on HttpException {
+    } on Exception {
       session = null;
       return false;
     }

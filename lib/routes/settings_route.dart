@@ -112,7 +112,7 @@ class SettingsRoute extends StatelessWidget {
                 description: Text(context.locals.settingsUntisTestLoginDescription),
                 onPressed: (context) async {
                   if (await UntisHelper().loginWithPreferences()) {
-                    FToast().showToast(child: ErrorToast(text: locals.untisLoginFailure));
+                    ErrorToast(text: locals.untisLoginFailure).show();
                     return;
                   }
                   FToast().showToast(child: ConfirmationToast(text: locals.untisLoginSuccess));
@@ -125,13 +125,13 @@ class SettingsRoute extends StatelessWidget {
                 onPressed: (context) async {
                   final List<UntisSubject> subjects = await UntisHelper().getCurrentUntisSubjects();
                   if (subjects.isEmpty) {
-                    FToast().showToast(child: ErrorToast(text: locals.untisLoginFailure));
+                    ErrorToast(text: locals.untisLoginFailure).show();
                     return;
                   }
                   for (final UntisSubject subject in subjects) {
-                    DBHelper().insertSubject(Subject(name: subject.longName, shortName: subject.name));
+                    DBHelper.insertSubject(Subject(name: subject.longName, shortName: subject.name));
                   }
-                  FToast().showToast(child: ConfirmationToast(text: locals.settingsUntisImportSuccess));
+                  ConfirmationToast(text: locals.settingsUntisImportSuccess).show();
                 },
               ),
             ],
@@ -158,7 +158,7 @@ class SettingsRoute extends StatelessWidget {
                   initValue: Preferences.getDiscordToken(),
                   onChanged: (s) => Preferences.saveDiscordToken(s ?? ""),
                 ),
-                leading: const Icon(Icons.login_rounded),
+                leading: const Icon(Icons.downloading_outlined),
               ),
             ],
           ),

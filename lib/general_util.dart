@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 extension MyBuildContext on BuildContext {
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
@@ -27,6 +28,8 @@ class ConfirmationToast extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       HWMToast(color: Colors.greenAccent.withOpacity(0.8), icon: const Icon(Icons.check), text: text);
+
+  void show() => FToast().showToast(child: this);
 }
 
 class ErrorToast extends StatelessWidget {
@@ -37,6 +40,8 @@ class ErrorToast extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       HWMToast(color: Colors.redAccent.withOpacity(0.8), icon: const Icon(Icons.sms_failed_rounded), text: text);
+
+  void show() => FToast().showToast(child: this);
 }
 
 class HWMToast extends StatelessWidget {
@@ -45,6 +50,8 @@ class HWMToast extends StatelessWidget {
   final String text;
 
   const HWMToast({required this.color, required this.icon, required this.text});
+
+  void show() => FToast().showToast(child: this);
 
   @override
   Widget build(BuildContext context) {

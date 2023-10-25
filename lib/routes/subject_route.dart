@@ -13,21 +13,9 @@ class SubjectRoute extends StatefulWidget {
 }
 
 class _SubjectRouteState extends State<SubjectRoute> {
-  late DBHelper dbHelper;
-
-  @override
-  void initState() {
-    super.initState();
-    dbHelper = DBHelper();
-    // No need for db initialization, because home route loads inits it
-    /*dbHelper.initDBs().whenComplete(() async {
-      setState(() {});
-    });*/
-  }
-
   Widget? subjectList() {
     return FutureBuilder(
-      future: dbHelper.retrieveSubjects(),
+      future: DBHelper.retrieveSubjects(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return FloatingButtonCardListView(
@@ -48,7 +36,7 @@ class _SubjectRouteState extends State<SubjectRoute> {
               onDeleted: (DismissDirection direction) async {
                 final Subject subject = snapshot.data![position];
                 snapshot.data!.remove(subject);
-                await DBHelper().deleteSubject(subject.name);
+                await DBHelper.deleteSubject(subject.name);
                 setState(() {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -57,7 +45,7 @@ class _SubjectRouteState extends State<SubjectRoute> {
                       ),
                       action: SnackBarAction(
                         label: context.locals.deleteSubjectToastUndo,
-                        onPressed: () => DBHelper().insertSubject(subject).then((value) => setState(() {})),
+                        onPressed: () => DBHelper.insertSubject(subject).then((value) => setState(() {})),
                       ),
                     ),
                   );

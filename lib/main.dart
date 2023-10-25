@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/routes/home_route.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
+import 'package:hw_manager_flutter/sqlite.dart';
 
-void main() {
+void main() async {
+  await DBHelper().initDBs();
   runApp(const HWMApp());
 }
 

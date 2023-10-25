@@ -63,7 +63,7 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
       print(hw);
     }
 
-    DBHelper().insertHomework(hw).then((value) => Navigator.pop(context, true));
+    DBHelper.insertHomework(hw).then((value) => Navigator.pop(context, true));
   }
 
   @override
@@ -167,7 +167,7 @@ class HomeworkFormContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           FutureBuilder(
-            future: DBHelper().retrieveSubjects(),
+            future: DBHelper.retrieveSubjects(),
             builder: (context, snapshot) {
               return FormField<String>(
                 validator: (s) => s == null || s.isEmpty ? context.locals.dialogHWSubjectValidator : null,
@@ -176,6 +176,7 @@ class HomeworkFormContent extends StatelessWidget {
                   return DropdownMenu<Subject>(
                     errorText: field.hasError ? field.errorText : null,
                     menuHeight: 250,
+                    requestFocusOnTap: true,
                     inputDecorationTheme: Theme.of(context).inputDecorationTheme,
                     expandedInsets: EdgeInsets.zero,
                     controller: subjectController,

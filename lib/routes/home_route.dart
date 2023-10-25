@@ -21,11 +21,9 @@ class HomeRoute extends StatefulWidget {
 }
 
 class HomeRouteState extends State<HomeRoute> {
-  late DBHelper dbHelper;
-
   Widget hwListWidget() {
     return FutureBuilder(
-      future: dbHelper.retrieveHomeworks(),
+      future: DBHelper.retrieveHomeworks(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return FloatingButtonCardListView(
@@ -45,9 +43,9 @@ class HomeRouteState extends State<HomeRoute> {
               }),
               onDeleted: (DismissDirection direction) async {
                 final Homework hw = snapshot.data![position];
-                final List<HWPage> pages = await DBHelper().retrieveHWPages(hw);
+                final List<HWPage> pages = await DBHelper.retrieveHWPages(hw);
                 snapshot.data!.remove(hw);
-                await DBHelper().deleteHomework(hw);
+                await DBHelper.deleteHomework(hw);
                 setState(() {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -57,8 +55,8 @@ class HomeRouteState extends State<HomeRoute> {
                       action: SnackBarAction(
                         label: context.locals.deleteHWToastUndo,
                         onPressed: () => Future.wait([
-                          DBHelper().insertHomework(hw),
-                          DBHelper().insertHWPages(pages),
+                          DBHelper.insertHomework(hw),
+                          DBHelper.insertHWPages(pages),
                         ]).then((value) => setState(() {})),
                       ),
                     ),
@@ -85,10 +83,6 @@ class HomeRouteState extends State<HomeRoute> {
   @override
   void initState() {
     super.initState();
-    dbHelper = DBHelper();
-    dbHelper.initDBs().whenComplete(() async {
-      setState(() {});
-    });
   }
 
   @override

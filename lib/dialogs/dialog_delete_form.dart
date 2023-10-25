@@ -19,14 +19,14 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
   @override
   void initState() {
     super.initState();
-    DBHelper().countHWPages(widget.hw.id ?? -1).then((value) => setState(() => pages = value));
+    DBHelper.countHWPages(widget.hw.id ?? -1).then((value) => setState(() => pages = value));
   }
 
   Future<void> _deletePages(BuildContext context) async {
     if (kDebugMode) {
       print(_tempSelectedPages);
     }
-    DBHelper().deleteHWPagesByHWOrder(widget.hw, _tempSelectedPages).then((value) {
+    DBHelper.deleteHWPagesByHWOrder(widget.hw, _tempSelectedPages).then((value) {
       if (pages - _tempSelectedPages.length > 0) {
         return Navigator.pop(context, pages - _tempSelectedPages.length);
       }

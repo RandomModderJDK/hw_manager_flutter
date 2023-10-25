@@ -58,7 +58,7 @@ dependencies:
   flutter_secure_storage: ^9.0.0
 
   # Discord Integration
-  nyxx: ^6.0.0-dev.3
+  nyxx: ^6.0.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
