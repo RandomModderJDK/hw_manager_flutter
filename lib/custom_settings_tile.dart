@@ -33,7 +33,6 @@ class HWMSettingsTile extends AbstractSettingsTile {
   @override
   Widget build(BuildContext context) {
     final theme = SettingsTheme.of(context);
-    final TextScaler scaleFactor = MediaQuery.of(context).textScaler;
 
     final cantShowAnimation =
         tileType == SettingsTileType.switchTile ? onToggle == null && onPressed == null : onPressed == null;
@@ -70,8 +69,8 @@ class HWMSettingsTile extends AbstractSettingsTile {
                   padding: EdgeInsetsDirectional.only(
                     start: 24,
                     end: 24,
-                    bottom: scaleFactor.scale(19),
-                    top: scaleFactor.scale(19),
+                    bottom: MediaQuery.of(context).textScaleFactor * 19,
+                    top: MediaQuery.of(context).textScaleFactor * 19,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -126,7 +126,6 @@ class SubjectFormContent extends StatelessWidget {
                 menuHeight: 250,
                 requestFocusOnTap: true,
                 inputDecorationTheme: Theme.of(context).inputDecorationTheme,
-                expandedInsets: EdgeInsets.zero,
                 controller: dChannelController,
                 hintText: context.locals.dialogSubjectChannelNameHint,
                 label: Text(context.locals.dialogSubjectChannelName),

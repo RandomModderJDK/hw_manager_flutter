@@ -178,7 +178,6 @@ class HomeworkFormContent extends StatelessWidget {
                     menuHeight: 250,
                     requestFocusOnTap: true,
                     inputDecorationTheme: Theme.of(context).inputDecorationTheme,
-                    expandedInsets: EdgeInsets.zero,
                     controller: subjectController,
                     onSelected: onSubjectSelected,
                     label: Text(context.locals.dialogHWSubject),
