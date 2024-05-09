@@ -59,8 +59,11 @@ class UntisHelper {
       final bool success = await loginWithPreferences();
       if (!success) return [];
     }
-    return session!.getCurrentSubjects();
+    _cachedSubjects ??= await session!.getCurrentSubjects();
+    return _cachedSubjects!;
   }
+
+  List<UntisSubject>? _cachedSubjects;
 
   Future<UntisSubject?> searchUntisSubject(
     String longName, [
@@ -70,14 +73,16 @@ class UntisHelper {
       final bool success = await loginWithPreferences();
       if (!success) return null;
     }
+
     if (shortName != null) {
-      return (await session!.subjects)
+      if (kDebugMode) print("Out there are: ${(await getCurrentUntisSubjects()).map((e) => e.longName)}");
+      return (await getCurrentUntisSubjects())
           .where(
             (element) => element.name.toLowerCase().trim().startsWith(shortName.toLowerCase().trim()),
           )
           .firstOrNull;
     }
-    return (await session!.subjects)
+    return (await getCurrentUntisSubjects())
         .where(
           (element) => element.longName.toLowerCase().trim().contains(longName.toLowerCase().trim()),
         )

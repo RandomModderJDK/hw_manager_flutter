@@ -119,6 +119,7 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
         },
         onSubjectSelected: (s) async {
           if (s == null) return;
+          // Trigger the next date search from untis
           final UntisSubject? subject = await UntisHelper().searchUntisSubject(s.name, s.shortName);
           if (kDebugMode) {
             print("found this subject in untis: $subject");
