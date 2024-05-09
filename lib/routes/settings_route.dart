@@ -110,13 +110,11 @@ class SettingsRoute extends StatelessWidget {
                 title: Text(context.locals.settingsUntisTestLoginTitle),
                 leading: const Icon(Icons.task_alt_rounded),
                 description: Text(context.locals.settingsUntisTestLoginDescription),
-                onPressed: (context) async {
-                  if (await UntisHelper().loginWithPreferences()) {
-                    ErrorToast(text: locals.untisLoginFailure).show();
-                    return;
-                  }
-                  FToast().showToast(child: ConfirmationToast(text: locals.untisLoginSuccess));
-                },
+                onPressed: (context) async => UntisHelper().loginWithPreferences().then(
+                      (success) => success
+                          ? FToast().showToast(child: ConfirmationToast(text: locals.untisLoginSuccess))
+                          : ErrorToast(text: locals.untisLoginFailure).show(),
+                    ),
               ),
               HWMSettingsTile(
                 title: Text(context.locals.settingsUntisImportTitle),

@@ -1,4 +1,3 @@
-
 import 'package:dart_untis_mobile/dart_untis_mobile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
@@ -33,7 +32,7 @@ class UntisHelper {
       session = null;
       return false;
     }
-    return session?.isLoggedIn == true;
+    return true;
   }
 
   Future<bool> loginWithPreferences() async {
