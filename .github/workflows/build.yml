@@ -162,14 +162,14 @@ jobs:
       - name: Push artifact
         uses: actions/upload-artifact@v3.1.2
         with:
-          name: HW-manager-${{ env.date }}.apk
-          path: '{{ env.apkbuild }}'
+          name: HW-manager-${{ env.date }}
+          path: build/app/outputs/flutter-apk/
 
       - name: Upload files to a GitHub release
         if: github.event_name == 'release'
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          asset_name: hw-manager-${{ github.ref_name }}.apk
-          file: '{{ env.apkbuild }}'
+          file_glob: true
+          file: build/app/outputs/flutter-apk
           tag: ${{ github.ref }}
