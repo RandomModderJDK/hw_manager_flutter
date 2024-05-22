@@ -1,4 +1,4 @@
-Name: "Build all flutter archs"
+name: "Build all flutter archs"
 on:
   workflow_dispatch:
   release:
