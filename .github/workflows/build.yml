@@ -152,7 +152,8 @@ jobs:
           cache: true
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-
+        with:
+          packages: 'build-tools'
       - name: Gathering dependencies
         run: flutter pub get
       - name: Build apk
