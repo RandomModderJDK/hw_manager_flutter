@@ -131,7 +131,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: 'Set up JDK 11'
+      - name: 'Set up JDK 17'
         uses: 'actions/setup-java@v1'
         with:
           java-version: '17'
@@ -155,7 +155,7 @@ jobs:
         run: flutter pub get
       - name: Build apk
         id: 'apkbuild'
-        run: 'flutter build apk --split-per-abi && echo "apkbuild=build/app/outputs/flutter-apk/" >> $GITHUB_ENV'
+        run: 'flutter build apk --split-per-abi && ls&& echo "apkbuild=build/app/outputs/flutter-apk/" >> $GITHUB_ENV'
       - name: Get current date
         id: date
         run: echo "date={$(date +'%Y-%m-%d')}" >> $GITHUB_ENV
@@ -163,7 +163,7 @@ jobs:
         uses: actions/upload-artifact@v3.1.2
         with:
           name: HW-manager-${{ env.date }}.apk
-          path: '{{ env.apkbuild }}'
+          path: {{ env.apkbuild }}
 
       - name: Upload files to a GitHub release
         if: github.event_name == 'release'
