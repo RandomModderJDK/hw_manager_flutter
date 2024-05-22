@@ -33,7 +33,7 @@ dependencies:
     # Internationalization
   flutter_localizations:
     sdk: flutter
-  intl: 
+  intl:
 
   # SQlite database
   path: ^1.8.3

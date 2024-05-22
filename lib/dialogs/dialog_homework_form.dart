@@ -113,7 +113,8 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
         subjectController: _subjectController,
         dateSelected: _dateSelected,
         userDated: _userDated,
-        onDateSelected: (DateTime value) {
+        onDateSelected: (DateTime? value) {
+          if (value == null) return;
           setState(() {
             _dateSelected = value;
             _userDated = true;
@@ -186,7 +187,7 @@ class HomeworkFormContent extends StatelessWidget {
   final TextEditingController subjectController;
   final DateTime dateSelected;
   final bool userDated;
-  final Function(DateTime) onDateSelected;
+  final Function(DateTime?) onDateSelected;
   final Subject? initSelectedSubject;
   final void Function(Subject?) onSubjectSelected;
   final GlobalKey<FormState> formKey;
@@ -244,14 +245,14 @@ class HomeworkFormContent extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           DateTimeField(
-            onDateSelected: onDateSelected,
-            selectedDate: dateSelected,
+            onChanged: onDateSelected,
+            value: dateSelected,
             mode: DateTimeFieldPickerMode.date,
             decoration: InputDecoration(labelText: context.locals.dateTimeFieldLabel)
                 .applyDefaults(Theme.of(context).inputDecorationTheme),
-            initialDate: DateTime(2023, 8),
+            initialPickerDateTime: DateTime.now().add(const Duration(days: 20)),
             dateFormat: DateFormat.yMMMMd(),
-            use24hFormat: true,
+            //use24hFormat: true,
           ),
           const SizedBox(height: 20),
           HWTextFormField(
