@@ -67,7 +67,7 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
     return AlertDialog(
       scrollable: true,
       title: Text(widget.title),
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       actions: [
         ElevatedButton(
           onPressed: () => Navigator.of(context).pop(false),

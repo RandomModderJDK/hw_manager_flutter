@@ -37,6 +37,8 @@ class HWMAppState extends State<HWMApp> {
         ? ColorScheme.fromSeed(
             brightness: Brightness.dark,
             seedColor: Colors.red.shade900,
+            inversePrimary: Colors.red.shade900.withOpacity(0.9),
+            surfaceContainer: Colors.red.shade900,
             surfaceTint: Colors.grey.shade900,
           )
         : ColorScheme.fromSeed(seedColor: Colors.red.shade900);
@@ -44,8 +46,8 @@ class HWMAppState extends State<HWMApp> {
     final InputDecorationTheme inputDecorationTheme = InputDecorationTheme(
       labelStyle: TextStyle(color: cScheme.primary),
       floatingLabelBehavior: FloatingLabelBehavior.always,
-      border: MaterialStateOutlineInputBorder.resolveWith((Set<MaterialState> states) {
-        final Color color = states.contains(MaterialState.focused)
+      border: MaterialStateOutlineInputBorder.resolveWith((Set<WidgetState> states) {
+        final Color color = states.contains(WidgetState.focused)
             ? Color.alphaBlend(
                 cScheme.primary.withAlpha(125),
                 cScheme.inversePrimary,
@@ -77,7 +79,7 @@ class HWMAppState extends State<HWMApp> {
       dropdownMenuTheme: DropdownMenuThemeData(
         inputDecorationTheme: inputDecorationTheme,
         menuStyle: const MenuStyle(
-          padding: MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.zero),
+          padding: WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.zero),
         ),
       ),
       inputDecorationTheme: inputDecorationTheme,

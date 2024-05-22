@@ -295,10 +295,7 @@ class _HomeworkDescription extends StatelessWidget {
         Expanded(
           child: SelectionArea(
             child: ExpandableText(
-              backgroundColor: Theme.of(context).brightness == Brightness.light
-                  ? const Color(0xfffbeff3)
-                  : Theme.of(context).colorScheme.background,
-              // I don't know how to achieve the matching color in white mode, temporary solution, until I find a proper one
+              backgroundColor: const Color.fromARGB(0, 0, 0, 0),
               boxShadow: const [],
               animationDuration: const Duration(milliseconds: 1),
               helperTextList: [

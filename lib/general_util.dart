@@ -9,7 +9,7 @@ extension MyBuildContext on BuildContext {
 
   Color get inversePrimaryColor => colorScheme.inversePrimary;
 
-  Color get backgroundColor => colorScheme.background;
+  Color get backgroundColor => colorScheme.surface;
 
   AppLocalizations get locals => AppLocalizations.of(this)!;
 }
