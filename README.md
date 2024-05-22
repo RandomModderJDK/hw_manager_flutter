@@ -48,6 +48,10 @@ Go to [https://ivi.cx/](https://ivi.cx/) and enter the details you want. You can
 
 You can use chrome to create an web app on android. This is like the native app, especially when the browser caches it.
 
+
+
+
+
 ### I prefer the native app
 
 **If you are on android** and do not mind the debug certificate go ahead to releases and download your arch.
