@@ -155,7 +155,7 @@ jobs:
         run: flutter pub get
       - name: Build apk
         id: 'apkbuild'
-        run: 'flutter build apk --split-per-abi && ls&& echo "apkbuild=build/app/outputs/flutter-apk/" >> $GITHUB_ENV'
+        run: 'flutter build apk --split-per-abi && ls build/app/outputs/flutter-apk && echo "apkbuild=build/app/outputs/flutter-apk/" >> $GITHUB_ENV'
       - name: Get current date
         id: date
         run: echo "date={$(date +'%Y-%m-%d')}" >> $GITHUB_ENV
