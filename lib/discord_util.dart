@@ -301,7 +301,7 @@ class DiscordHelper {
             }
           }
           if (embed.title == null || embed.title == "") throw StateError("There is no title/subject in this message");
-          // TODO: Be careful about subjects longName being with parenthesis
+          // TODO: Be careful about subjects' longName being with parenthesis
           bool isExactMatch(Subject s, Embed embed) => embed.title == "${s.name} (${s.shortName})";
           bool ignoreShortNameMatch(Subject s, Embed embed) =>
               s.name == embed.title!.substring(0, embed.title!.length - (embed.title!.split(" (").last.length + 2));

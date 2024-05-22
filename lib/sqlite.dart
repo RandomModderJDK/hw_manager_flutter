@@ -238,7 +238,7 @@ class DBHelper {
     return DBHelper().db.insert('homeworks', hw.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-// TODO Add search function/do not return the whole list of homeworks
+// Maybe Add search function/do not return the whole list of homeworks
   static Future<List<Homework>> retrieveHomeworks() async {
     final List<Map<String, Object?>> queryResult = await DBHelper().db.query('homeworks', orderBy: "overdueDate");
     final List<Homework> hws = await Future.wait(
