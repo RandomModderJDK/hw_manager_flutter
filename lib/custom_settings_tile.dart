@@ -69,8 +69,8 @@ class HWMSettingsTile extends AbstractSettingsTile {
                   padding: EdgeInsetsDirectional.only(
                     start: 24,
                     end: 24,
-                    bottom: MediaQuery.of(context).textScaleFactor * 19,
-                    top: MediaQuery.of(context).textScaleFactor * 19,
+                    bottom: MediaQuery.of(context).textScaler.scale(15),
+                    top: MediaQuery.of(context).textScaler.scale(15),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,30 +83,52 @@ class HWMSettingsTile extends AbstractSettingsTile {
                         ),
                         child: title ?? Container(),
                       ),
-                      if (value != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4.0),
-                          child: DefaultTextStyle(
-                            style: TextStyle(
-                              color: enabled
-                                  ? theme.themeData.tileDescriptionTextColor
-                                  : theme.themeData.inactiveSubtitleColor,
+                      Row(
+                        children: [
+                          if (value != null)
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                child: DefaultTextStyle(
+                                  style: TextStyle(
+                                    color: enabled
+                                        ? theme.themeData.tileDescriptionTextColor
+                                        : theme.themeData.inactiveSubtitleColor,
+                                  ),
+                                  child: value!,
+                                ),
+                              ),
+                            )
+                          else if (description != null)
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                child: DefaultTextStyle(
+                                  style: TextStyle(
+                                    color: enabled
+                                        ? theme.themeData.tileDescriptionTextColor
+                                        : theme.themeData.inactiveSubtitleColor,
+                                  ),
+                                  child: description!,
+                                ),
+                              ),
                             ),
-                            child: value!,
-                          ),
-                        )
-                      else if (description != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4.0),
-                          child: DefaultTextStyle(
-                            style: TextStyle(
-                              color: enabled
-                                  ? theme.themeData.tileDescriptionTextColor
-                                  : theme.themeData.inactiveSubtitleColor,
+                          if (trailing != null)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: trailing,
+                            )
+                          else if (tileType == SettingsTileType.switchTile)
+                            Padding(
+                              padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
+                              child: Switch.adaptive(
+                                value: initialValue,
+                                onChanged: onToggle,
+                                activeColor: enabled ? activeSwitchColor : theme.themeData.inactiveTitleColor,
+                              ),
                             ),
-                            child: description!,
-                          ),
-                        ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -116,20 +138,6 @@ class HWMSettingsTile extends AbstractSettingsTile {
               //     height: 30,
               //     child: VerticalDivider(),
               //   ),
-              if (trailing != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: trailing,
-                )
-              else if (tileType == SettingsTileType.switchTile)
-                Padding(
-                  padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
-                  child: Switch.adaptive(
-                    value: initialValue,
-                    onChanged: onToggle,
-                    activeColor: enabled ? activeSwitchColor : theme.themeData.inactiveTitleColor,
-                  ),
-                ),
             ],
           ),
         ),

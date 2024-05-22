@@ -36,11 +36,16 @@ class _DiscordRouteState extends State<DiscordRoute> {
               onDeleted: (DismissDirection direction) async {
                 final DiscordRelation dr = snapshot.data![position];
                 snapshot.data!.remove(dr);
-                await DBHelper.deleteDiscordRelation(dr.channelName);
+                await DBHelper.deleteDiscordRelation(dr.channelID);
                 setState(() {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(context.locals.deleteDiscordRelationToast(dr.channelName, dr.webhookUrl ?? "-")),
+                      content: Text(
+                        context.locals.deleteDiscordRelationToast(
+                          dr.channelName,
+                          dr.webhookUrl ?? "-",
+                        ),
+                      ),
                       action: SnackBarAction(
                         label: context.locals.deleteDiscordRelationToastUndo,
                         onPressed: () => DBHelper.insertDiscordRelation(dr).then((value) => setState(() {})),

@@ -51,7 +51,11 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.only(left: 24.0, top: 24.0, right: 24.0),
+                        padding: const EdgeInsets.only(
+                          left: 24.0,
+                          top: 24.0,
+                          right: 24.0,
+                        ),
                         child: DefaultTextStyle(
                           style: DialogTheme.of(context).titleTextStyle ?? Theme.of(context).textTheme.titleLarge!,
                           textAlign: TextAlign.center,
@@ -68,7 +72,12 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
                   ),
                   // CONTENT STARTING HERE
                   Padding(
-                    padding: const EdgeInsets.only(left: 24.0, top: 16.0, right: 24.0, bottom: 24.0),
+                    padding: const EdgeInsets.only(
+                      left: 24.0,
+                      top: 16.0,
+                      right: 24.0,
+                      bottom: 24.0,
+                    ),
                     child: DefaultTextStyle(
                       style: DialogTheme.of(context).contentTextStyle ?? Theme.of(context).textTheme.bodyMedium!,
                       child: ListView.builder(
@@ -83,7 +92,9 @@ class _DeleteFormDialogState extends State<DeleteFormDialog> {
                               setState(() => _tempSelectedPages.add(index));
                             } else {
                               if (!_tempSelectedPages.contains(index)) return;
-                              setState(() => _tempSelectedPages.removeWhere((i) => i == index));
+                              setState(
+                                () => _tempSelectedPages.removeWhere((i) => i == index),
+                              );
                             }
                           },
                         ),

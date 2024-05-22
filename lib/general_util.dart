@@ -26,8 +26,11 @@ class ConfirmationToast extends StatelessWidget {
   const ConfirmationToast({super.key, required this.text});
 
   @override
-  Widget build(BuildContext context) =>
-      HWMToast(color: Colors.greenAccent.withOpacity(0.8), icon: const Icon(Icons.check), text: text);
+  Widget build(BuildContext context) => HWMToast(
+        color: Colors.green.shade900.withOpacity(0.8),
+        icon: const Icon(Icons.check),
+        text: text,
+      );
 
   void show() => FToast().showToast(child: this);
 }
@@ -38,8 +41,11 @@ class ErrorToast extends StatelessWidget {
   const ErrorToast({super.key, required this.text});
 
   @override
-  Widget build(BuildContext context) =>
-      HWMToast(color: Colors.redAccent.withOpacity(0.8), icon: const Icon(Icons.sms_failed_rounded), text: text);
+  Widget build(BuildContext context) => HWMToast(
+        color: Colors.redAccent.withOpacity(0.8),
+        icon: const Icon(Icons.sms_failed_rounded),
+        text: text,
+      );
 
   void show() => FToast().showToast(child: this);
 }
@@ -63,8 +69,25 @@ class HWMToast extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: [if (icon != null) icon!, if (icon != null) const SizedBox(width: 12.0), Text(text)],
+        children: [
+          if (icon != null) icon!,
+          if (icon != null) const SizedBox(width: 12.0),
+          Flexible(
+            child: Text(
+              style: DialogTheme.of(context).contentTextStyle,
+              text,
+              softWrap: true,
+            ),
+          ),
+        ],
       ),
     );
+  }
+}
+
+class BasicNotifier extends ChangeNotifier {
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
   }
 }

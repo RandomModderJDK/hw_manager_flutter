@@ -17,6 +17,7 @@ class _SubjectRouteState extends State<SubjectRoute> {
     return FutureBuilder(
       future: DBHelper.retrieveSubjects(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) throw snapshot.error.toString();
         if (snapshot.hasData) {
           return FloatingButtonCardListView(
             itemCount: snapshot.data!.length,
@@ -41,7 +42,10 @@ class _SubjectRouteState extends State<SubjectRoute> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        context.locals.deleteSubjectToast(subject.name, subject.shortName ?? "-"),
+                        context.locals.deleteSubjectToast(
+                          subject.name,
+                          subject.shortName ?? "-",
+                        ),
                       ),
                       action: SnackBarAction(
                         label: context.locals.deleteSubjectToastUndo,

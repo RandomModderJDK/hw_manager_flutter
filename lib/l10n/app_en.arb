@@ -111,7 +111,7 @@
   },
   "settingsUntisImportSuccess": "Imported untis subjects",
   "@settingsUntisImportSuccess": {
-    "description": "Toast notification, when WebUntis login succeeded"
+    "description": "Toast notification, when WebUntis subject import succeeded"
   },
   "untisLoginFailure": "Failed to log in",
   "@untisLoginFailure": {
@@ -132,6 +132,41 @@
   "settingsDiscordRelationsBotToken": "Bot Token for message fetching",
   "@settingsDiscordRelationsBotToken": {
     "description": "The label for the bot token text box"
+  },
+  "settingsDiscordRelationsBotTryToken": "Token is tried...",
+  "@settingsDiscordRelationsBotTryToken": {
+    "description": "Status message to show, when the bot tries login process"
+  },
+  "settingsDiscordRelationsBotTryTokenSuccess": "Bot logged in",
+  "@settingsDiscordRelationsBotTryTokenSuccess": {
+    "description": "Confirmation message to show, when the bot logs in successfully"
+  },
+  "settingsDiscordRelationsBotTryTokenFailure": "Bot could not login!",
+  "@settingsDiscordRelationsBotTryTokenFailure": {
+    "description": "Status message to show, when the bot failed a login"
+  },
+  "settingsDiscordRelationsImportTitle": "Import discord channels",
+  "@settingsDiscordRelationsImportTitle": {
+    "description": "Title for discord relations management route"
+  },
+  "settingsDiscordRelationsImportDescription": "Import all homework discord channels, using the channel specified above as the identifier. After this, discord channels can be tied to subjects to fetch homework and (with a specified webhook) send homework.",
+  "@settingsDiscordRelationsImportDescription": {
+    "description": "Description for discord channel import"
+  },
+  "settingsDiscordRelationsImportSuccess": "Imported {count} discord channels",
+  "@settingsDiscordRelationsImportSuccess": {
+    "description": "Toast notification, when Discord relation import succeeds",
+    "placeholder": {
+      "hours": {
+        "type": "int",
+        "format": "compact",
+        "example": "14"
+      }
+    }
+  },
+  "settingsDiscordRelationsImportFailure": "Could not import channels",
+  "@settingsDiscordRelationsImportFailure": {
+    "description": "Toast notification, when Discord relation import fails"
   },
   "discordRelationsTitle": "Discord relations",
   "@discordRelationsTitle": {
@@ -368,13 +403,13 @@
   "@dialogSubjectShortNameHint": {
     "description": "A hint what you can write into subject's short name field"
   },
-  "dialogSubjectChannelName": "Channel name",
+  "dialogSubjectChannelName": "Relation channel name",
   "@dialogSubjectChannelName": {
-    "description": "The label of the subject's channel name"
+    "description": "The label of the subject's relation channel name"
   },
-  "dialogSubjectChannelNameHint": "Klasse12.3",
+  "dialogSubjectChannelNameHint": "Select discord relation",
   "@dialogSubjectChannelNameHint": {
-    "description": "A hint what you can write into subjects' channel field"
+    "description": "A hint that you should use the dropdown for discord relations"
   },
   "dialogHWSubject": "Subject",
   "@dialogHWSubject": {
@@ -383,6 +418,14 @@
   "dialogHWSubjectValidator": "Enter or select subject!",
   "@dialogHWSubjectValidator": {
     "description": "The text appearing when nothing is entered"
+  },
+  "dialogHWSubjectUntisFailure": "Could not fetch period from Untis",
+  "@dialogHWSubjectUntisFailure": {
+    "description": "Error message, when the subject is not in the near future reachable."
+  },
+  "dialogHWSubjectUntisSuccess": "Fetched date from Untis!",
+  "@dialogHWSubjectUntisSuccess": {
+    "description": "Succeed message, when the date fetch of a subject went fine."
   },
   "dialogHWContent": "Content",
   "@dialogHWContent": {
@@ -438,6 +481,37 @@
   "@deleteHWToastUndo": {
     "description": "Button to undo deleting homework"
   },
+  "discordHomeworkFetchTitle": "Fetch messages",
+  "@discordHomeworkFetchTitle": {
+    "description": "Used for the fetch icon as a tooltip"
+  },
+  "discordHomeworkFetchSuccess": "Fetched {fetchs}, which adds {creations} homeworks",
+  "@discordHomeworkFetchSuccess": {
+    "description": "Confirmation message, when the fetching of homeworks in the home route worked",
+    "placeholders": {
+      "fetchs": {
+        "type": "int",
+        "format": "compact",
+        "example": "5"
+      },
+      "creations": {
+        "type": "int",
+        "format": "compact",
+        "example": "1"
+      }
+    }
+  },
+  "discordHomeworkFetchLocalOverwriteStatus": "There were {overwrites} local changes, that got overwritten",
+  "@discordHomeworkFetchLocalOverwriteStatus": {
+    "description": "Status message, how many homeworks got edited by this fetching run",
+    "placeholder": {
+      "overwrites": {
+        "type": "int",
+        "format": "compact",
+        "example": "1"
+      }
+    }
+  },
   "showMore": " Show more",
   "@showMore": {
     "description": "Show more indicator when text is collapsed"
@@ -445,6 +519,26 @@
   "showLess": " Show less",
   "@showLess": {
     "description": "Show less indicator when text is collapsed"
+  },
+  "discordCreateMessageButton": "Post new message",
+  "@discordCreateMessageButton": {
+    "description": "Label for button on homeworks, which creates a new message"
+  },
+  "discordEditMessageButton": "Modify existing message",
+  "@discordEditMessageButton": {
+    "description": "Same as @discordCreateMessageButton, but this is displayed, when a message already exists"
+  },
+  "discordWebhookTooManyPagesError": "There were only 10 pages send, as discord does not support more",
+  "@discordWebhookTooManyPagesError": {
+    "description": "Error message, when user tries to upload more than 10 pages to discord"
+  },
+  "discordWebhookMessageEditNotPossible": "Original message doesn't exists, sending new...",
+  "@discordWebhookMessageEditNotPossible": {
+    "description": "Error/status message, when messageID stored in db doesn't match up to real msg"
+  },
+  "discordWebhookURLInvalid": "The webhook is invalid",
+  "@discordWebhookURLInvalid": {
+    "description": "Error message, when discord returns unknown webhook error"
   },
   "takePhoto": "Add a photo",
   "@takePhoto": {

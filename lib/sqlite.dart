@@ -89,7 +89,6 @@ Future<ImageSource?> _openChooseSourceBar(BuildContext context) async {
   );
 }
 
-// TODO Add search function/do not return the whole list of homeworks
 class DBHelper {
   static final DBHelper _dbHelper = DBHelper._();
 
@@ -128,31 +127,50 @@ class DBHelper {
           : join((await getApplicationDocumentsDirectory()).path, "hwm_databases", 'hw_database.db'),
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion == 1) {
-          await DBHelper().db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, data BLOB NOT NULL)');
+          await db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, data BLOB NOT NULL)');
         }
         if (oldVersion < 3) {
-          await DBHelper().db.execute('CREATE TABLE discordRelations(channel TEXT PRIMARY KEY, webhook TEXT)');
+          await db.execute('CREATE TABLE discordRelations(channel TEXT PRIMARY KEY, webhook TEXT)');
         }
-        if (oldVersion < 3) await DBHelper().db.execute("ALTER TABLE subjects ADD COLUMN discordChannel TEXT");
-        if (oldVersion < 4) await DBHelper().db.execute("ALTER TABLE homeworks DROP COLUMN subject_short");
+        if (oldVersion < 3) await db.execute("ALTER TABLE subjects ADD COLUMN discordChannel TEXT");
+        if (oldVersion < 4) await db.execute("ALTER TABLE homeworks DROP COLUMN subject_short");
+        if (oldVersion < 5) {
+          await db.execute("ALTER TABLE discordRelations ADD COLUMN channelID TEXT");
+          await db.execute("ALTER TABLE discordRelations RENAME COLUMN channel to channelName");
+          await db.execute("ALTER TABLE discordRelations RENAME TO orig_discordRelations"); // Hold data for later
+          // orig_discordRelations(channelName TEXT PRIMARY KEY, webhook TEXT, channelID TEXT)
+          await db.execute(
+            'CREATE TABLE discordRelations(channelID TEXT PRIMARY KEY, channelName TEXT NOT NULL, webhook TEXT)',
+          ); // Create table with correct PK
+          await db.execute(
+            'INSERT INTO discordRelations SELECT channelID, channelName, webhook FROM orig_discordRelations',
+          );
+          await db.execute("ALTER TABLE subjects RENAME COLUMN discordChannel to discordChannelID");
+        }
+        if (oldVersion < 6) {
+          await db.execute("ALTER TABLE homeworks ADD COLUMN messageID TEXT");
+        }
       },
       onCreate: (db, version) async {
-        await DBHelper().db.execute('CREATE TABLE discordRelations(channel TEXT PRIMARY KEY, webhook TEXT)');
-        await DBHelper().db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, data BLOB NOT NULL)');
-        await DBHelper()
-            .db
-            .execute('CREATE TABLE subjects(name TEXT PRIMARY KEY, shortName TEXT, discordChannel TEXT)');
-        return DBHelper().db.execute("CREATE TABLE homeworks(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        await db.execute(
+          'CREATE TABLE discordRelations(channelID TEXT PRIMARY KEY, channelName TEXT NOT NULL, webhook TEXT)',
+        );
+        await db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, data BLOB NOT NULL)');
+        await db.execute('CREATE TABLE subjects(name TEXT PRIMARY KEY, shortName TEXT, discordChannelID TEXT)');
+        return db.execute("CREATE TABLE homeworks(id INTEGER PRIMARY KEY AUTOINCREMENT, "
             'subject TEXT NOT NULL, '
             'overdueDate TEXT NOT NULL, '
             'content TEXT NOT NULL, '
             'creationDate TEXT NOT NULL, '
-            'finished TEXT NOT NULL)');
+            'finished TEXT NOT NULL, '
+            'messageID TEXT)');
       },
       // VERSION 2 -- Added imageblobs table
       // VERSION 3 -- Added discord table
       // VERSION 4 -- Modified homeworks table
-      version: 4,
+      // VERSION 5 -- Modified discord table to hold channelID & moved primary key and modified subject table
+      // VERSION 6 -- Added messageID to homeworks table
+      version: 6,
     );
     return true;
   }
@@ -175,6 +193,12 @@ class DBHelper {
     return Future.wait(queryResult.map((e) => Subject.fromMap(e.map((key, value) => MapEntry(key, value.toString())))));
   }
 
+  static Future<List<Subject>> retrieveSubjectsIn(String channelID) async {
+    final List<Map<String, Object?>> queryResult =
+        await DBHelper().db.query('subjects', where: "discordChannelID = ?", whereArgs: [channelID]);
+    return Future.wait(queryResult.map((e) => Subject.fromMap(e.map((key, value) => MapEntry(key, value.toString())))));
+  }
+
   static Future<void> deleteSubject(String name) async {
     await DBHelper().db.delete('subjects', where: "name = ?", whereArgs: [name]);
   }
@@ -184,32 +208,49 @@ class DBHelper {
     return DBHelper().db.insert('discordRelations', dr.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  static Future<DiscordRelation?> getDiscordRelation(String channelName) async {
+  static Future<DiscordRelation?> getDiscordRelation(String channelID) async {
     final Map<String, Object?>? queryResult =
-        (await DBHelper().db.query('discordRelations', where: "channel = ?", whereArgs: [channelName])).firstOrNull;
+        (await DBHelper().db.query('discordRelations', where: "channelID = ?", whereArgs: [channelID])).firstOrNull;
+    return queryResult != null ? DiscordRelation.fromMap(queryResult.map((k, v) => MapEntry(k, v.toString()))) : null;
+  }
+
+  static Future<DiscordRelation?> getDiscordRelationByWHID(String webhookID) async {
+    final Map<String, Object?>? queryResult =
+        (await DBHelper().db.query('discordRelations', where: "channelID LIKE '%?%'", whereArgs: [webhookID]))
+            .firstOrNull;
     return queryResult != null ? DiscordRelation.fromMap(queryResult.map((k, v) => MapEntry(k, v.toString()))) : null;
   }
 
   static Future<List<DiscordRelation>> retrieveDiscordRelations() async {
-    final List<Map<String, Object?>> queryResult = await DBHelper().db.query('discordRelations', orderBy: "channel");
+    final List<Map<String, Object?>> queryResult =
+        await DBHelper().db.query('discordRelations', orderBy: "channelName");
     return queryResult.map((e) => DiscordRelation.fromMap(e.map((k, v) => MapEntry(k, v.toString())))).toList();
   }
 
-  static Future<void> deleteDiscordRelation(String channelName) async {
-    await DBHelper().db.delete('discordRelations', where: "channel = ?", whereArgs: [channelName]);
+  static Future<void> deleteDiscordRelation(String channelID) async {
+    await DBHelper().db.update('subjects', {"discordChannelID": ""}, where: "name = ?", whereArgs: [channelID]);
+    await DBHelper().db.delete('discordRelations', where: "channelID = ?", whereArgs: [channelID]);
   }
 
   /// Inserts or updates homework supplied into database
+  /// Returns the id of the homework
   static Future<int> insertHomework(Homework hw) async {
     return DBHelper().db.insert('homeworks', hw.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
+// TODO Add search function/do not return the whole list of homeworks
   static Future<List<Homework>> retrieveHomeworks() async {
     final List<Map<String, Object?>> queryResult = await DBHelper().db.query('homeworks', orderBy: "overdueDate");
     final List<Homework> hws = await Future.wait(
       queryResult.map((e) => Homework.fromMap(e.map((key, value) => MapEntry(key, value.toString())))),
     );
     return hws;
+  }
+
+  static Future<Homework?> getHomeworkByMessageID(String messageID) async {
+    final Map<String, Object?>? queryResult =
+        (await DBHelper().db.query('homeworks', where: "messageID = ?", whereArgs: [messageID])).firstOrNull;
+    return queryResult != null ? await Homework.fromMap(queryResult.map((k, v) => MapEntry(k, v.toString()))) : null;
   }
 
   // Deletes homework from database. If homework does not have id, nothing will be deleted
@@ -256,6 +297,7 @@ class DBHelper {
         await DBHelper().db.query('imageBlobs', where: 'id LIKE ?', whereArgs: ["${hw.id ?? "NULL"}+%"]);
     if (queryResult.isEmpty) return [];
     final result = queryResult.map((e) => HWPage.fromMap(e)).toList();
+    result.sort((a, b) => a.order - b.order);
     return result;
   }
 
@@ -306,21 +348,25 @@ class DBHelper {
 }
 
 class Homework {
-  final int? id;
+  int? id;
   final DateTime overdueTimestamp;
   final DateTime creationTimestamp;
   final Subject subject;
   final String content;
   final bool finished;
+  String? messageID;
+
+  bool get published => messageID != null;
 
   // DateTime needs DateTime.tryParse(isoString);
-  const Homework({
+  Homework({
     this.id,
     required this.subject,
     required this.overdueTimestamp,
     required this.creationTimestamp,
     required this.content,
     required this.finished,
+    this.messageID,
   });
 
   /// Convert a Homework into a Map.
@@ -332,6 +378,7 @@ class Homework {
       creationTimestamp: DateTime.parse(map["overdueDate"]!),
       content: map["content"]!,
       finished: bool.parse(map["finished"]!),
+      messageID: map["messageID"] ?? "",
     );
     return hw;
   }
@@ -344,7 +391,8 @@ class Homework {
       'overdueDate': overdueTimestamp.toIso8601String(),
       'creationDate': creationTimestamp.toIso8601String(),
       'content': content,
-      'finished': finished.toString(),
+      'finished': finished.toString(), // TODO: Implement this functionality
+      'messageID': messageID ?? "",
     };
   }
 
@@ -363,13 +411,20 @@ class Subject {
 
   /// Convert a Subject into a Map.
   static Future<Subject> fromMap(Map<String, String?> map) async {
+    DiscordRelation? dr;
+    if (map["discordChannelID"] != null && map["discordChannelID"] != "null") {
+      dr = await DBHelper.getDiscordRelation(map["discordChannelID"]!);
+      if (dr == null) {
+        if (kDebugMode) {
+          print("DATABASE ERROR ${map["discordChannelID"]} doesn't exist");
+        }
+      }
+      // Subject points to channelid that isnt in realtion database, so ERROR
+    }
     return Subject(
       name: map["name"]!,
       shortName: map["shortName"],
-      discordChannel: map["discordChannel"] != null
-          ? await DBHelper.getDiscordRelation(map["discordChannel"]!) ??
-              DiscordRelation(channelName: map["discordChannel"]!)
-          : null,
+      discordChannel: dr,
     );
   }
 
@@ -377,30 +432,50 @@ class Subject {
   Map<String, Object?> toMap() {
     return {
       'name': name,
-      'shortName': shortName,
-      'discordChannel': discordChannel?.channelName,
+      'shortName': shortName ?? "",
+      'discordChannelID': discordChannel?.channelID,
     };
   }
+
+  @override
+  bool operator ==(Object b) =>
+      b is Subject && name == b.name && shortName == b.shortName && discordChannel == b.discordChannel;
+
+  @override
+  int get hashCode => Object.hash(name, shortName, discordChannel);
 }
 
 class DiscordRelation {
   final String channelName;
+  final String channelID;
   final String? webhookUrl;
 
-  const DiscordRelation({required this.channelName, this.webhookUrl});
+  const DiscordRelation({required this.channelID, required this.channelName, this.webhookUrl});
 
-  /// Convert a DiscordRelation into a Map.
+  /// Convert a DiscordRelation into a Map.https://discord.com/api/webhooks/1160945067184377996/E0dFr2laboRG2XO8ExVS0PYO7y7hhK5DWTsPf5wj52FOG3nyga6gS9fQ0l7TrxH6TwOW
   DiscordRelation.fromMap(Map<String, String?> map)
-      : channelName = map["channel"]!,
+      : channelID = map["channelID"]!,
+        channelName = map["channelName"]!,
         webhookUrl = map["webhook"];
 
   /// Convert a DiscordRelation into a Map.
   Map<String, Object?> toMap() {
     return {
-      'channel': channelName,
-      'webhook': webhookUrl,
+      'channelID': channelID,
+      'channelName': channelName,
+      'webhook': webhookUrl ?? "",
     };
   }
+
+  @override
+  bool operator ==(Object b) =>
+      b is DiscordRelation &&
+      channelID == b.channelID &&
+      channelName == b.channelName &&
+      webhookUrl.toString() == b.webhookUrl.toString();
+
+  @override
+  int get hashCode => Object.hash(channelID, channelName, webhookUrl);
 }
 
 class HWPage {

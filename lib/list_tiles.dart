@@ -19,8 +19,13 @@ class HWListItem extends StatelessWidget {
   final void Function() onEdit;
   final Function(DismissDirection) onDeleted;
 
-  DateTime _dateTimeToDate(DateTime dateTime) =>
-      dateTime.copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+  DateTime _dateTimeToDate(DateTime dateTime) => dateTime.copyWith(
+        hour: 0,
+        minute: 0,
+        second: 0,
+        millisecond: 0,
+        microsecond: 0,
+      );
 
   String _formatDate(BuildContext context, DateTime date) {
     final Duration diff = _dateTimeToDate(date).difference(_dateTimeToDate(DateTime.now()));
@@ -69,7 +74,10 @@ class HWListItem extends StatelessWidget {
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
         shape: OutlineInputBorder(
-          borderSide: BorderSide(width: 1.5, color: Theme.of(context).colorScheme.inversePrimary),
+          borderSide: BorderSide(
+            width: 1.5,
+            color: Theme.of(context).colorScheme.inversePrimary,
+          ),
           borderRadius: const BorderRadius.all(Radius.circular(10.0)),
         ),
         child: Padding(
@@ -88,7 +96,8 @@ class HWListItem extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (homework.subject.discordChannel?.webhookUrl != null)
+                        if (homework.subject.discordChannel?.webhookUrl != null &&
+                            homework.subject.discordChannel?.webhookUrl != "")
                           _HomeworkSendButton(homework: homework),
                         IconButton(
                           onPressed: () => onEdit(),
@@ -112,7 +121,9 @@ class HWListItem extends StatelessWidget {
                                           onPressed: () => Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => ImageViewerRoute(homework: homework),
+                                              builder: (context) => ImageViewerRoute(
+                                                homework: homework,
+                                              ),
                                             ),
                                           ).then((value) => setState(() {})),
                                           tooltip: context.locals.openImageViewer,
@@ -127,7 +138,9 @@ class HWListItem extends StatelessWidget {
                                             });
                                           },
                                           tooltip: context.locals.takePhoto,
-                                          icon: const Icon(Icons.add_a_photo_rounded),
+                                          icon: const Icon(
+                                            Icons.add_a_photo_rounded,
+                                          ),
                                         );
                                 },
                               );
@@ -142,7 +155,11 @@ class HWListItem extends StatelessWidget {
                                 ? IconButton(
                                     onPressed: () => Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => ImageViewerRoute(homework: homework)),
+                                      MaterialPageRoute(
+                                        builder: (context) => ImageViewerRoute(
+                                          homework: homework,
+                                        ),
+                                      ),
                                     ).then((value) => setState(() {})),
                                     tooltip: context.locals.openImageViewer,
                                     icon: const Icon(Icons.photo_album),
@@ -161,7 +178,12 @@ class HWListItem extends StatelessWidget {
                       ],
                     ),
                     const Spacer(),
-                    Text(_formatDate(context, homework.overdueTimestamp.toLocal())),
+                    Text(
+                      _formatDate(
+                        context,
+                        homework.overdueTimestamp.toLocal(),
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -192,20 +214,37 @@ class _HomeworkSendButtonState extends State<_HomeworkSendButton> {
   Widget build(BuildContext context) {
     bool isDisabled = false;
     Widget? icon;
+
     switch (state) {
       case 0:
-        icon = const RotatedBox(quarterTurns: 3, child: Icon(Icons.send_rounded));
+        icon = RotatedBox(
+          quarterTurns: 3,
+          child: widget.homework.messageID == null || widget.homework.messageID!.isEmpty
+              ? const Icon(Icons.send_rounded)
+              : const Icon(Icons.send_and_archive_rounded),
+        );
+
       case 1: // On it's way
         isDisabled = true;
-        timer = Timer(const Duration(seconds: 15), () => setState(() => isDisabled = false));
+        timer = Timer(
+          const Duration(seconds: 15),
+          () => context.mounted ? setState(() => isDisabled = false) : null,
+        );
         icon = const Icon(Icons.delivery_dining_outlined);
       case 2: // Success
-        timer = Timer(const Duration(seconds: 2), () => setState(() => state = 0));
+        timer = Timer(
+          const Duration(seconds: 2),
+          () => context.mounted ? setState(() => state = 0) : null,
+        );
         icon = const Icon(Icons.check_outlined);
       case 3: // Failure
-        timer = Timer(const Duration(seconds: 2), () => setState(() => state = 0));
+        timer = Timer(
+          const Duration(seconds: 2),
+          () => context.mounted ? setState(() => state = 0) : null,
+        );
         icon = const Icon(Icons.error_outline_outlined);
     }
+
     return IconButton(
       onPressed: isDisabled
           ? null
@@ -215,17 +254,15 @@ class _HomeworkSendButtonState extends State<_HomeworkSendButton> {
               DiscordHelper().sendWebhook(url, widget.homework).then(
                 (v) => setState(() => state = v ? 2 : 3),
                 onError: (obj, trace) {
-                  if (obj is FormatException) {
-                    ErrorToast(text: obj.message).show();
-                  } else {
-                    ErrorToast(text: obj.toString()).show();
-                  }
+                  discordError("$obj");
                   setState(() => state = 3);
                 },
               );
               setState(() => state = 1);
             },
-      tooltip: context.locals.dialogHWEditTitle,
+      tooltip: widget.homework.messageID == null || widget.homework.messageID!.isEmpty
+          ? locals.discordCreateMessageButton
+          : locals.discordEditMessageButton,
       icon: icon ?? const Icon(Icons.error_outline_outlined),
     );
   }
@@ -247,7 +284,11 @@ class _HomeworkDescription extends StatelessWidget {
             homework.subject.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
         ),
         const Padding(padding: EdgeInsets.only(bottom: 0.8)),
@@ -260,7 +301,10 @@ class _HomeworkDescription extends StatelessWidget {
               // I don't know how to achieve the matching color in white mode, temporary solution, until I find a proper one
               boxShadow: const [],
               animationDuration: const Duration(milliseconds: 1),
-              helperTextList: [context.locals.showMore, context.locals.showLess],
+              helperTextList: [
+                context.locals.showMore,
+                context.locals.showLess,
+              ],
               padding: EdgeInsets.zero,
               helper: Helper.text,
               helperTextStyle: TextStyle(
@@ -311,7 +355,10 @@ class SubjectListItem extends StatelessWidget {
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
         shape: OutlineInputBorder(
-          borderSide: BorderSide(width: 1.5, color: Theme.of(context).colorScheme.inversePrimary),
+          borderSide: BorderSide(
+            width: 1.5,
+            color: Theme.of(context).colorScheme.inversePrimary,
+          ),
           borderRadius: const BorderRadius.all(Radius.circular(10.0)),
         ),
         child: Padding(
@@ -358,7 +405,11 @@ class _SubjectDescription extends StatelessWidget {
             subject.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
         ),
         SelectionArea(
@@ -403,7 +454,7 @@ class DiscordRelationListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: Key(dr.channelName),
+      key: Key(dr.channelID),
       onDismissed: onDeleted,
       background: Container(
         color: Colors.red,
@@ -414,7 +465,10 @@ class DiscordRelationListItem extends StatelessWidget {
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
         shape: OutlineInputBorder(
-          borderSide: BorderSide(width: 1.5, color: Theme.of(context).colorScheme.inversePrimary),
+          borderSide: BorderSide(
+            width: 1.5,
+            color: Theme.of(context).colorScheme.inversePrimary,
+          ),
           borderRadius: const BorderRadius.all(Radius.circular(10.0)),
         ),
         child: Padding(
@@ -461,7 +515,11 @@ class _DiscordRelationDescription extends StatelessWidget {
             dr.channelName,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
         ),
         const Padding(padding: EdgeInsets.only(bottom: 0.8)),

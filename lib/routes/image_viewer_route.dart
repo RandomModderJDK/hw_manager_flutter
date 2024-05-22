@@ -99,6 +99,7 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
               child: Builder(
                 builder: (context) {
                   if (_images.isEmpty) return _refreshImages(context);
+                  if (page >= _images.length) return _refreshImages(context);
                   return _images[page];
                 },
               ),

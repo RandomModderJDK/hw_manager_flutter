@@ -12,28 +12,44 @@ mixin Preferences {
 
   static const discordBotToken = "DISCORD.TOKEN";
 
-  static AndroidOptions _getAndroidOptions() => const AndroidOptions(encryptedSharedPreferences: true);
-  static final FlutterSecureStorage _storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
+  //static const discordWebhookChannel = "DISCORD.WEBHOOKCHANNEL";
 
-  static Future<void> saveUntisServer(String server) => _storage.write(key: untisServer, value: server);
+  static AndroidOptions _getAndroidOptions() =>
+      const AndroidOptions(encryptedSharedPreferences: true);
+  static final FlutterSecureStorage _storage =
+      FlutterSecureStorage(aOptions: _getAndroidOptions());
 
-  static Future<void> saveUntisSchool(String school) => _storage.write(key: untisSchool, value: school);
+  static Future<void> saveUntisServer(String server) =>
+      _storage.write(key: untisServer, value: server);
 
-  static Future<void> saveUntisUsername(String username) => _storage.write(key: untisUsername, value: username);
+  static Future<void> saveUntisSchool(String school) =>
+      _storage.write(key: untisSchool, value: school);
 
-  static Future<void> saveUntisPassword(String password) => _storage.write(key: untisPassword, value: password);
+  static Future<void> saveUntisUsername(String username) =>
+      _storage.write(key: untisUsername, value: username);
+
+  static Future<void> saveUntisPassword(String password) =>
+      _storage.write(key: untisPassword, value: password);
 
   static Future<String?> getUntisServer() => _storage.read(key: untisServer);
 
   static Future<String?> getUntisSchool() => _storage.read(key: untisSchool);
 
-  static Future<String?> getUntisUsername() => _storage.read(key: untisUsername);
+  static Future<String?> getUntisUsername() =>
+      _storage.read(key: untisUsername);
 
-  static Future<String?> getUntisPassword() => _storage.read(key: untisPassword);
+  static Future<String?> getUntisPassword() =>
+      _storage.read(key: untisPassword);
 
-  static Future<void> saveDiscordToken(String token) => _storage.write(key: discordBotToken, value: token);
+  static Future<void> saveDiscordToken(String token) =>
+      _storage.write(key: discordBotToken, value: token);
 
-  static Future<String> getDiscordToken() async => await _storage.read(key: discordBotToken) ?? "";
+  static Future<String> getDiscordToken() async =>
+      await _storage.read(key: discordBotToken) ?? "";
+
+  //static Future<void> saveWebhooksChannelID(String? id) => _storage.write(key: discordWebhookChannel, value: id);
+
+  //static Future<String?> getWebhooksChannelID() async => await _storage.read(key: discordWebhookChannel);
 
   /// 0 - Automatic (System)
   /// 1 - Light

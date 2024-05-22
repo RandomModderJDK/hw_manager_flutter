@@ -48,7 +48,8 @@ class _SynchronizeRouteState extends State<SynchronizeRoute> {
                       ),
                       action: SnackBarAction(
                         label: context.locals.deleteSubjectToastUndo,
-                        onPressed: () => DBHelper.insertSubject(subject).then((value) => setState(() {})),
+                        onPressed: () => DBHelper.insertSubject(subject)
+                            .then((value) => setState(() {})),
                       ),
                     ),
                   );

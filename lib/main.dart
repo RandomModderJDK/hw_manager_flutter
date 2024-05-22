@@ -46,12 +46,19 @@ class HWMAppState extends State<HWMApp> {
       floatingLabelBehavior: FloatingLabelBehavior.always,
       border: MaterialStateOutlineInputBorder.resolveWith((Set<MaterialState> states) {
         final Color color = states.contains(MaterialState.focused)
-            ? Color.alphaBlend(cScheme.primary.withAlpha(125), cScheme.inversePrimary)
+            ? Color.alphaBlend(
+                cScheme.primary.withAlpha(125),
+                cScheme.inversePrimary,
+              )
             : cScheme.primary;
-        return OutlineInputBorder(borderSide: BorderSide(width: 1.3, color: color));
+        return OutlineInputBorder(
+          borderSide: BorderSide(width: 1.3, color: color),
+        );
       }),
       errorStyle: TextStyle(color: cScheme.inversePrimary),
-      errorBorder: OutlineInputBorder(borderSide: BorderSide(color: cScheme.inversePrimary)),
+      errorBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: cScheme.inversePrimary),
+      ),
     );
 
     return ThemeData(
@@ -61,12 +68,17 @@ class HWMAppState extends State<HWMApp> {
           backgroundColor: cScheme.inversePrimary,
         ),
       ),
-      dialogTheme:
-          const DialogTheme(shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)))),
+      dialogTheme: const DialogTheme(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+      ),
       colorScheme: cScheme,
       dropdownMenuTheme: DropdownMenuThemeData(
         inputDecorationTheme: inputDecorationTheme,
-        menuStyle: const MenuStyle(padding: MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.zero)),
+        menuStyle: const MenuStyle(
+          padding: MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.zero),
+        ),
       ),
       inputDecorationTheme: inputDecorationTheme,
       useMaterial3: true,
@@ -81,6 +93,7 @@ class HWMAppState extends State<HWMApp> {
       debugShowCheckedModeBanner: false,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      locale: AppLocalizations.supportedLocales.first,
       theme: _getAdjustedTheme(),
       darkTheme: _getAdjustedTheme(true),
       themeMode: _themeMode,

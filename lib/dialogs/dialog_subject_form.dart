@@ -8,6 +8,8 @@ class SubjectFormDialog extends StatefulWidget {
   final String cancel;
   final Subject? subject;
 
+  static final BasicNotifier subjectRelationNotifier = BasicNotifier();
+
   const SubjectFormDialog({
     super.key,
     required this.title,
@@ -23,7 +25,7 @@ class SubjectFormDialog extends StatefulWidget {
 class _SubjectFormDialogState extends State<SubjectFormDialog> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _shortNameController = TextEditingController();
-  final TextEditingController _dChannelController = TextEditingController();
+  DiscordRelation? _discordRelation;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -37,21 +39,27 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
     if (widget.subject == null) return;
     _nameController.text = widget.subject!.name;
     _shortNameController.text = widget.subject!.shortName ?? "";
-    _dChannelController.text = widget.subject!.discordChannel?.channelName ?? "";
+    _discordRelation = widget.subject!.discordChannel;
   }
 
   Future<void> _saveSubject(BuildContext context) async {
     final String name = _nameController.text.trim();
     final String shortName = _shortNameController.text.trim();
-    final String dChannel = _dChannelController.text.trim();
 
-    final Subject subject =
-        Subject(name: name, shortName: shortName, discordChannel: DiscordRelation(channelName: dChannel));
+    final Subject subject = Subject(
+      name: name,
+      shortName: shortName,
+      discordChannel: _discordRelation,
+    );
 
     if (widget.subject != null) {
-      DBHelper.deleteSubject(widget.subject!.name); // If this is in editing mode, delete subject beforehand
+      DBHelper.deleteSubject(
+        widget.subject!.name,
+      ); // If this is in editing mode, delete subject beforehand
     }
-    DBHelper.insertSubject(subject).then((value) => Navigator.pop(context, true));
+    await DBHelper.insertSubject(subject).then((value) => Navigator.pop(context, true));
+    SubjectFormDialog.subjectRelationNotifier
+        .notifyListeners(); // TODO: Implement immediate return value, so we don't have to wait for db
   }
 
   @override
@@ -61,7 +69,10 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
       title: Text(widget.title),
       backgroundColor: Theme.of(context).colorScheme.background,
       actions: [
-        ElevatedButton(onPressed: () => Navigator.of(context).pop(false), child: Text(widget.cancel)),
+        ElevatedButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(widget.cancel),
+        ),
         ElevatedButton(
           onPressed: () {
             if (!formKey.currentState!.validate()) return;
@@ -74,7 +85,8 @@ class _SubjectFormDialogState extends State<SubjectFormDialog> {
         formKey: formKey,
         nameController: _nameController,
         shortNameController: _shortNameController,
-        dChannelController: _dChannelController,
+        onChannelSelected: (dr) => _discordRelation = dr,
+        initChannelSelected: _discordRelation,
       ),
     );
   }
@@ -86,12 +98,14 @@ class SubjectFormContent extends StatelessWidget {
     required this.formKey,
     required this.nameController,
     required this.shortNameController,
-    required this.dChannelController,
+    required this.onChannelSelected,
+    required this.initChannelSelected,
   });
 
   final TextEditingController nameController;
   final TextEditingController shortNameController;
-  final TextEditingController dChannelController;
+  final Function(DiscordRelation?) onChannelSelected;
+  final DiscordRelation? initChannelSelected;
   final GlobalKey<FormState> formKey;
 
   @override
@@ -126,12 +140,37 @@ class SubjectFormContent extends StatelessWidget {
                 menuHeight: 250,
                 requestFocusOnTap: true,
                 inputDecorationTheme: Theme.of(context).inputDecorationTheme,
-                controller: dChannelController,
                 hintText: context.locals.dialogSubjectChannelNameHint,
                 label: Text(context.locals.dialogSubjectChannelName),
-                dropdownMenuEntries: snapshot.data != null
-                    ? snapshot.data!.map((s) => DropdownMenuEntry(value: s, label: s.channelName)).toList()
-                    : [],
+                expandedInsets: EdgeInsets.zero,
+                initialSelection: initChannelSelected != null
+                    ? snapshot.data == null
+                        ? initChannelSelected
+                        : snapshot.data!.firstWhere((element) => element == initChannelSelected)
+                    : null,
+                onSelected: onChannelSelected,
+                searchCallback: (entries, s) {
+                  if (entries.where((e) => e.label.contains(s)).isEmpty) {
+                    onChannelSelected(null);
+                    return null;
+                  }
+
+                  final int index = entries.indexWhere((entry) => entry.label.contains(s));
+
+                  return index != -1 ? index : null;
+                },
+                dropdownMenuEntries: (snapshot.data != null
+                        ? snapshot.data!
+                        : initChannelSelected != null
+                            ? [initChannelSelected!]
+                            : <DiscordRelation>[])
+                    .map(
+                      (s) => DropdownMenuEntry<DiscordRelation>(
+                        value: s,
+                        label: "${s.channelName} (${s.channelID})",
+                      ),
+                    )
+                    .toList(),
               );
             },
           ),

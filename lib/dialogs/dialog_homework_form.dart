@@ -55,10 +55,12 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
       id: widget.homework?.id,
       subject: Subject(name: subject),
       overdueTimestamp: _dateSelected,
-      creationTimestamp: DateTime.timestamp(),
+      creationTimestamp: widget.homework != null ? widget.homework!.creationTimestamp : DateTime.timestamp(),
       content: content,
       finished: false,
+      messageID: widget.homework != null ? widget.homework!.messageID : "",
     );
+    // TODO: Ask for edit of the remote discord message, if anything has changed with an edit of this homework
     if (kDebugMode) {
       print(hw);
     }
@@ -117,19 +119,47 @@ class _HomeworkFormDialogState extends State<HomeworkFormDialog> {
             _userDated = true;
           });
         },
+        initSelectedSubject: widget.homework?.subject,
         onSubjectSelected: (s) async {
           if (s == null) return;
-          // Trigger the next date search from untis
-          final UntisSubject? subject = await UntisHelper().searchUntisSubject(s.name, s.shortName);
-          if (kDebugMode) {
-            print("found this subject in untis: $subject");
+          if (!await UntisHelper().loginCredentialsValid) return;
+          final DateTime startUntis = DateTime.timestamp();
+          UntisSubject? subject;
+          try {
+            // Trigger the next date search from untis
+            subject = await UntisHelper().searchUntisSubject(s.name, s.shortName);
+          } catch (e) {
+            if (e is! ArgumentError) rethrow;
+            if (e.message == "Still couldn't login") {
+              ErrorToast(text: locals.untisLoginFailure).show();
+              return;
+            }
           }
-          if (subject == null) return;
+          if (subject == null) {
+            const ErrorToast(text: "Ohoh...").show();
+            return;
+          }
+          final DateTime searchUntis = DateTime.timestamp();
+          if (kDebugMode) {
+            final Duration diff = searchUntis.difference(startUntis);
+            print(
+              "found this subject in untis in ${diff.inMilliseconds}ms: $subject",
+            );
+          }
           final UntisPeriod? period = await UntisHelper().searchUntisSubjectUntisPeriod(subject);
           if (kDebugMode) {
-            print("and these periods: $period");
+            final DateTime periodUntis = DateTime.timestamp();
+            final Duration totalDiff = periodUntis.difference(startUntis);
+            final Duration subDiff = periodUntis.difference(searchUntis);
+            print(
+              "and these periods in ${subDiff.inMilliseconds}ms; total of ${totalDiff.inMilliseconds}ms: $period",
+            );
           }
-          if (period == null) return;
+          if (period == null) {
+            untisError(locals.dialogHWSubjectUntisFailure);
+            return;
+          }
+          untisConfirmation(locals.dialogHWSubjectUntisSuccess);
           setState(() {
             _dateSelected = period.startDateTime;
           });
@@ -148,6 +178,7 @@ class HomeworkFormContent extends StatelessWidget {
     required this.dateSelected,
     required this.userDated,
     required this.onDateSelected,
+    required this.initSelectedSubject,
     required this.onSubjectSelected,
   });
 
@@ -156,6 +187,7 @@ class HomeworkFormContent extends StatelessWidget {
   final DateTime dateSelected;
   final bool userDated;
   final Function(DateTime) onDateSelected;
+  final Subject? initSelectedSubject;
   final void Function(Subject?) onSubjectSelected;
   final GlobalKey<FormState> formKey;
 
@@ -170,23 +202,43 @@ class HomeworkFormContent extends StatelessWidget {
           FutureBuilder(
             future: DBHelper.retrieveSubjects(),
             builder: (context, snapshot) {
-              return FormField<String>(
-                validator: (s) => s == null || s.isEmpty ? context.locals.dialogHWSubjectValidator : null,
-                builder: (FormFieldState<String> field) {
-                  subjectController.addListener(() => field.didChange(subjectController.text));
-                  return DropdownMenu<Subject>(
-                    errorText: field.hasError ? field.errorText : null,
-                    menuHeight: 250,
-                    requestFocusOnTap: true,
-                    inputDecorationTheme: Theme.of(context).inputDecorationTheme,
-                    controller: subjectController,
-                    onSelected: onSubjectSelected,
-                    label: Text(context.locals.dialogHWSubject),
-                    dropdownMenuEntries: snapshot.data != null
-                        ? snapshot.data!.map((s) => DropdownMenuEntry(value: s, label: s.name)).toList()
-                        : [],
-                  );
-                },
+              return Row(
+                children: [
+                  FormField<String>(
+                    initialValue: subjectController.text,
+                    validator: (s) => s == null || s.isEmpty ? context.locals.dialogHWSubjectValidator : null,
+                    builder: (FormFieldState<String> field) {
+                      subjectController.addListener(
+                        () => field.didChange(subjectController.text),
+                      );
+                      return Flexible(
+                        child: DropdownMenu<Subject>(
+                          errorText: field.hasError ? field.errorText : null,
+                          menuHeight: 250,
+                          requestFocusOnTap: true,
+                          inputDecorationTheme: Theme.of(context).inputDecorationTheme,
+                          controller: subjectController,
+                          onSelected: onSubjectSelected,
+                          label: Text(context.locals.dialogHWSubject),
+                          initialSelection: snapshot.data == null
+                              ? initSelectedSubject
+                              : snapshot.data!.where((s) => s == initSelectedSubject).firstOrNull,
+                          dropdownMenuEntries: snapshot.data != null
+                              ? snapshot.data!
+                                  .map(
+                                    (s) => DropdownMenuEntry(
+                                      value: s,
+                                      label: s.name,
+                                    ),
+                                  )
+                                  .toList()
+                              : [],
+                        ),
+                      );
+                    },
+                  ),
+                  // TODO: Implement a Loading indicator for untis
+                ],
               );
             },
           ),

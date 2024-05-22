@@ -2,11 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hw_manager_flutter/dialogs/dialog_homework_form.dart';
+import 'package:hw_manager_flutter/dialogs/dialog_subject_form.dart';
+import 'package:hw_manager_flutter/discord_util.dart';
 import 'package:hw_manager_flutter/general_util.dart';
 import 'package:hw_manager_flutter/list_tiles.dart';
 import 'package:hw_manager_flutter/my_listview.dart';
 import 'package:hw_manager_flutter/routes/settings_route.dart';
-//import 'package:hw_manager_flutter/routes/synchronize_route.dart';
+import 'package:hw_manager_flutter/shared_preferences.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -40,9 +42,11 @@ class HomeRouteState extends State<HomeRoute> {
                 ),
               ).then((v) {
                 if (v == true) setState(() {});
+                // TODO: Implement asking for edit of discord message, when one exists
               }),
               onDeleted: (DismissDirection direction) async {
                 final Homework hw = snapshot.data![position];
+                SubjectFormDialog.subjectRelationNotifier.addListener(() => setState((){}));
                 final List<HWPage> pages = await DBHelper.retrieveHWPages(hw);
                 snapshot.data!.remove(hw);
                 await DBHelper.deleteHomework(hw);
@@ -83,6 +87,22 @@ class HomeRouteState extends State<HomeRoute> {
   @override
   void initState() {
     super.initState();
+    DiscordHelper().loggedInNotifier.addListener(() => setState((){}));
+    SubjectFormDialog.subjectRelationNotifier.addListener(() => setState((){}));
+    () async {
+      final token = await Preferences.getDiscordToken();
+      if (DiscordHelper().tokenEqualsTo(null) && !DiscordHelper().isLoggedIn && token.isNotEmpty) {
+        final bool successfulLogin = await DiscordHelper().login(token);
+        final bool successfulGuildRefresh = await DiscordHelper().refreshGuildCache();
+        final bool successfulChannelRefresh = await DiscordHelper().refreshChannelCache();
+        if (!(successfulLogin && successfulGuildRefresh && successfulChannelRefresh)) {
+          discordError(locals.settingsDiscordRelationsBotTryTokenFailure);
+          return;
+        }
+        discordConfirmation(locals.settingsDiscordRelationsBotTryTokenSuccess);
+        setState(() {});
+      }
+    }();
   }
 
   @override
@@ -100,21 +120,52 @@ class HomeRouteState extends State<HomeRoute> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(context.locals.homeTitle),
         actions: <Widget>[
-          /*IconButton(
+          IconButton(
             icon: const Icon(Icons.cloud_sync_outlined),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SynchronizeRoute(),
-              ),
-            ),
-          ),*/
+            tooltip: locals.discordHomeworkFetchTitle,
+            onPressed: !DiscordHelper().isLoggedIn
+                ? null
+                : () => DiscordHelper().fetchHomework().then((map) async {
+              /*void Function(String text) discordError =
+                      (String text) => HWMToast(text: text, color: Colors.red, icon: const Icon(Icons.cloud_sync_outlined)).show();*/
+              void fetchConfirmation(String text) =>
+                  HWMToast(text: text, color: Colors.green.shade900, icon: const Icon(Icons.cloud_sync_outlined)).show();
+              void fetchStatusUpdate(String text) =>
+                  HWMToast(text: text, color: Colors.yellow.shade700, icon: const Icon(Icons.cloud_sync_outlined)).show();
+                  int totCount = map.length;
+                  int overwriteCount = 0;
+                      map.forEach((hw, pagesData) async {
+                        final Homework? existingHomework = await DBHelper.getHomeworkByMessageID(hw.messageID!);
+                        if (existingHomework != null) {
+                          overwriteCount++;
+                          if (kDebugMode) {
+                            print("${existingHomework.content} was overwritten");
+                          }
+                          hw.id = existingHomework.id; // TODO: Maybe ask for confirmation to overwrite
+                        }
+                        if (totCount == 1) {
+                          fetchConfirmation(locals.discordHomeworkFetchSuccess(map.length, map.length-overwriteCount));
+                          fetchStatusUpdate(locals.discordHomeworkFetchLocalOverwriteStatus(overwriteCount));
+                        } else {
+                          totCount--;
+                        }
+                        hw.id = await DBHelper.insertHomework(hw);
+                        final List<HWPage> pages = [];
+                        for (int i = 0; i < pagesData.length; i++) {
+                          pages.add(HWPage(hw.id!, pagesData[i], order: i));
+                        }
+                        DBHelper.insertHWPages(pages.toList());
+                        setState(() {});
+                      });
+                    }),
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SettingsRoute()),
-            ),
+            onPressed: () =>
+               Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsRoute()),
+              ),
           ),
         ],
       ),
