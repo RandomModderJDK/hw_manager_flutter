@@ -47,7 +47,8 @@ jobs:
         if: steps.assets.output.days == 0
         with:
           cache: true
-          
+      - name: Download dependencies
+        run: flutter pub get
       - name: Generate flutter launcher icons
         if: steps.assets.output.days == 0
         run: flutter pub run flutter_launcher_icons
