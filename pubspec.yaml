@@ -47,9 +47,9 @@ dependencies:
   shared_preferences: ^2.2.0
 
   # General UI components
-  date_field: ^3.0.5
+  date_field: ^5.0.1
   expandable_widgets: ^1.0.3+1
-  photo_view: ^0.14.0
+  photo_view: ^0.15.0
   image_picker: ^1.0.4
   fluttertoast: ^8.2.2
 
