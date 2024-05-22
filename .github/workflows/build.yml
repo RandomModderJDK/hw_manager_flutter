@@ -134,9 +134,9 @@ jobs:
       - name: 'Set up JDK 11'
         uses: 'actions/setup-java@v1'
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
-        # Set up JDK 11 using the "actions/setup-java" action.
+        # Set up JDK 17 using the "actions/setup-java" action.
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
