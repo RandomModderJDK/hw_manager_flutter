@@ -44,6 +44,8 @@ Go to the website above and click on the share icon. There click on "Add to home
 ##### Use a profile (WebClip)
 Go to [https://ivi.cx/](https://ivi.cx/) and enter the details you want. You can use for example the asset provided in this repository as an icon. 
 
+<br>
+
 #### Android home screen app
 
 You can use chrome to create an web app on android. This is like the native app, especially when the browser caches it.
