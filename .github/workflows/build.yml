@@ -163,7 +163,7 @@ jobs:
         uses: actions/upload-artifact@v3.1.2
         with:
           name: HW-manager-${{ env.date }}.apk
-          path: {{ env.apkbuild }}
+          path: '{{ env.apkbuild }}'
 
       - name: Upload files to a GitHub release
         if: github.event_name == 'release'
