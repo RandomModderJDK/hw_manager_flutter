@@ -20,7 +20,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           cache: true
-          channel: beta
+          
       - name: Download dependencies
         run: flutter pub get
       - name: Run tests
@@ -47,7 +47,7 @@ jobs:
         if: steps.assets.output.days == 0
         with:
           cache: true
-          channel: beta
+          
       - name: Generate flutter launcher icons
         if: steps.assets.output.days == 0
         run: flutter pub run flutter_launcher_icons
@@ -69,7 +69,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           cache: true
-          channel: beta
+          
       - run: flutter pub get
 
       # Implement this troguh other action - run: dart run sqflite_common_ffi_web:setup
@@ -96,7 +96,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           cache: true
-          channel: beta
+          
       - name: Gathering dependencies
         run: flutter pub get
       - name: Build ios xcarchive
