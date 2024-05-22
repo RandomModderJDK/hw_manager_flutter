@@ -153,7 +153,7 @@ jobs:
           
       - name: Gathering dependencies
         run: flutter pub get
-      - name: Build ios xcarchive
+      - name: Build apk
         id: 'apkbuild'
         run: 'flutter build apk --split-per-abi && echo "apkbuild=build/app/outputs/flutter-apk/" >> $GITHUB_ENV'
       - name: Get current date
