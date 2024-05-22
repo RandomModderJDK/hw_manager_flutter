@@ -153,7 +153,7 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          packages: 'build-tools;android-30'
+          packages: 'build-tools;latest'
       - name: Gathering dependencies
         run: flutter pub get
       - name: Build apk
