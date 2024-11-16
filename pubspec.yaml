@@ -62,7 +62,6 @@ dependencies:
   nyxx:
     git: https://github.com/RandomModderJDK/nyxx.git
   http: ^1.2.1
-  http_proxy_override: ^1.0.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
