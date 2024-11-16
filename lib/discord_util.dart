@@ -477,10 +477,10 @@ class BasicWebhook {
 
   factory BasicWebhook.fromUrlString(String url) {
     final List<String> splitUrl = url.split("/");
-    if (splitUrl.length < 7) throw const FormatException("This is not a valid webhook url");
+    if (splitUrl.length < 7) throw const FormatException("This is not a valid webhook url, length below 7");
 
     final BigInt? id = BigInt.tryParse(splitUrl[5]);
-    if (id == null) throw const FormatException("This is not a valid webhook url");
+    if (id == null) throw const FormatException("This is not a valid webhook url, no id");
     final String token = splitUrl[6];
     return BasicWebhook(
       id: Snowflake.fromBigInt(id),
