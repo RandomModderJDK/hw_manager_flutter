@@ -540,6 +540,16 @@
   "@discordWebhookURLInvalid": {
     "description": "Error message, when discord returns unknown webhook error"
   },
+  "discordNetworkError": "Network error, whilst requesting discord: {err}",
+  "@discordNetworkError": {
+    "description": "Error message, when a the network seemingly failed",
+    "placeholders": {
+          "err": {
+            "type": "String",
+            "example": "Connection refused"
+          }
+        }
+  },
   "takePhoto": "Add a photo",
   "@takePhoto": {
     "description": "Take a photo tooltip"

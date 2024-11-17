@@ -226,7 +226,7 @@ class DiscordHelper {
       if (kDebugMode) {
         print(s);
       }
-      discordError(locals.discordWebhookURLInvalid);
+      discordError(locals.discordNetworkError(s.toString()));
       return false;
     }
     return true;

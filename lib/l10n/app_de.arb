@@ -96,6 +96,7 @@
   "discordWebhookTooManyPagesError": "Nur 10 Seiten werden gesendet, weil Discord nicht mehr unterstützt!",
   "discordWebhookMessageEditNotPossible": "Original-Nachricht existiert nicht mehr, sende Neue...",
   "discordWebhookURLInvalid": "Der Webhook ist ungültig",
+  "discordNetworkError": "Netzwerkfehler, beim Verbinden zu Discord: {err}",
   "takePhoto": "Ein Foto hinzufügen",
   "photoOptionCamera": "Schieß ein Foto",
   "photoOptionGallery": "Füge Bild aus Gallerie hinzu",

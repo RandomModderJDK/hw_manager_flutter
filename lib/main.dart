@@ -1,11 +1,21 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:http_proxy/http_proxy.dart';
 import 'package:hw_manager_flutter/routes/home_route.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 
 void main() async {
+  if (!kIsWeb) {
+    if (Platform.isAndroid || Platform.isAndroid) {
+      WidgetsFlutterBinding.ensureInitialized();
+      final HttpProxy httpProxy = await HttpProxy.createHttpProxy();
+      HttpOverrides.global = httpProxy;
+    }
+  }
   await DBHelper().initDBs();
   runApp(const HWMApp());
 }
