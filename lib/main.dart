@@ -10,7 +10,7 @@ import 'package:hw_manager_flutter/sqlite.dart';
 
 void main() async {
   if (!kIsWeb) {
-    if (Platform.isAndroid || Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       WidgetsFlutterBinding.ensureInitialized();
       final HttpProxy httpProxy = await HttpProxy.createHttpProxy();
       HttpOverrides.global = httpProxy;
