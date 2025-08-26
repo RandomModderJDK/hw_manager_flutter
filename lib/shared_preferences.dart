@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_secure_storage/simple_secure_storage.dart';
 
 mixin Preferences {
   static const themeStatus = "THEMESTATUS";
@@ -14,54 +14,41 @@ mixin Preferences {
 
   //static const discordWebhookChannel = "DISCORD.WEBHOOKCHANNEL";
 
-  static AndroidOptions _getAndroidOptions() =>
-      const AndroidOptions(encryptedSharedPreferences: true);
-  static final FlutterSecureStorage _storage =
-      FlutterSecureStorage(aOptions: _getAndroidOptions());
+  static Future<void> saveUntisServer(String server) => SimpleSecureStorage.write(untisServer, server);
 
-  static Future<void> saveUntisServer(String server) =>
-      _storage.write(key: untisServer, value: server);
+  static Future<void> saveUntisSchool(String school) => SimpleSecureStorage.write(untisSchool, school);
 
-  static Future<void> saveUntisSchool(String school) =>
-      _storage.write(key: untisSchool, value: school);
+  static Future<void> saveUntisUsername(String username) => SimpleSecureStorage.write(untisUsername, username);
 
-  static Future<void> saveUntisUsername(String username) =>
-      _storage.write(key: untisUsername, value: username);
+  static Future<void> saveUntisPassword(String password) => SimpleSecureStorage.write(untisPassword, password);
 
-  static Future<void> saveUntisPassword(String password) =>
-      _storage.write(key: untisPassword, value: password);
+  static Future<String?> getUntisServer() => SimpleSecureStorage.read(untisServer);
 
-  static Future<String?> getUntisServer() => _storage.read(key: untisServer);
+  static Future<String?> getUntisSchool() => SimpleSecureStorage.read(untisSchool);
 
-  static Future<String?> getUntisSchool() => _storage.read(key: untisSchool);
+  static Future<String?> getUntisUsername() => SimpleSecureStorage.read(untisUsername);
 
-  static Future<String?> getUntisUsername() =>
-      _storage.read(key: untisUsername);
+  static Future<String?> getUntisPassword() => SimpleSecureStorage.read(untisPassword);
 
-  static Future<String?> getUntisPassword() =>
-      _storage.read(key: untisPassword);
+  static Future<void> saveDiscordToken(String token) => SimpleSecureStorage.write(discordBotToken, token);
 
-  static Future<void> saveDiscordToken(String token) =>
-      _storage.write(key: discordBotToken, value: token);
+  static Future<String> getDiscordToken() async => await SimpleSecureStorage.read(discordBotToken) ?? "";
 
-  static Future<String> getDiscordToken() async =>
-      await _storage.read(key: discordBotToken) ?? "";
+  //static Future<void> saveWebhooksChannelID(String? id) => SimpleSecureStorage.write(key: discordWebhookChannel, value: id);
 
-  //static Future<void> saveWebhooksChannelID(String? id) => _storage.write(key: discordWebhookChannel, value: id);
-
-  //static Future<String?> getWebhooksChannelID() async => await _storage.read(key: discordWebhookChannel);
+  //static Future<String?> getWebhooksChannelID() async => await SimpleSecureStorage.read(key: discordWebhookChannel);
 
   /// 0 - Automatic (System)
   /// 1 - Light
   /// 2 - Dark
   static Future<void> setThemeMode(ThemeMode mode) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final SharedPreferencesAsync prefs = SharedPreferencesAsync();
     prefs.setString(themeStatus, mode.name);
   }
 
   static Future<ThemeMode> getThemeMode() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String mName = prefs.getString(themeStatus) ?? "system";
+    final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+    final String mName = await prefs.getString(themeStatus) ?? "system";
     final ThemeMode mode = ThemeMode.values.firstWhere((m) => m.name == mName);
     return mode;
   }

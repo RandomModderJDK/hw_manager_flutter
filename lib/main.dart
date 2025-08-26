@@ -7,14 +7,20 @@ import 'package:hw_manager_flutter/l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/routes/home_route.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
+import 'package:simple_secure_storage/simple_secure_storage.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     if (Platform.isAndroid || Platform.isIOS) {
-      WidgetsFlutterBinding.ensureInitialized();
       final HttpProxy httpProxy = await HttpProxy.createHttpProxy();
       HttpOverrides.global = httpProxy;
     }
+    await SimpleSecureStorage.initialize(const InitializationOptions());
+  } else {
+    // To secure your data on Flutter web, we have to encrypt it using a password and a salt.
+    await SimpleSecureStorage.initialize(WebInitializationOptions(
+        keyPassword: "thisismysupersecretpassword,thatnobodyshouldbeseeing right now.", encryptionSalt: "salty"));
   }
   await DBHelper().initDBs();
   runApp(const HWMApp());

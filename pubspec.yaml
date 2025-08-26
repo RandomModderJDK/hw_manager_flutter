@@ -55,7 +55,8 @@ dependencies:
 
   # Untis Integration
   dart_untis_mobile: ^1.0.1
-  flutter_secure_storage: ^9.0.0
+  #flutter_secure_storage: ^9.0.0
+  simple_secure_storage: ^0.3.4
 
   # Discord Integration
   #nyxx: ^6.0.0
