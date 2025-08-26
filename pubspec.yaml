@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.4.2
+version: 1.4.3
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -33,13 +33,13 @@ dependencies:
     # Internationalization
   flutter_localizations:
     sdk: flutter
-  intl:
+  intl: any
 
   # SQlite database
   path: ^1.8.3
   path_provider: ^2.1.1
   sqflite_common_ffi: ^2.3.0
-  sqflite_common_ffi_web: ^0.4.0
+  sqflite_common_ffi_web: ^1.0.1+1
   sqlite3_flutter_libs: ^0.5.26
 
   # Preferences
@@ -47,7 +47,7 @@ dependencies:
   shared_preferences: ^2.2.0
 
   # General UI components
-  date_field: ^5.0.1
+  date_field: ^6.0.3+1
   expandable_widgets: ^1.0.3+1
   photo_view: ^0.15.0
   image_picker: ^1.0.4
@@ -68,7 +68,7 @@ dependencies:
     git: https://github.com/RandomModderJDK/http_proxy.git
 
 dev_dependencies:
-  flutter_launcher_icons: ^0.13.1
+  flutter_launcher_icons: ^0.14.4
   flutter_test:
     sdk: flutter
   integration_test:
@@ -101,13 +101,12 @@ flutter_launcher_icons:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  # for l10n
+  generate: true
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
-  generate: true
 
   # To add assets to your application, add an assets section, like this:
   # assets:

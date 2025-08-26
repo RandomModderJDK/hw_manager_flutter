@@ -228,8 +228,17 @@ class DBHelper {
   }
 
   static Future<void> deleteDiscordRelation(String channelID) async {
-    await DBHelper().db.update('subjects', {"discordChannelID": ""}, where: "name = ?", whereArgs: [channelID]);
+    await DBHelper()
+        .db
+        .update('subjects', {"discordChannelID": ""}, where: "discordChannelID = ?", whereArgs: [channelID]);
     await DBHelper().db.delete('discordRelations', where: "channelID = ?", whereArgs: [channelID]);
+  }
+
+  static Future<void> renameDiscordRelation(String oldID, String newID) async {
+    await DBHelper()
+        .db
+        .update('subjects', {"discordChannelID": newID}, where: "discordChannelID = ?", whereArgs: [oldID]);
+    await DBHelper().db.update('discordRelations', {"channelID": newID}, where: "channelID = ?", whereArgs: [oldID]);
   }
 
   /// Inserts or updates homework supplied into database
@@ -415,11 +424,11 @@ class Subject {
     if (map["discordChannelID"] != null && map["discordChannelID"] != "null") {
       dr = await DBHelper.getDiscordRelation(map["discordChannelID"]!);
       if (dr == null) {
+        // Subject points to channelid that isnt in relation database, this is not intended
         if (kDebugMode) {
           print("DATABASE ERROR ${map["discordChannelID"]} doesn't exist");
         }
       }
-      // Subject points to channelid that isnt in realtion database, so ERROR
     }
     return Subject(
       name: map["name"]!,

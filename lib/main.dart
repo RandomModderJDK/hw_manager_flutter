@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http_proxy/http_proxy.dart';
+import 'package:hw_manager_flutter/l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/routes/home_route.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
@@ -80,7 +80,7 @@ class HWMAppState extends State<HWMApp> {
           backgroundColor: cScheme.inversePrimary,
         ),
       ),
-      dialogTheme: const DialogTheme(
+      dialogTheme: const DialogThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),

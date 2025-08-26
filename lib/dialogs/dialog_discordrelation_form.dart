@@ -76,7 +76,8 @@ class _DiscordRelationFormDialogState extends State<DiscordRelationFormDialog> {
     );
 
     if (widget.dr != null) {
-      await DBHelper.deleteDiscordRelation(widget.dr!.channelID); // If this is in editing mode, delete dr beforehand
+      await DBHelper.renameDiscordRelation(
+          widget.dr!.channelID, id); // If this is in editing mode, rename dr in database beforehand
     }
     if (selectedChannel?.id == null) discordStatusUpdate("ID: $id");
     await DBHelper.insertDiscordRelation(dr).then((value) => Navigator.pop(context, true));

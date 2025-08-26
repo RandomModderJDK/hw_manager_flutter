@@ -50,12 +50,16 @@ class HomeRouteState extends State<HomeRoute> {
                 final List<HWPage> pages = await DBHelper.retrieveHWPages(hw);
                 snapshot.data!.remove(hw);
                 await DBHelper.deleteHomework(hw);
+                if (hw.subject.discordChannel != null) {
+                  if (hw.subject.discordChannel!.webhookUrl != null) {
+                    final String url = hw.subject.discordChannel!.webhookUrl!;
+                    await DiscordHelper().deleteWebhookMessage(url, hw);
+                  }
+                }
                 setState(() {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
-                        context.locals.deleteHWToast(hw.id!, hw.subject.name),
-                      ),
+                      content: Text(context.locals.deleteHWToast(hw.id!, hw.subject.name)),
                       action: SnackBarAction(
                         label: context.locals.deleteHWToastUndo,
                         onPressed: () => Future.wait([
@@ -87,6 +91,7 @@ class HomeRouteState extends State<HomeRoute> {
   @override
   void initState() {
     super.initState();
+
     DiscordHelper().loggedInNotifier.addListener(() => setState((){}));
     SubjectFormDialog.subjectRelationNotifier.addListener(() => setState((){}));
     () async {
@@ -132,32 +137,32 @@ class HomeRouteState extends State<HomeRoute> {
                   HWMToast(text: text, color: Colors.green.shade900, icon: const Icon(Icons.cloud_sync_outlined)).show();
               void fetchStatusUpdate(String text) =>
                   HWMToast(text: text, color: Colors.yellow.shade700, icon: const Icon(Icons.cloud_sync_outlined)).show();
-                  int totCount = map.length;
-                  int overwriteCount = 0;
-                      map.forEach((hw, pagesData) async {
-                        final Homework? existingHomework = await DBHelper.getHomeworkByMessageID(hw.messageID!);
-                        if (existingHomework != null) {
-                          overwriteCount++;
-                          if (kDebugMode) {
-                            print("${existingHomework.content} was overwritten");
-                          }
-                          hw.id = existingHomework.id; // TODO: Maybe ask for confirmation to overwrite
-                        }
-                        if (totCount == 1) {
-                          fetchConfirmation(locals.discordHomeworkFetchSuccess(map.length, map.length-overwriteCount));
-                          fetchStatusUpdate(locals.discordHomeworkFetchLocalOverwriteStatus(overwriteCount));
-                        } else {
-                          totCount--;
-                        }
-                        hw.id = await DBHelper.insertHomework(hw);
-                        final List<HWPage> pages = [];
-                        for (int i = 0; i < pagesData.length; i++) {
-                          pages.add(HWPage(hw.id!, pagesData[i], order: i));
-                        }
-                        DBHelper.insertHWPages(pages.toList());
-                        setState(() {});
-                      });
-                    }),
+              int totCount = map.length;
+              int overwriteCount = 0;
+              map.forEach((hw, pagesData) async {
+                final Homework? existingHomework = await DBHelper.getHomeworkByMessageID(hw.messageID!);
+                if (existingHomework != null) {
+                  overwriteCount++;
+                  if (kDebugMode) {
+                    print("${existingHomework.content} was overwritten");
+                  }
+                  hw.id = existingHomework.id; // TODO: Maybe ask for confirmation to overwrite
+                }
+                if (totCount == 1) {
+                  fetchConfirmation(locals.discordHomeworkFetchSuccess(map.length, map.length-overwriteCount));
+                  fetchStatusUpdate(locals.discordHomeworkFetchLocalOverwriteStatus(overwriteCount));
+                } else {
+                  totCount--;
+                }
+                hw.id = await DBHelper.insertHomework(hw);
+                final List<HWPage> pages = [];
+                for (int i = 0; i < pagesData.length; i++) {
+                  pages.add(HWPage(hw.id!, pagesData[i], order: i));
+                }
+                DBHelper.insertHWPages(pages.toList());
+                setState(() {});
+              });
+            }),
           ),
           IconButton(
             icon: const Icon(Icons.settings),

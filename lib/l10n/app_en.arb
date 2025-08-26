@@ -537,18 +537,32 @@
     "description": "Error/status message, when messageID stored in db doesn't match up to real msg"
   },
   "discordWebhookURLInvalid": "The webhook is invalid",
-  "@discordWebhookURLInvalid": {
-    "description": "Error message, when discord returns unknown webhook error"
+    "@discordWebhookURLInvalid": {
+      "description": "Error message, when discord returns unknown webhook error"
+  },
+  "discordOnlyCertainChannelsChecked": "Discord bot (token) only had access to {amount}/{total} channels",
+  "@discordOnlyCertainChannelsChecked": {
+    "description": "Status update, informing the user that the discordRelations could be broken",
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "type": "int",
+        "example": "3"
+      }
+    }
   },
   "discordNetworkError": "Network error, whilst requesting discord: {err}",
   "@discordNetworkError": {
     "description": "Error message, when a the network seemingly failed",
     "placeholders": {
-          "err": {
-            "type": "String",
-            "example": "Connection refused"
-          }
-        }
+      "err": {
+        "type": "String",
+        "example": "Connection refused"
+      }
+    }
   },
   "takePhoto": "Add a photo",
   "@takePhoto": {

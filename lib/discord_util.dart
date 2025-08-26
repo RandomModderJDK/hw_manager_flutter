@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:hw_manager_flutter/general_util.dart';
+import 'package:hw_manager_flutter/l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -187,6 +187,31 @@ class DiscordHelper {
     return _channels != null;
   }
 
+  /// Deletes message of webhook
+  ///
+  /// Returns true, when homework doesn't have message id
+  Future<bool> deleteWebhookMessage(String url, Homework homework) async {
+    try {
+      final BasicWebhook wh = BasicWebhook.fromUrlString(url);
+      if (homework.messageID == null || homework.messageID!.isEmpty) return true;
+      try {
+        await wh.delete(Snowflake.parse(homework.messageID!));
+      } catch (error) {
+        rethrow;
+      }
+
+      homework.messageID = null;
+      DBHelper.insertHomework(homework);
+    } catch (s) {
+      if (kDebugMode) {
+        print(s);
+      }
+      discordError(locals.discordNetworkError(s.toString()));
+      return false;
+    }
+    return true;
+  }
+
   // TODO: Send a color which is stored in the hw's subject
   Future<bool> sendWebhook(String url, Homework homework) async {
     var pages = await DBHelper.retrieveHWPages(homework);
@@ -242,9 +267,12 @@ class DiscordHelper {
   Future<TextChannel?> getTextChannel(String channelID) async {
     final channels = await this.channels;
     if (channels == null) return null;
-    final allChannel = channels.firstWhere((c) => c.id.value.toString() == channelID);
-    assert(allChannel is TextChannel);
-    return allChannel as TextChannel;
+    final allChannel = channels.where((c) => c.id.value.toString() == channelID);
+    if (allChannel.isEmpty || allChannel.firstOrNull is! TextChannel) {
+      if (kDebugMode) print("Channel $channelID cant be accessed with discord bot");
+      return null;
+    }
+    return allChannel.first as TextChannel;
   }
 
 // The format of a Message is:
@@ -255,12 +283,20 @@ class DiscordHelper {
   }*/
   Future<Map<Homework, List<Uint8List>>> fetchHomework() async {
     final Map<Homework, List<Uint8List>> list = {};
+    int successesResolving = 0;
+    int channelsChecked = 0;
     for (final DiscordRelation dr in await DBHelper.retrieveDiscordRelations()) {
       final List<Subject> subj = await DBHelper.retrieveSubjectsIn(dr.channelID);
+      // TODO: Ask if it only should check for subjects which are from a particular channel or all existing ones
       if (subj.isEmpty) continue;
+      channelsChecked += 1;
       final c = await getTextChannel(dr.channelID);
-      if (c == null) continue;
+      if (c == null) {
+        if (kDebugMode) print("${dr.channelID}is not a channel");
+        continue;
+      }
       final messages = await c.messages.fetchMany(limit: 15);
+      successesResolving += 1;
       for (final Message msg in messages) {
         try {
           final Embed embed = msg.embeds.first;
@@ -303,7 +339,7 @@ class DiscordHelper {
           if (embed.title == null || embed.title == "") throw StateError("There is no title/subject in this message");
           // TODO: Be careful about subjects' longName being with parenthesis
           bool isExactMatch(Subject s, Embed embed) => embed.title == "${s.name} (${s.shortName})";
-          bool ignoreShortNameMatch(Subject s, Embed embed) =>
+          bool equalsIgnoreShortName(Subject s, Embed embed) =>
               s.name == embed.title!.substring(0, embed.title!.length - (embed.title!.split(" (").last.length + 2));
 
           final Subject? matchingSubj;
@@ -316,14 +352,31 @@ class DiscordHelper {
             //       When enabled should this be still null
             matchingSubj = subj.where((s) => s.name == embed.title!).firstOrNull;
           } else {
-            matchingSubj = subj.where((s) => ignoreShortNameMatch(s, embed)).firstOrNull;
+            matchingSubj = subj.where((s) => equalsIgnoreShortName(s, embed)).firstOrNull;
           }
           if (matchingSubj == null) {
             // TODO: Implement ask for creating subject, if this subj doesn't exist in local subjects
             if (kDebugMode) {
+              // Test equalsIgnoreShortName
+              const Subject testS = Subject(name: "test");
+              final Embed testEmbed = Embed(
+                  title: "test (hehea)",
+                  description: "description",
+                  url: null,
+                  timestamp: null,
+                  color: null,
+                  footer: null,
+                  image: null,
+                  thumbnail: null,
+                  video: null,
+                  provider: null,
+                  author: null,
+                  fields: null);
+              assert(equalsIgnoreShortName(testS, testEmbed));
+
               print("Does not have a matching local subject");
               print(
-                "Local subjects don't contain ${embed.title!.substring(0, embed.title!.length - (embed.title!.split(" (").last.length))}",
+                "Local subjects don't contain ${embed.title!.substring(0, embed.title!.length - (embed.title!.split(" (").last.length + 2))} which has the discord channel specified",
               );
             }
             continue;
@@ -352,6 +405,9 @@ class DiscordHelper {
           if (kDebugMode) print("Couldn't fetch a msg: ${e.message}");
         }
       }
+    }
+    if (channelsChecked != successesResolving) {
+      discordStatusUpdate(locals.discordOnlyCertainChannelsChecked(successesResolving, channelsChecked));
     }
     return list;
   }
@@ -612,7 +668,7 @@ class BasicWebhook {
   }
 
   Future<Snowflake> edit(Snowflake messageID, MessageUpdateBuilder builder, {Snowflake? threadId}) async =>
-      (await _edit(id, messageID, builder, token: token!))!;
+      (await _edit(id, messageID, builder, token: token!, threadId: threadId))!;
 
   /// Edit a webhook messagge.
   Future<Snowflake?> _edit(
@@ -683,6 +739,27 @@ class BasicWebhook {
     final message = messageManager.parse(jsonBody as Map<String, Object?>);*/
 
     return channelId;
+  }
+
+  Future<void> delete(Snowflake messageID, {Snowflake? threadId}) async =>
+      await _delete(id, messageID, token: token!, threadId: threadId);
+
+  Future<void> _delete(Snowflake webhookId, Snowflake messageId, {required String token, Snowflake? threadId}) async {
+    final apiOptions = RestApiOptions(token: "");
+
+    final queryParameters = {if (threadId != null) 'thread_id': threadId.toString()};
+    final route = Uri.https(
+        apiOptions.host, "${apiOptions.baseUri}/webhooks/$webhookId/$token/messages/$messageId", queryParameters);
+    final http.Request req = http.Request('DELETE', route);
+    if (!kIsWeb) req.headers.addAll({"User-Agent": apiOptions.userAgent});
+    req.headers.addAll({'Content-Type': 'application/json'});
+    //req.body = jsonEncode(builder.build());
+    final http.StreamedResponse response = await httpClient.send(req);
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      if (response.statusCode == 204) return;
+      if (response.statusCode == 429) throw "Rate Limited";
+    }
   }
 }
 
