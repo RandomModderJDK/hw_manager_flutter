@@ -140,6 +140,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
         # Set up JDK 17 using the "actions/setup-java" action.
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'cmake;3.22.1 ndk;27.0.12077973 build-tools;30.0.3 platforms;android-31 platforms;android-32 platforms;android-33'
+      - uses: subosito/flutter-action@v2
+        with:
+          cache: true
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -150,13 +157,6 @@ jobs:
         #    lib
         #    scripts
         #    ios
-      - uses: subosito/flutter-action@v2
-        with:
-          cache: true
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: 'build-tools;30.0.3 platforms;android-32'
       - name: Gathering dependencies
         run: flutter pub get
       - name: Decode Keystore
