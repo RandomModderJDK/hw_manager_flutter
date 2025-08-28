@@ -186,7 +186,7 @@ class DiscordRelationFormContent extends StatelessWidget {
                       print("SEARCH != null");
                     }
                     final DummyChannel channel = DummyChannel.snow(Snowflake.now(), channelNameController.text);
-                    field.didChange(channel);
+                    //field.didChange(channel);
                     onChannelSelected(channel);
                   }
                   if (s.isEmpty) return null;
@@ -250,7 +250,7 @@ class DummyChannel implements GuildChannel {
   Future<List<Webhook>> fetchWebhooks() => throw UnimplementedError();
 
   @override
-  Future<void> follow(Snowflake id) => throw UnimplementedError();
+  Future<void> follow(Snowflake id, {String? auditLogReason}) => throw UnimplementedError();
 
   @override
   Future<Channel> get() => throw UnimplementedError();

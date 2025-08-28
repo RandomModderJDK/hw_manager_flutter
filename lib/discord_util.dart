@@ -62,9 +62,12 @@ class DiscordHelper {
         options: clientOptions(),
       );
       loggedInNotifier.notifyListeners();
-    } on HttpResponseError {
+    } on HttpResponseError catch (e) {
       _client = null;
       loggedInNotifier.notifyListeners();
+      if (kDebugMode) {
+        print("HTTPRESPONSE ERROR, whilst logging in: ${e.errorCode} ${e.message}  ");
+      }
       return false;
     }
     if (_client == null) {
@@ -145,11 +148,16 @@ class DiscordHelper {
 
   static final channelTypeGroups = () {
     final channelTypeGroups = [
+      // 5                                0
       [ChannelType.guildAnnouncement, ChannelType.guildText],
     ];
-    channelTypeGroups.addAll(
-      ChannelType.values.where((t) => !channelTypeGroups.expand((l) => l).contains(t)).map((t) => [t]).toList(),
-    );
+
+    for (int i = 1; i < 5; i++) { // add 1-4 (including) each as own category
+      channelTypeGroups.add([ChannelType(i)]);
+    }
+    for (int i = 10; i < 17; i++) { // add 10-16 (including) each as own category
+        channelTypeGroups.add([ChannelType(i)]);
+    }
     /*
     List<ChannelType> getTypeGroup(ChannelType type) => channelTypeGroups.firstWhere((g) => g.contains(type));
 
@@ -371,7 +379,7 @@ class DiscordHelper {
                   video: null,
                   provider: null,
                   author: null,
-                  fields: null);
+                  fields: null, type: EmbedType.article);
               assert(equalsIgnoreShortName(testS, testEmbed));
 
               print("Does not have a matching local subject");

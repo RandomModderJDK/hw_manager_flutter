@@ -121,13 +121,13 @@
   "@untisLoginSuccess": {
     "description": "Toast notification, when WebUntis login succeeded"
   },
-  "settingsDiscordRelationsTitle": "Discord relation overview",
+  "settingsDiscordRelationsTitle": "Discord Channel Links Overview",
   "@settingsDiscordRelationsTitle": {
-    "description": "Title for discord relations management route"
+    "description": "Title for channel linkage management route"
   },
-  "settingsDiscordRelationsDescription": "Delete, insert or edit the relations between discord channel name and corresponding webhook",
+  "settingsDiscordRelationsDescription": "Delete, insert or edit the links between discord channel name and corresponding webhook",
   "@settingsDiscordRelationsDescription": {
-    "description": "Description for discord relations management route"
+    "description": "Description for discord channel linkage management route"
   },
   "settingsDiscordRelationsBotToken": "Bot Token for message fetching",
   "@settingsDiscordRelationsBotToken": {
@@ -147,7 +147,7 @@
   },
   "settingsDiscordRelationsImportTitle": "Import discord channels",
   "@settingsDiscordRelationsImportTitle": {
-    "description": "Title for discord relations management route"
+    "description": "Title for discord channel linkage management route"
   },
   "settingsDiscordRelationsImportDescription": "Import all homework discord channels, using the channel specified above as the identifier. After this, discord channels can be tied to subjects to fetch homework and (with a specified webhook) send homework.",
   "@settingsDiscordRelationsImportDescription": {
@@ -155,7 +155,7 @@
   },
   "settingsDiscordRelationsImportSuccess": "Imported {count} discord channels",
   "@settingsDiscordRelationsImportSuccess": {
-    "description": "Toast notification, when Discord relation import succeeds",
+    "description": "Toast notification, when channel import succeeds",
     "placeholder": {
       "hours": {
         "type": "int",
@@ -166,15 +166,15 @@
   },
   "settingsDiscordRelationsImportFailure": "Could not import channels",
   "@settingsDiscordRelationsImportFailure": {
-    "description": "Toast notification, when Discord relation import fails"
+    "description": "Toast notification, when Discord channel import fails"
   },
-  "discordRelationsTitle": "Discord relations",
+  "discordRelationsTitle": "Discord Channel Linkage",
   "@discordRelationsTitle": {
-    "description": "Shows title text of the discord relations route"
+    "description": "Shows title text of the channel linkage route"
   },
   "deleteDiscordRelationToast": "Deleted {longName} ({shortName})",
   "@deleteDiscordRelationToast": {
-    "description": "Text popping up from bottom when deleting discord relations",
+    "description": "Text popping up from bottom when deleting discord channel links",
     "placeholders": {
       "longName": {
         "type": "String",
@@ -188,7 +188,7 @@
   },
   "deleteDiscordRelationToastUndo": "UNDO",
   "@deleteDiscordRelationToastUndo": {
-    "description": "Button to undo deleting discord relation"
+    "description": "Button to undo deleting discord channel link"
   },
   "datePassed": "Passed already since {date}{hours, plural, =0{} other{ at {time}}}",
   "@datePassed": {
@@ -315,35 +315,35 @@
   "@dateTimeFieldLabel": {
     "description": "Completes to e.g Until the 12. of June"
   },
-  "dialogDiscordRelationAddTitle": "Add discord relation",
+  "dialogDiscordRelationAddTitle": "Link new channel",
   "@dialogDiscordRelationAddTitle": {
-    "description": "Title/tooltip of add relation dialog"
+    "description": "Title/tooltip of add link dialog"
   },
   "dialogDiscordRelationAdd": "Add",
   "@dialogDiscordRelationAdd": {
-    "description": "Submit button of add relation dialog"
+    "description": "Submit button of add link dialog"
   },
   "dialogDiscordRelationAddCancel": "Cancel",
   "@dialogDiscordRelationAddCancel": {
-    "description": "Cancel button of add relation dialog"
+    "description": "Cancel button of add link dialog"
   },
-  "dialogDiscordRelationEditTitle": "Edit relation",
+  "dialogDiscordRelationEditTitle": "Edit channel link",
   "@dialogDiscordRelationEditTitle": {
-    "description": "Title/tooltip of edit relation dialog"
+    "description": "Title/tooltip of edit link dialog"
   },
   "dialogDiscordRelationEdit": "Edit",
   "@dialogDiscordRelationEdit": {
-    "description": "Submit button of edit relation dialog"
+    "description": "Submit button of edit link dialog"
   },
   "dialogDiscordRelationEditCancel": "Cancel",
   "@dialogDiscordRelationEditCancel": {
-    "description": "Cancel button of edit relation dialog"
+    "description": "Cancel button of edit link dialog"
   },
   "dialogDiscordRelationChannelName": "Channel name",
   "@dialogDiscordRelationChannelName": {
     "description": "The label of the subject's full name entered"
   },
-  "dialogDiscordRelationChannelNameHint": "Klasse12.3",
+  "dialogDiscordRelationChannelNameHint": "Class12.3",
   "@dialogDiscordRelationChannelNameHint": {
     "description": "A hint what you can write into relation's channel field"
   },
@@ -353,7 +353,7 @@
   },
   "dialogDiscordRelationUrl": "Webhook url",
   "@dialogDiscordRelationUrl": {
-    "description": "The url of the relation's webhook"
+    "description": "The url of the link's webhook"
   },
   "dialogDiscordRelationUrlHint": "https://discord.com/api/webhooks/8689847212939485983/D0dwgzujWHderrIjdIIPOikjdkwwO038jqQIa0dijdWdwDwgfGHxVS0PIUghU0i0auwJ",
   "@dialogDiscordRelationUrlHint": {
@@ -403,13 +403,13 @@
   "@dialogSubjectShortNameHint": {
     "description": "A hint what you can write into subject's short name field"
   },
-  "dialogSubjectChannelName": "Relation channel name",
+  "dialogSubjectChannelName": "Name of channel (link)",
   "@dialogSubjectChannelName": {
-    "description": "The label of the subject's relation channel name"
+    "description": "The label of the subject's discord channel name accordinig to channel links"
   },
-  "dialogSubjectChannelNameHint": "Select discord relation",
+  "dialogSubjectChannelNameHint": "Select channel link",
   "@dialogSubjectChannelNameHint": {
-    "description": "A hint that you should use the dropdown for discord relations"
+    "description": "A hint that you should use the dropdown for discord channel links"
   },
   "dialogHWSubject": "Subject",
   "@dialogHWSubject": {
