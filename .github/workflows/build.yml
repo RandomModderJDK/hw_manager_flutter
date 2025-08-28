@@ -98,8 +98,9 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           cache: true
-      - name: prepare XCode
-        run: xcodebuild -downloadPlatform iOS
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
       - name: Gathering dependencies
         run: flutter pub get
       - name: Build ios xcarchive
