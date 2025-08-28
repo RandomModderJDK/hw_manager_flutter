@@ -156,6 +156,15 @@ jobs:
           packages: 'build-tools;30.0.3 platforms;android-32'
       - name: Gathering dependencies
         run: flutter pub get
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.JKS_B64 }}" | base64 --decode > android/app/keystore.jks
+      - name: Create key.properties
+        run: |
+          echo "storePassword=${{ secrets.JKS_PW }}" > android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PW }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=keystore.jks" >> android/key.properties
       - name: Build apk
         id: 'apkbuild'
         run: 'flutter doctor -v; flutter build apk --split-per-abi && ls build/app/outputs/flutter-apk && echo "apkbuild=build/app/outputs/flutter-apk/" >> $GITHUB_ENV'
