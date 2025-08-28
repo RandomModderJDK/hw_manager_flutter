@@ -212,8 +212,7 @@ class HomeworkFormContent extends StatelessWidget {
                       subjectController.addListener(
                         () => field.didChange(subjectController.text),
                       );
-                      return Flexible(
-                        child: DropdownMenu<Subject>(
+                      return DropdownMenu<Subject>(
                           errorText: field.hasError ? field.errorText : null,
                           menuHeight: 250,
                           requestFocusOnTap: true,
@@ -234,8 +233,7 @@ class HomeworkFormContent extends StatelessWidget {
                                   )
                                   .toList()
                               : [],
-                        ),
-                      );
+                        );
                     },
                   ),
                   // TODO: Implement a Loading indicator for untis

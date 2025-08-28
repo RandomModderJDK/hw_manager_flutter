@@ -99,6 +99,12 @@ class HWMAppState extends State<HWMApp> {
         ),
       ),
       inputDecorationTheme: inputDecorationTheme,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: <TargetPlatform, PageTransitionsBuilder>{
+          // Set the predictive back transitions for Android.
+          TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+        },
+      ),
       useMaterial3: true,
     );
   }
