@@ -74,8 +74,9 @@ jobs:
       - run: flutter pub get
 
       # Implement this troguh other action - run: dart run sqflite_common_ffi_web:setup
-      - uses: bluefireteam/flutter-gh-pages@v7
+      - uses: bluefireteam/flutter-gh-pages@v9
         with:
+          compileToWasm: true
           baseHref: /${{ github.event.repository.name }}/
   build_ios:
     name: Build iOS ipa
@@ -111,7 +112,7 @@ jobs:
         id: date
         run: echo "date={$(date +'%Y-%m-%d')}" >> $GITHUB_ENV
       - name: Push artifact
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v4
         with:
           name: HW-manager-${{ env.date }}.ipa
           path: ./hw_manager_flutter.ipa
@@ -172,7 +173,7 @@ jobs:
         id: date
         run: echo "date={$(date +'%Y-%m-%d')}" >> $GITHUB_ENV
       - name: Push artifact
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v4
         with:
           name: HW-manager-${{ env.date }}
           path: build/app/outputs/flutter-apk/
