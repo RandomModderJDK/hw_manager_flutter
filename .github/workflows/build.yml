@@ -85,6 +85,12 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: subosito/flutter-action@v2
+        with:
+          cache: true
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 16.4
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -95,12 +101,6 @@ jobs:
         #    lib
         #    scripts
         #    ios
-      - uses: subosito/flutter-action@v2
-        with:
-          cache: true
-      - uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: 16.4
       - name: Gathering dependencies
         run: flutter pub get
       - name: Build ios xcarchive
