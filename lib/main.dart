@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http_proxy/http_proxy.dart';
+import 'package:native_flutter_proxy/native_flutter_proxy.dart';
 import 'package:hw_manager_flutter/l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/routes/home_route.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
@@ -13,10 +13,28 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     if (Platform.isAndroid || Platform.isIOS) {
-      final HttpProxy httpProxy = await HttpProxy.createHttpProxy();
-      HttpOverrides.global = httpProxy;
+      bool enabled = false;
+      String? host;
+      int? port;
+      try {
+        final ProxySetting settings = await NativeProxyReader.proxySetting;
+        enabled = settings.enabled;
+        host = settings.host;
+        port = settings.port;
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
+      }
+      if (enabled && host != null) {
+        final proxy = CustomProxy(ipAddress: host, port: port);
+        proxy.enable();
+        if (kDebugMode) {
+          print("proxy enabled");
+        }
+      }
     }
-    await SimpleSecureStorage.initialize(const InitializationOptions());
+    await SimpleSecureStorage.initialize();
   } else {
     // To secure your data on Flutter web, we have to encrypt it using a password and a salt.
     await SimpleSecureStorage.initialize(WebInitializationOptions(
