@@ -56,9 +56,9 @@ This is like the native app (except the security), especially when the browser c
 </details>
 <details open><summary><h3 style="display:inline-block">I prefer the native app</h3></summary>
 
-**If you are on android** and do not mind the debug certificate go ahead to releases and download your arch.
+**If you are on android** and go ahead to releases and download your arch.
 
-**If you are on ios**, download the ipa (native app) in the releases, if you know how to install it. This is again not really signed. I would recommend Alt-/Troll-/Sidestore. When Apple allows apps to finally be installed like on android, then do it that way.
+**If you are on ios**, download the ipa (native app) in the releases, if you know how to install it. This is not really signed. I would recommend Alt-/Troll-/Sidestore. When Apple allows apps to finally be installed like on android, then do it that way.
 
 **If you'd like any other platform**:
 Clone this repo, (add your platform,), build HWM (and maybe contribute a GitHub action) yourself.
