@@ -1,13 +1,35 @@
+import 'dart:io';
+
 import 'package:dart_untis_mobile/dart_untis_mobile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hw_manager_flutter/general_util.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
+import 'package:logger/logger.dart';
 
-void Function(String text) untisError = (String text) =>
-    HWMToast(text: text, color: Colors.redAccent.withOpacity(0.8), icon: const Icon(Icons.access_time_rounded)).show();
-void Function(String text) untisConfirmation = (String text) =>
-    HWMToast(text: text, color: Colors.green.shade900, icon: const Icon(Icons.access_time_rounded)).show();
+void Function(String text) untisError = (String text) => HWMToast(
+        text: text,
+        color: Colors.redAccent.withValues(alpha: 0.8),
+        icon: const Icon(Icons.access_time_rounded))
+    .show();
+void Function(String text) untisConfirmation = (String text) => HWMToast(
+        text: text,
+        color: Colors.green.shade900,
+        icon: const Icon(Icons.access_time_rounded))
+    .show();
+
+class NoFilter extends LogFilter {
+  @override
+  bool shouldLog(LogEvent event) {
+    return kDebugMode || event.level >= Logger.level;
+  }
+}
+
+final log = Logger(
+  filter: NoFilter(), // Use the default LogFilter (-> only log in debug mode)
+  printer: PrettyPrinter(), // Use the PrettyPrinter to format and print log
+  //output: null, // Use the default LogOutput (-> send everything to console)
+);
 
 class UntisHelper {
   static final UntisHelper _untisHelper = UntisHelper._();
@@ -35,7 +57,11 @@ class UntisHelper {
     }
     try {
       session = await UntisSession.init(server, school, username, password);
-    } on Exception {
+    } on Exception catch (e) {
+      if (!kIsWeb) {
+        untisError((e as HttpException).message);
+      }
+      log.w("Could not login into untis!", error: e);
       session = null;
       return false;
     }
@@ -92,16 +118,24 @@ class UntisHelper {
     String? shortName,
   ]) async {
     if (shortName != null) {
-      if (kDebugMode) print("Out there are: ${(await getCurrentUntisSubjects()).map((e) => e.longName)}");
+      if (kDebugMode)
+        print(
+            "Out there are: ${(await getCurrentUntisSubjects()).map((e) => e.longName)}");
       return (await getCurrentUntisSubjects())
           .where(
-            (element) => element.name.toLowerCase().trim().startsWith(shortName.toLowerCase().trim()),
+            (element) => element.name
+                .toLowerCase()
+                .trim()
+                .startsWith(shortName.toLowerCase().trim()),
           )
           .firstOrNull;
     }
     return (await getCurrentUntisSubjects())
         .where(
-          (element) => element.longName.toLowerCase().trim().contains(longName.toLowerCase().trim()),
+          (element) => element.longName
+              .toLowerCase()
+              .trim()
+              .contains(longName.toLowerCase().trim()),
         )
         .firstOrNull;
   }
@@ -132,7 +166,8 @@ class UntisHelper {
         startDate: i == 0
             ? DateTime.now().add(const Duration(days: 1))
             : DateTime.now().add(Duration(days: searchIntervalsInDays * i)),
-        endDate: DateTime.now().add(Duration(days: searchIntervalsInDays * (i + 1))),
+        endDate:
+            DateTime.now().add(Duration(days: searchIntervalsInDays * (i + 1))),
       ))
           .periods;
       if (kDebugMode) {

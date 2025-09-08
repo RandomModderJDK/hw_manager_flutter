@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:native_flutter_proxy/native_flutter_proxy.dart';
 import 'package:hw_manager_flutter/l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/routes/home_route.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
+import 'package:native_flutter_proxy/native_flutter_proxy.dart';
 import 'package:simple_secure_storage/simple_secure_storage.dart';
 
 void main() async {
@@ -38,7 +38,9 @@ void main() async {
   } else {
     // To secure your data on Flutter web, we have to encrypt it using a password and a salt.
     await SimpleSecureStorage.initialize(WebInitializationOptions(
-        keyPassword: "thisismysupersecretpassword,thatnobodyshouldbeseeing right now.", encryptionSalt: "salty"));
+        keyPassword:
+            "thisismysupersecretpassword,thatnobodyshouldbeseeing right now.",
+        encryptionSalt: "salty"));
   }
   await DBHelper().initDBs();
   runApp(const HWMApp());
@@ -52,7 +54,8 @@ class HWMApp extends StatefulWidget {
 
   /// InheritedWidget style accessor to our State object.
   // ignore: unreachable_from_main
-  static HWMAppState of(BuildContext context) => context.findAncestorStateOfType<HWMAppState>()!;
+  static HWMAppState of(BuildContext context) =>
+      context.findAncestorStateOfType<HWMAppState>()!;
 }
 
 class HWMAppState extends State<HWMApp> {
