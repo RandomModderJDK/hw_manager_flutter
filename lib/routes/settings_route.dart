@@ -68,7 +68,8 @@ class SettingsRoute extends StatelessWidget {
                   backgroundColor: Colors.transparent,
                   boxShadow: const [],
                   centralizeFirstChild: false,
-                  arrowWidget: const Icon(Icons.keyboard_arrow_up_rounded, size: 40.0),
+                  arrowWidget:
+                      const Icon(Icons.keyboard_arrow_up_rounded, size: 40.0),
                   firstChild: Expanded(
                     child: Align(
                       alignment: Alignment.centerLeft,
@@ -86,6 +87,7 @@ class SettingsRoute extends StatelessWidget {
                         hintText: context.locals.settingsUntisLoginServerHint,
                         initValue: Preferences.getUntisServer(),
                         onChanged: (s) => Preferences.saveUntisServer(s ?? ""),
+                        autoTrim: true,
                       ),
                       const SizedBox(height: 10),
                       SettingsTextFormField(
@@ -99,7 +101,8 @@ class SettingsRoute extends StatelessWidget {
                         labelText: context.locals.settingsUntisLoginUsername,
                         hintText: context.locals.settingsUntisLoginUsernameHint,
                         initValue: Preferences.getUntisUsername(),
-                        onChanged: (s) => Preferences.saveUntisUsername(s ?? ""),
+                        onChanged: (s) =>
+                            Preferences.saveUntisUsername(s ?? ""),
                       ),
                       const SizedBox(height: 10),
                       SettingsTextFormField(
@@ -107,7 +110,8 @@ class SettingsRoute extends StatelessWidget {
                         labelText: context.locals.settingsUntisLoginPassword,
                         hintText: context.locals.settingsUntisLoginPasswordHint,
                         initValue: Preferences.getUntisPassword(),
-                        onChanged: (s) => Preferences.saveUntisPassword(s ?? ""),
+                        onChanged: (s) =>
+                            Preferences.saveUntisPassword(s ?? ""),
                       ),
                     ],
                   ),
@@ -116,16 +120,20 @@ class SettingsRoute extends StatelessWidget {
               HWMSettingsTile(
                 title: Text(context.locals.settingsUntisTestLoginTitle),
                 leading: const Icon(Icons.task_alt_rounded),
-                description: Text(context.locals.settingsUntisTestLoginDescription),
-                onPressed: (context) async => UntisHelper().loginWithPreferences().then(
-                      (success) =>
-                          success ? untisConfirmation(locals.untisLoginSuccess) : untisError(locals.untisLoginFailure),
-                    ),
+                description:
+                    Text(context.locals.settingsUntisTestLoginDescription),
+                onPressed: (context) async =>
+                    UntisHelper().loginWithPreferences().then(
+                          (success) => success
+                              ? untisConfirmation(locals.untisLoginSuccess)
+                              : untisError(locals.untisLoginFailure),
+                        ),
               ),
               HWMSettingsTile(
                 title: Text(context.locals.settingsUntisImportTitle),
                 leading: const Icon(Icons.cloud_download_outlined),
-                description: Text(context.locals.settingsUntisImportDescription),
+                description:
+                    Text(context.locals.settingsUntisImportDescription),
                 onPressed: (context) async {
                   final List<UntisSubject> subjects;
                   try {
@@ -171,36 +179,55 @@ class SettingsRoute extends StatelessWidget {
               HWMSettingsTile(
                 title: SettingsTextFormField(
                   labelText: context.locals.settingsDiscordRelationsBotToken,
-                  hintText: "OPdhu29hawopuhnUOUWE9awofhou.awdawdh34WDGGHH-Wawdsghj",
+                  hintText:
+                      "OPdhu29hawopuhnUOUWE9awofhou.awdawdh34WDGGHH-Wawdsghj",
                   initValue: Preferences.getDiscordToken(),
-                  onChanged: (s) async => Preferences.saveDiscordToken(s ?? ""),
+                  onChanged: (s) => Preferences.saveDiscordToken(s ?? ""),
+                  autoTrim: true,
                   onDeactivate: () async {
                     final String token = await Preferences.getDiscordToken();
                     if (DiscordHelper().tokenEqualsTo(token)) return;
-                    discordStatusUpdate(locals.settingsDiscordRelationsBotTryToken);
-                    final bool successfulLogin = await DiscordHelper().login(token);
-                    final bool successfulGuildRefresh = await DiscordHelper().refreshGuildCache();
-                    final bool successfulChannelRefresh = await DiscordHelper().refreshChannelCache();
-                    if (successfulLogin && successfulGuildRefresh && successfulChannelRefresh) {
-                      discordConfirmation(locals.settingsDiscordRelationsBotTryTokenSuccess);
+                    discordStatusUpdate(
+                        locals.settingsDiscordRelationsBotTryToken);
+                    final bool successfulLogin =
+                        await DiscordHelper().login(token);
+                    final bool successfulGuildRefresh =
+                        await DiscordHelper().refreshGuildCache();
+                    final bool successfulChannelRefresh =
+                        await DiscordHelper().refreshChannelCache();
+                    if (successfulLogin &&
+                        successfulGuildRefresh &&
+                        successfulChannelRefresh) {
+                      discordConfirmation(
+                          locals.settingsDiscordRelationsBotTryTokenSuccess);
                     } else {
-                      discordError(locals.settingsDiscordRelationsBotTryTokenFailure);
+                      discordError(
+                          locals.settingsDiscordRelationsBotTryTokenFailure);
                     }
                   },
                   onEnter: (s) {
                     Preferences.getDiscordToken().then((token) async {
                       if (!DiscordHelper().tokenEqualsTo(token)) {
-                        discordStatusUpdate(locals.settingsDiscordRelationsBotTryToken);
+                        discordStatusUpdate(
+                            locals.settingsDiscordRelationsBotTryToken);
                       }
-                      if (!DiscordHelper().tokenEqualsTo(token) || DiscordHelper().tokenEqualsTo(null)) {
-                        final bool successfulLogin = await DiscordHelper().login(token);
-                        final bool successfulGuildRefresh = await DiscordHelper().refreshGuildCache();
-                        final bool successfulChannelRefresh = await DiscordHelper().refreshChannelCache();
-                        if (!(successfulLogin && successfulGuildRefresh && successfulChannelRefresh)) {
-                          discordError(locals.settingsDiscordRelationsBotTryTokenFailure);
+                      if (!DiscordHelper().tokenEqualsTo(token) ||
+                          DiscordHelper().tokenEqualsTo(null)) {
+                        final bool successfulLogin =
+                            await DiscordHelper().login(token);
+                        final bool successfulGuildRefresh =
+                            await DiscordHelper().refreshGuildCache();
+                        final bool successfulChannelRefresh =
+                            await DiscordHelper().refreshChannelCache();
+                        if (!(successfulLogin &&
+                            successfulGuildRefresh &&
+                            successfulChannelRefresh)) {
+                          discordError(locals
+                              .settingsDiscordRelationsBotTryTokenFailure);
                           return null;
                         }
-                        discordConfirmation(locals.settingsDiscordRelationsBotTryTokenSuccess);
+                        discordConfirmation(
+                            locals.settingsDiscordRelationsBotTryTokenSuccess);
                         DiscordHelper().loggedInNotifier.notifyListeners();
                       }
                     });
@@ -247,18 +274,29 @@ class SettingsRoute extends StatelessWidget {
                 onPressed: (context) async {
                   final String token = await Preferences.getDiscordToken();
                   if (!DiscordHelper().tokenEqualsTo(token)) {
-                    discordStatusUpdate(locals.settingsDiscordRelationsBotTryToken);
-                    final bool successfulLogin = await DiscordHelper().login(token);
-                    final bool successfulGuildRefresh = await DiscordHelper().refreshGuildCache();
-                    final bool successfulChannelRefresh = await DiscordHelper().refreshChannelCache();
-                    if (!(successfulLogin && successfulGuildRefresh && successfulChannelRefresh)) {
-                      discordError(locals.settingsDiscordRelationsBotTryTokenFailure);
+                    discordStatusUpdate(
+                        locals.settingsDiscordRelationsBotTryToken);
+                    final bool successfulLogin =
+                        await DiscordHelper().login(token);
+                    final bool successfulGuildRefresh =
+                        await DiscordHelper().refreshGuildCache();
+                    final bool successfulChannelRefresh =
+                        await DiscordHelper().refreshChannelCache();
+                    if (!(successfulLogin &&
+                        successfulGuildRefresh &&
+                        successfulChannelRefresh)) {
+                      discordError(
+                          locals.settingsDiscordRelationsBotTryTokenFailure);
                       return;
                     }
                   }
-                  final List<DiscordRelation> relations = await DBHelper.retrieveDiscordRelations();
-                  final Iterable<GuildChannel>? channels = (await DiscordHelper().channels)?.where(
-                    (c) => !relations.map((r) => r.channelID).contains(c.id.value.toString()),
+                  final List<DiscordRelation> relations =
+                      await DBHelper.retrieveDiscordRelations();
+                  final Iterable<GuildChannel>? channels =
+                      (await DiscordHelper().channels)?.where(
+                    (c) => !relations
+                        .map((r) => r.channelID)
+                        .contains(c.id.value.toString()),
                   );
                   if (channels == null) {
                     discordError(locals.settingsDiscordRelationsImportFailure);
@@ -271,11 +309,13 @@ class SettingsRoute extends StatelessWidget {
                       channelID: c.id.value.toString(),
                       channelName: c.name,
                     );
-                    if (kDebugMode) print("Added channel ${c.name} ${c.id.value}");
+                    if (kDebugMode)
+                      print("Added channel ${c.name} ${c.id.value}");
                     DBHelper.insertDiscordRelation(dr);
                     count++;
                   }
-                  discordConfirmation(locals.settingsDiscordRelationsImportSuccess(count));
+                  discordConfirmation(
+                      locals.settingsDiscordRelationsImportSuccess(count));
                 },
                 leading: const Icon(Icons.cloud_download_outlined),
               ),
@@ -312,7 +352,7 @@ class SettingsTextFormField extends StatefulWidget {
     required this.labelText,
     required this.hintText,
     this.passwordStyle = false,
-    this.autoTrim = true,
+    this.autoTrim = false,
     this.initValue,
     this.onChanged,
     this.onEnter,
@@ -353,12 +393,15 @@ class _SettingsTextFormFieldState extends State<SettingsTextFormField> {
       ).applyDefaults(Theme.of(context).inputDecorationTheme),
       onChanged: (s) {
         if (widget.autoTrim) {
-          if (s.trim() != s) setState(() => _controller.text = s.trim()); // Remove whitespace immediately
+          if (s.trim() != s)
+            setState(() =>
+                _controller.text = s.trim()); // Remove whitespace immediately
           s = s.trim();
         }
         widget.onChanged?.call(s);
       },
-      onFieldSubmitted: (s) => widget.onEnter?.call(widget.autoTrim ? s.trim() : s),
+      onFieldSubmitted: (s) =>
+          widget.onEnter?.call(widget.autoTrim ? s.trim() : s),
       //onTapOutside: onFinishEditing, // disabled because it break the focus system
     );
   }
