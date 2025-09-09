@@ -9,6 +9,8 @@
   "subjectsTitle": "Fächer verwalten",
   "deleteSubjectToast": "{longName} ({shortName}) gelöscht",
   "deleteSubjectToastUndo": "Rückgängig",
+  "settingsAboutTitle": "Über HWM",
+  "settingsAboutDescription": "Version, Installationsmethoden, Quelltext, Hilfe",
   "settingsUntis": "Untis",
   "settingsUntisLoginTitle": "Anmelden",
   "settingsUntisLoginDescription": "Mit deinem Untis-Schulaccount anmelden",

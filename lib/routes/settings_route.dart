@@ -6,6 +6,7 @@ import 'package:hw_manager_flutter/custom_settings_tile.dart';
 import 'package:hw_manager_flutter/discord_util.dart';
 import 'package:hw_manager_flutter/general_util.dart';
 import 'package:hw_manager_flutter/main.dart';
+import 'package:hw_manager_flutter/routes/about_route.dart';
 import 'package:hw_manager_flutter/routes/discord_route.dart';
 import 'package:hw_manager_flutter/routes/subject_route.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
@@ -44,13 +45,17 @@ class SettingsRoute extends StatelessWidget {
               HWMSettingsTile(
                 title: Text(context.locals.settingsSubjectsTitle),
                 leading: const Icon(Icons.subject),
-                description: Text(
-                  context.locals.settingsSubjectsDescription,
-                ),
+                description: Text(context.locals.settingsSubjectsDescription),
                 onPressed: (context) => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const SubjectRoute(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const SubjectRoute()),
+                ),
+              ),
+              HWMSettingsTile(
+                title: Text(context.locals.settingsAboutTitle),
+                leading: const Icon(Icons.info_outline_rounded),
+                description: Text(context.locals.settingsAboutDescription),
+                onPressed: (context) => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const AboutRoute()),
                 ),
               ),
             ],

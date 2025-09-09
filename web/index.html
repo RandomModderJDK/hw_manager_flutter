@@ -23,13 +23,26 @@
     <!-- iOS meta tags & icons -->
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="black" name="apple-mobile-web-app-status-bar-style">
-    <meta content="hw_manager_flutter" name="apple-mobile-web-app-title">
+    <meta content="HWM" name="apple-mobile-web-app-title">
     <link href="icons/Icon-192.png" rel="apple-touch-icon">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service_worker.js').then((registration) => {
+              console.log('ServiceWorker registration successful:', registration);
+            }).catch((error) => {
+              console.log('ServiceWorker registration failed:', error);
+            });
+          });
+        }
+    </script>
+
 
     <!-- Favicon -->
     <link href="favicon.png" rel="icon" type="image/png"/>
 
-    <title>hw_manager_flutter</title>
+    <title>HWM</title>
     <link href="manifest.json" rel="manifest">
 
     <!-- This script adds the flutter initialization JS code -->

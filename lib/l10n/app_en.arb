@@ -49,6 +49,14 @@
   "@deleteSubjectToastUndo": {
     "description": "Button to undo deleting subject"
   },
+  "settingsAboutTitle": "About HWM",
+  "@settingsAboutTitle": {
+    "description": "Title for opening the about menu"
+  },
+  "settingsAboutDescription": "Version, Deployment Methods, Source Code, Help",
+  "@settingsAboutDescription": {
+    "description": "Description for the about page"
+  },
   "settingsUntis": "Untis",
   "@settingsUntis": {
     "description": "Untis management settings section"

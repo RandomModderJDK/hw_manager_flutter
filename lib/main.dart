@@ -6,11 +6,18 @@ import 'package:hw_manager_flutter/l10n/app_localizations.dart';
 import 'package:hw_manager_flutter/routes/home_route.dart';
 import 'package:hw_manager_flutter/shared_preferences.dart';
 import 'package:hw_manager_flutter/sqlite.dart';
+import 'package:hw_manager_flutter/untis_util.dart';
+import 'package:logger/logger.dart';
 import 'package:native_flutter_proxy/native_flutter_proxy.dart';
 import 'package:simple_secure_storage/simple_secure_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final log = Logger(
+    filter: NoFilter(), // Use the default LogFilter (-> only log in debug mode)
+    printer: PrettyPrinter(), // Use the PrettyPrinter to format and print log
+    //output: null, // Use the default LogOutput (-> send everything to console)
+  );
   if (!kIsWeb) {
     if (Platform.isAndroid || Platform.isIOS) {
       bool enabled = false;
@@ -21,6 +28,7 @@ void main() async {
         enabled = settings.enabled;
         host = settings.host;
         port = settings.port;
+        log.i("h: $host, port: $port, enabled: $enabled");
       } catch (e) {
         if (kDebugMode) {
           print(e);
@@ -60,6 +68,14 @@ class HWMApp extends StatefulWidget {
 
 class HWMAppState extends State<HWMApp> {
   ThemeMode _themeMode = ThemeMode.system;
+
+  late String packageVersion;
+
+  void setVersion() async {
+    final pubspec =
+        await DefaultAssetBundle.of(context).loadString("pubspec.yaml");
+    packageVersion = pubspec.split("version: ")[1].split("+")[0];
+  }
 
   @override
   void initState() {
