@@ -4,11 +4,13 @@ plugins {
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+import java.util.Properties
 
-def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file("key.properties")
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+val keyPropertiesFile = file("../key.properties")
+val keyProperties = Properties().apply {
+    if (keyPropertiesFile.exists()) {
+        load(keyPropertiesFile.inputStream())
+    }
 }
 
 android {
@@ -36,18 +38,18 @@ android {
     }
 
     signingConfigs {
-        release {
-            keyAlias keystoreProperties["keyAlias"]
-            keyPassword keystoreProperties["keyPassword"]
-            storeFile keystoreProperties["storeFile"] ? file(keystoreProperties["storeFile"]) : null
-            storePassword keystoreProperties["storePassword"]
+        create("release") {
+            storeFile = file(keyProperties["storeFile"] as String)
+            storePassword = keyProperties["storePassword"] as String
+            keyAlias = keyProperties["keyAlias"] as String
+            keyPassword = keyProperties["keyPassword"] as String
         }
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release // <-- use release signing
-
+            signingConfig = signingConfigs.getByName("release")
+        
             // Enables code-related app optimization.
             isMinifyEnabled = true
 
