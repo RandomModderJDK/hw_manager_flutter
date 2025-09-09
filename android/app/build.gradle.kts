@@ -38,18 +38,23 @@ android {
     }
 
     signingConfigs {
-        create("release") {
+        if (keyPropertiesFile.exists()) {create("release") {
             storeFile = file(keyProperties["storeFile"] as String)
             storePassword = keyProperties["storePassword"] as String
             keyAlias = keyProperties["keyAlias"] as String
             keyPassword = keyProperties["keyPassword"] as String
-        }
+        }}
     }
 
     buildTypes {
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+            isDebuggable = true
+        }
+        if (keyPropertiesFile.exists()) {
         release {
             signingConfig = signingConfigs.getByName("release")
-        
+
             // Enables code-related app optimization.
             isMinifyEnabled = true
 
@@ -60,7 +65,7 @@ android {
                 // Default file with automatically generated optimization rules.
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
-        }
+        }}
     }
 }
 

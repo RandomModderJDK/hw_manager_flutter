@@ -28,7 +28,7 @@ void main() async {
         enabled = settings.enabled;
         host = settings.host;
         port = settings.port;
-        log.i("h: $host, port: $port, enabled: $enabled");
+        log.i("PROXY conf: h: $host, port: $port, enabled: $enabled");
       } catch (e) {
         if (kDebugMode) {
           print(e);
@@ -74,12 +74,13 @@ class HWMAppState extends State<HWMApp> {
   void setVersion() async {
     final pubspec =
         await DefaultAssetBundle.of(context).loadString("pubspec.yaml");
-    packageVersion = pubspec.split("version: ")[1].split("+")[0];
+    packageVersion = pubspec.split("version: ")[1].split("\n")[0];
   }
 
   @override
   void initState() {
     super.initState();
+    setVersion();
     Preferences.getThemeMode().then((value) {
       setState(() => _themeMode = value);
     });

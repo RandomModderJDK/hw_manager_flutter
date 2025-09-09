@@ -33,16 +33,6 @@ class AboutRoute extends StatelessWidget {
                   ],
                 )),
 
-            //brief summary
-            Container(
-                width: MediaQuery.of(context).size.width,
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  'A wonderful homework app, that you can even use collaboratory.',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                )),
-
-            //statement and values
             Container(
                 width: MediaQuery.of(context).size.width,
                 padding: const EdgeInsets.all(8),
@@ -50,66 +40,38 @@ class AboutRoute extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Mission Statement:',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Our mission is to provide high-quality products and services to our customers.',
+                      'A wonderful homework app, that you can even use collaboratively.',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    const SizedBox(height: 16),
                     Text(
-                      'Values:',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    const ListTile(
-                      leading: Icon(Icons.check),
-                      title: Text('Customer satisfaction is our top priority'),
-                    ),
-                    const ListTile(
-                      leading: Icon(Icons.check),
-                      title: Text('We strive for continuous improvement'),
-                    ),
-                    const ListTile(
-                      leading: Icon(Icons.check),
-                      title: Text(
-                          'We value honesty and integrity in all our actions'),
+                      'I really wanted to have a way to store images and tasks with a deadline that works smartly. Therefore there is Untis integration. \n\n'
+                      '~ Random',
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 )),
 
-            //social media
-            Container(
-                width: MediaQuery.of(context).size.width,
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Deployment methods:',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    ListTile(
-                      leading: const Icon(Icons.link),
-                      title: const Text('Native Apps (recommended)'),
-                      onTap: () => launchUrl(Uri.parse(
-                          'https://github.com/RandomModderJDK/hw_manager_flutter/releases/latest')),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.link),
-                      title: const Text('Add WebApp to homescreen'),
-                      onTap: () => launchUrl(Uri.parse(
-                          'https://www.macrumors.com/how-to/save-safari-bookmark-web-app-iphone-home-screen/')),
-                    ),
-                  ],
-                )),
+            Text(
+              'Deployment methods:',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            ListTile(
+              leading: const Icon(Icons.link),
+              title: const Text('Native Apps (recommended)'),
+              onTap: () => launchUrl(Uri.parse(
+                  'https://github.com/RandomModderJDK/hw_manager_flutter/releases/latest')),
+            ),
+            ListTile(
+              leading: const Icon(Icons.link),
+              title: const Text('Add WebApp to homescreen'),
+              onTap: () => launchUrl(Uri.parse(
+                  'https://www.macrumors.com/how-to/save-safari-bookmark-web-app-iphone-home-screen/')),
+            ),
 
             ListTile(
               leading:
-                  const FaIcon(FontAwesomeIcons.github, color: Colors.black),
+                  const FaIcon(FontAwesomeIcons.github, color: Colors.white38),
               title: const Text('Source Code'),
               onTap: () => launchUrl(Uri.parse(
                   'https://github.com/RandomModderJDK/hw_manager_flutter')),
