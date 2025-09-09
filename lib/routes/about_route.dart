@@ -60,7 +60,7 @@ class AboutRoute extends StatelessWidget {
               leading: const Icon(Icons.link),
               title: const Text('Native Apps (recommended)'),
               onTap: () => launchUrl(Uri.parse(
-                  'https://github.com/RandomModderJDK/hw_manager_flutter/releases/latest')),
+                  'https://github.com/RandomModderJDK/HWM/releases/latest')),
             ),
             ListTile(
               leading: const Icon(Icons.link),
@@ -74,7 +74,7 @@ class AboutRoute extends StatelessWidget {
                   const FaIcon(FontAwesomeIcons.github, color: Colors.white38),
               title: const Text('Source Code'),
               onTap: () => launchUrl(Uri.parse(
-                  'https://github.com/RandomModderJDK/hw_manager_flutter')),
+                  'https://github.com/RandomModderJDK/HWM')),
             )
           ],
         )));
