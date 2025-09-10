@@ -11,12 +11,19 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:nyxx/nyxx.dart';
 
-void Function(String text) discordError =
-    (String text) => HWMToast(text: text, color: Colors.red, icon: const Icon(Icons.discord_outlined)).show();
-void Function(String text) discordConfirmation = (String text) =>
-    HWMToast(text: text, color: Colors.green.shade900, icon: const Icon(Icons.discord_outlined)).show();
-void Function(String text) discordStatusUpdate = (String text) =>
-    HWMToast(text: text, color: Colors.yellow.shade700, icon: const Icon(Icons.discord_outlined)).show();
+void Function(String text) discordError = (String text) => HWMToast(
+        text: text, color: Colors.red, icon: const Icon(Icons.discord_outlined))
+    .show();
+void Function(String text) discordConfirmation = (String text) => HWMToast(
+        text: text,
+        color: Colors.green.shade900,
+        icon: const Icon(Icons.discord_outlined))
+    .show();
+void Function(String text) discordStatusUpdate = (String text) => HWMToast(
+        text: text,
+        color: Colors.yellow.shade700,
+        icon: const Icon(Icons.discord_outlined))
+    .show();
 
 class DiscordHelper {
   static final DiscordHelper _discordHelper = DiscordHelper._();
@@ -47,7 +54,8 @@ class DiscordHelper {
 
   String? _token;
 
-  bool tokenEqualsTo(String? tokenToCheck) => tokenToCheck?.trim() == _token?.trim();
+  bool tokenEqualsTo(String? tokenToCheck) =>
+      tokenToCheck?.trim() == _token?.trim();
 
   Future<bool> login(String token) async {
     _token = token;
@@ -66,7 +74,8 @@ class DiscordHelper {
       _client = null;
       loggedInNotifier.notifyListeners();
       if (kDebugMode) {
-        print("HTTPRESPONSE ERROR, whilst logging in: ${e.errorCode} ${e.message}  ");
+        print(
+            "HTTPRESPONSE ERROR, whilst logging in: ${e.errorCode} ${e.message}  ");
       }
       return false;
     }
@@ -102,7 +111,8 @@ class DiscordHelper {
   List<GuildChannel>? _channels;
 
   Future<List<GuildChannel>?> get channels async {
-    if (_channels == null && !await refreshChannelCache()) {
+    if (!await refreshChannelCache()) {
+      // disable caching, why should we not update?
       if (kDebugMode) print("Bot couldn't fetch channels");
     }
     return _channels;
@@ -113,27 +123,40 @@ class DiscordHelper {
     bool showId = true,
   }) {
     if (channels == null) return null;
-    return channels.where((c) => c is! GuildCategory && c is! ThreadsOnlyChannel).map((c) {
+    return channels
+        .where((c) => c is! GuildCategory && c is! ThreadsOnlyChannel)
+        .map((c) {
       Widget? labelWidget;
       if (c.parentId != null) {
         // This channel is in a category
-        final GuildChannel category = channels.firstWhere((cat) => cat.id.value == c.parentId!.value);
-        final List<GuildChannel> channelsInCategory = channels.where((c1) => c1.parentId == c.parentId).toList();
+        final GuildChannel category =
+            channels.firstWhere((cat) => cat.id.value == c.parentId!.value);
+        final List<GuildChannel> channelsInCategory =
+            channels.where((c1) => c1.parentId == c.parentId).toList();
         //print("${category.position} ${c.position}");
         //print("${category.name} ${c.name}");
         if (channelsInCategory.indexOf(c) == 0) {
           labelWidget = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(style: const TextStyle(fontWeight: FontWeight.bold), "${category.name}:"),
+              Text(
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  "${category.name}:"),
               Row(
-                children: [const Text(style: TextStyle(fontWeight: FontWeight.bold), " ╚ "), Text(c.name)],
+                children: [
+                  const Text(
+                      style: TextStyle(fontWeight: FontWeight.bold), " ╚ "),
+                  Text(c.name)
+                ],
               ),
             ],
           );
         } else {
           labelWidget = Row(
-            children: [const Text(style: TextStyle(fontWeight: FontWeight.bold), " ╚ "), Text(c.name)],
+            children: [
+              const Text(style: TextStyle(fontWeight: FontWeight.bold), " ╚ "),
+              Text(c.name)
+            ],
           );
         }
       }
@@ -152,11 +175,13 @@ class DiscordHelper {
       [ChannelType.guildAnnouncement, ChannelType.guildText],
     ];
 
-    for (int i = 1; i < 5; i++) { // add 1-4 (including) each as own category
+    for (int i = 1; i < 5; i++) {
+      // add 1-4 (including) each as own category
       channelTypeGroups.add([ChannelType(i)]);
     }
-    for (int i = 10; i < 17; i++) { // add 10-16 (including) each as own category
-        channelTypeGroups.add([ChannelType(i)]);
+    for (int i = 10; i < 17; i++) {
+      // add 10-16 (including) each as own category
+      channelTypeGroups.add([ChannelType(i)]);
     }
     /*
     List<ChannelType> getTypeGroup(ChannelType type) => channelTypeGroups.firstWhere((g) => g.contains(type));
@@ -167,7 +192,9 @@ class DiscordHelper {
   }();
 
   int sortForChannels(GuildChannel a, GuildChannel b) {
-    final bool sameCategory = channelTypeGroups.firstWhere((g) => g.contains(a.type)).contains(b.type);
+    final bool sameCategory = channelTypeGroups
+        .firstWhere((g) => g.contains(a.type))
+        .contains(b.type);
     return sameCategory
         ? a.position - b.position
         : channelTypeGroups.indexWhere((t) => t.contains(a.type)) -
@@ -181,16 +208,25 @@ class DiscordHelper {
     _channels = c?.toList();
     if (_channels?.where((c) => c.parentId != null).firstOrNull != null) {
       // Sort by categories->types->position
-      final List<MapEntry<GuildChannel, List<GuildChannel>>> groupedIntoCategories =
-          _channels!.where((c) => c.parentId == null).map((c) => MapEntry(c, <GuildChannel>[])).toList();
+      final List<MapEntry<GuildChannel, List<GuildChannel>>>
+          groupedIntoCategories = _channels!
+              .where((c) => c.parentId == null)
+              .map((c) => MapEntry(c, <GuildChannel>[]))
+              .toList();
       groupedIntoCategories.sort((a, b) => sortForChannels(a.key, b.key));
       for (final category in groupedIntoCategories) {
-        category.value.addAll(_channels!.where((c) => c.parentId == category.key.id));
+        category.value
+            .addAll(_channels!.where((c) => c.parentId == category.key.id));
         category.value.sort(sortForChannels);
       }
-      _channels =
-          groupedIntoCategories.map((ent) => ent.value..insert(0, ent.key)).expand((entries) => entries).toList();
-      assert(c!.sublist(0).where((element) => !_channels!.contains(element)).isEmpty);
+      _channels = groupedIntoCategories
+          .map((ent) => ent.value..insert(0, ent.key))
+          .expand((entries) => entries)
+          .toList();
+      assert(c!
+          .sublist(0)
+          .where((element) => !_channels!.contains(element))
+          .isEmpty);
     }
     return _channels != null;
   }
@@ -201,7 +237,8 @@ class DiscordHelper {
   Future<bool> deleteWebhookMessage(String url, Homework homework) async {
     try {
       final BasicWebhook wh = BasicWebhook.fromUrlString(url);
-      if (homework.messageID == null || homework.messageID!.isEmpty) return true;
+      if (homework.messageID == null || homework.messageID!.isEmpty)
+        return true;
       try {
         await wh.delete(Snowflake.parse(homework.messageID!));
       } catch (error) {
@@ -231,20 +268,26 @@ class DiscordHelper {
       final BasicWebhook wh = BasicWebhook.fromUrlString(url);
       Snowflake msgID;
       if (homework.messageID == null || homework.messageID!.isEmpty) {
-        msgID = await wh.execute(toBuiltMessage(homework, pages) as MessageBuilder);
+        msgID =
+            await wh.execute(toBuiltMessage(homework, pages) as MessageBuilder);
       } else {
         try {
           msgID = await wh.edit(
             Snowflake.parse(homework.messageID!),
-            toBuiltMessage(homework, pages, update: true) as MessageUpdateBuilder,
+            toBuiltMessage(homework, pages, update: true)
+                as MessageUpdateBuilder,
           );
         } catch (error) {
-          if (error is ArgumentError && (error.message as String).contains("{message: Unknown Message, code: 10008}")) {
+          if (error is ArgumentError &&
+              (error.message as String)
+                  .contains("{message: Unknown Message, code: 10008}")) {
             // This needs to check whether the message exists or if it was removed or smth.
             discordStatusUpdate(locals.discordWebhookMessageEditNotPossible);
-            msgID = await wh.execute(toBuiltMessage(homework, pages) as MessageBuilder);
+            msgID = await wh
+                .execute(toBuiltMessage(homework, pages) as MessageBuilder);
           } else if (error is ArgumentError &&
-              (error.message as String).contains("{message: Unknown Webhook, code: 10015}")) {
+              (error.message as String)
+                  .contains("{message: Unknown Webhook, code: 10015}")) {
             discordError(locals.discordWebhookURLInvalid);
             return false;
           } else {
@@ -267,7 +310,9 @@ class DiscordHelper {
 
   RestClientOptions Function() clientOptions = () => RestClientOptions(
         plugins: [
-          Logging(stdout: kIsWeb ? FallbackStringSink() : null, stderr: kIsWeb ? FallbackStringSink("[ERR] ") : null),
+          Logging(
+              stdout: kIsWeb ? FallbackStringSink() : null,
+              stderr: kIsWeb ? FallbackStringSink("[ERR] ") : null),
           if (!kIsWeb) cliIntegration,
         ],
       );
@@ -275,9 +320,11 @@ class DiscordHelper {
   Future<TextChannel?> getTextChannel(String channelID) async {
     final channels = await this.channels;
     if (channels == null) return null;
-    final allChannel = channels.where((c) => c.id.value.toString() == channelID);
+    final allChannel =
+        channels.where((c) => c.id.value.toString() == channelID);
     if (allChannel.isEmpty || allChannel.firstOrNull is! TextChannel) {
-      if (kDebugMode) print("Channel $channelID cant be accessed with discord bot");
+      if (kDebugMode)
+        print("Channel $channelID cant be accessed with discord bot");
       return null;
     }
     return allChannel.first as TextChannel;
@@ -293,8 +340,10 @@ class DiscordHelper {
     final Map<Homework, List<Uint8List>> list = {};
     int successesResolving = 0;
     int channelsChecked = 0;
-    for (final DiscordRelation dr in await DBHelper.retrieveDiscordRelations()) {
-      final List<Subject> subj = await DBHelper.retrieveSubjectsIn(dr.channelID);
+    for (final DiscordRelation dr
+        in await DBHelper.retrieveDiscordRelations()) {
+      final List<Subject> subj =
+          await DBHelper.retrieveSubjectsIn(dr.channelID);
       // TODO: Ask if it only should check for subjects which are from a particular channel or all existing ones
       if (subj.isEmpty) continue;
       channelsChecked += 1;
@@ -316,14 +365,20 @@ class DiscordHelper {
             dateTime = DateFormat.yMd().parse(dateTimeS.split(" ")[1]);
           } on FormatException {
             try {
-              final String lastLocale = AppLocalizations.supportedLocales.map((e) => e.languageCode).last;
-              final String firstLocale = AppLocalizations.supportedLocales.map((e) => e.languageCode).first;
+              final String lastLocale = AppLocalizations.supportedLocales
+                  .map((e) => e.languageCode)
+                  .last;
+              final String firstLocale = AppLocalizations.supportedLocales
+                  .map((e) => e.languageCode)
+                  .first;
               if (lastLocale == locals.localeName) {
                 await initializeDateFormatting(firstLocale);
-                dateTime = DateFormat.yMd(firstLocale).parse(dateTimeS.split(" ")[1]);
+                dateTime =
+                    DateFormat.yMd(firstLocale).parse(dateTimeS.split(" ")[1]);
               } else {
                 await initializeDateFormatting(lastLocale);
-                dateTime = DateFormat.yMd(lastLocale).parse(dateTimeS.split(" ")[1]);
+                dateTime =
+                    DateFormat.yMd(lastLocale).parse(dateTimeS.split(" ")[1]);
                 if (kDebugMode) {
                   print(
                     "Trying last supported locale ${AppLocalizations.supportedLocales.map((e) => e.languageCode).last}",
@@ -337,30 +392,41 @@ class DiscordHelper {
             }
           }
           try {
-            final DateTime time = DateFormat.Hm().parse(dateTimeS.split(" ")[3]);
-            dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day, time.hour, time.minute);
+            final DateTime time =
+                DateFormat.Hm().parse(dateTimeS.split(" ")[3]);
+            dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day,
+                time.hour, time.minute);
           } catch (e) {
             if (kDebugMode) {
               print("Time fetching failed with msg: $dateTimeS");
             }
           }
-          if (embed.title == null || embed.title == "") throw StateError("There is no title/subject in this message");
+          if (embed.title == null || embed.title == "")
+            throw StateError("There is no title/subject in this message");
           // TODO: Be careful about subjects' longName being with parenthesis
-          bool isExactMatch(Subject s, Embed embed) => embed.title == "${s.name} (${s.shortName})";
+          bool isExactMatch(Subject s, Embed embed) =>
+              embed.title == "${s.name} (${s.shortName})";
           bool equalsIgnoreShortName(Subject s, Embed embed) =>
-              s.name == embed.title!.substring(0, embed.title!.length - (embed.title!.split(" (").last.length + 2));
+              s.name ==
+              embed.title!.substring(
+                  0,
+                  embed.title!.length -
+                      (embed.title!.split(" (").last.length + 2));
 
           final Subject? matchingSubj;
-          final Subject? exactMatch = subj.where((s) => isExactMatch(s, embed)).firstOrNull;
+          final Subject? exactMatch =
+              subj.where((s) => isExactMatch(s, embed)).firstOrNull;
           if (exactMatch != null) {
             matchingSubj = exactMatch;
           } else if (embed.title!.split(" (").length == 1) {
             // If there is no shortName in the message
             // TODO: Add option to be really exact about the names, to not include things with just a matching longName
             //       When enabled should this be still null
-            matchingSubj = subj.where((s) => s.name == embed.title!).firstOrNull;
+            matchingSubj =
+                subj.where((s) => s.name == embed.title!).firstOrNull;
           } else {
-            matchingSubj = subj.where((s) => equalsIgnoreShortName(s, embed)).firstOrNull;
+            matchingSubj =
+                subj.where((s) => equalsIgnoreShortName(s, embed)).firstOrNull;
           }
           if (matchingSubj == null) {
             // TODO: Implement ask for creating subject, if this subj doesn't exist in local subjects
@@ -379,7 +445,8 @@ class DiscordHelper {
                   video: null,
                   provider: null,
                   author: null,
-                  fields: null, type: EmbedType.article);
+                  fields: null,
+                  type: EmbedType.article);
               assert(equalsIgnoreShortName(testS, testEmbed));
 
               print("Does not have a matching local subject");
@@ -398,7 +465,8 @@ class DiscordHelper {
             finished: false,
             messageID: msg.id.toString(),
           );
-          final List<Uint8List?> pages = List.filled(msg.attachments.length, null);
+          final List<Uint8List?> pages =
+              List.filled(msg.attachments.length, null);
           if (msg.attachments.isNotEmpty) {
             for (final Attachment att in msg.attachments) {
               // We just assume it is an image TODO: Verify that this is an image
@@ -407,7 +475,12 @@ class DiscordHelper {
               pages[int.parse(order)] = imageBytes;
             }
           }
-          list.putIfAbsent(hw, () => pages.where((element) => element != null).map((e) => e!).toList());
+          list.putIfAbsent(
+              hw,
+              () => pages
+                  .where((element) => element != null)
+                  .map((e) => e!)
+                  .toList());
         } on StateError catch (e) {
           // TODO: Use a better way than to catch an error
           if (kDebugMode) print("Couldn't fetch a msg: ${e.message}");
@@ -415,7 +488,8 @@ class DiscordHelper {
       }
     }
     if (channelsChecked != successesResolving) {
-      discordStatusUpdate(locals.discordOnlyCertainChannelsChecked(successesResolving, channelsChecked));
+      discordStatusUpdate(locals.discordOnlyCertainChannelsChecked(
+          successesResolving, channelsChecked));
     }
     return list;
   }
@@ -426,15 +500,22 @@ class DiscordHelper {
   "avatar_url":"https://productimages.artboxone.com/929001056-PO-big.jpg",
   "embeds":[{"title":"Englisch","description":"Aufgabe","author":{"icon_url":"","name":"Bis zum 02."}}]
   }*/
-  dynamic toBuiltMessage(Homework hw, List<HWPage> pages, {bool update = false}) {
+  dynamic toBuiltMessage(Homework hw, List<HWPage> pages,
+      {bool update = false}) {
     final String task = hw.content;
     final String subject = hw.subject.name +
-        (hw.subject.shortName == null || hw.subject.shortName == "" ? "" : " (${hw.subject.shortName})");
+        (hw.subject.shortName == null || hw.subject.shortName == ""
+            ? ""
+            : " (${hw.subject.shortName})");
     final DateTime date = hw.overdueTimestamp.toLocal();
-    final String tillDate = locals.dateAnywhereElse(date, date, date, date.hour);
+    final String tillDate =
+        locals.dateAnywhereElse(date, date, date, date.hour);
     final List<AttachmentBuilder> att = pages
-        .where((p) => p.order < 9) // Discord doesn't support more than 10 messages
-        .map((p) => AttachmentBuilder(data: p.data, fileName: "$subject-${date.toIso8601String()}-${p.order}.png"))
+        .where(
+            (p) => p.order < 9) // Discord doesn't support more than 10 messages
+        .map((p) => AttachmentBuilder(
+            data: p.data,
+            fileName: "$subject-${date.toIso8601String()}-${p.order}.png"))
         .toList();
     /*List<EmbedBuilder> attEmbeds = att
         .map(
@@ -449,7 +530,10 @@ class DiscordHelper {
       return MessageUpdateBuilder(
         content: generalMessage,
         embeds: [
-          EmbedBuilder(title: subject, description: task, author: EmbedAuthorBuilder(name: tillDate)),
+          EmbedBuilder(
+              title: subject,
+              description: task,
+              author: EmbedAuthorBuilder(name: tillDate)),
           // ...attEmbeds,
         ],
         attachments: att,
@@ -458,7 +542,10 @@ class DiscordHelper {
     return MessageBuilder(
       content: generalMessage,
       embeds: [
-        EmbedBuilder(title: subject, description: task, author: EmbedAuthorBuilder(name: tillDate)),
+        EmbedBuilder(
+            title: subject,
+            description: task,
+            author: EmbedAuthorBuilder(name: tillDate)),
         //...attEmbeds,
       ],
       attachments: att,
@@ -531,7 +618,8 @@ class BasicWebhook {
   });
 
   @override
-  bool operator ==(Object other) => identical(this, other) || (other is BasicWebhook && other.id == id);
+  bool operator ==(Object other) =>
+      identical(this, other) || (other is BasicWebhook && other.id == id);
 
   @override
   int get hashCode => id.hashCode;
@@ -541,10 +629,13 @@ class BasicWebhook {
 
   factory BasicWebhook.fromUrlString(String url) {
     final List<String> splitUrl = url.split("/");
-    if (splitUrl.length < 7) throw const FormatException("This is not a valid webhook url, length below 7");
+    if (splitUrl.length < 7)
+      throw const FormatException(
+          "This is not a valid webhook url, length below 7");
 
     final BigInt? id = BigInt.tryParse(splitUrl[5]);
-    if (id == null) throw const FormatException("This is not a valid webhook url, no id");
+    if (id == null)
+      throw const FormatException("This is not a valid webhook url, no id");
     final String token = splitUrl[6];
     return BasicWebhook(
       id: Snowflake.fromBigInt(id),
@@ -571,7 +662,8 @@ class BasicWebhook {
     String? threadName,
     List<Snowflake>? appliedTags,
     String? username = "Hausaufgaben", // TODO: at these options to preferences
-    String? avatarUrl = "https://productimages.artboxone.com/929001056-PO-big.jpg",
+    String? avatarUrl =
+        "https://productimages.artboxone.com/929001056-PO-big.jpg",
   }) async =>
       (await _execute(
         id,
@@ -603,14 +695,16 @@ class BasicWebhook {
       if (wait != null) 'wait': wait.toString(),
       if (threadId != null) 'thread_id': threadId.toString(),
     };
-    final route = Uri.https(apiOptions.host, "${apiOptions.baseUri}/webhooks/$id/$token", queryParameters);
+    final route = Uri.https(apiOptions.host,
+        "${apiOptions.baseUri}/webhooks/$id/$token", queryParameters);
     final BaseRequest request;
     if (builder.attachments != null && builder.attachments!.isNotEmpty) {
       final attachments = builder.attachments!;
       final payload = {
         ...builder.build(),
         if (threadName != null) 'thread_name': threadName,
-        if (appliedTags != null) 'applied_tags': appliedTags.map((e) => e.toString()),
+        if (appliedTags != null)
+          'applied_tags': appliedTags.map((e) => e.toString()),
         if (username != null) 'username': username,
         if (avatarUrl != null) 'avatar_url': avatarUrl,
       };
@@ -628,7 +722,8 @@ class BasicWebhook {
       }
 
       final multiReq = http.MultipartRequest('POST', route);
-      if (!kIsWeb) multiReq.headers.addAll({"User-Agent": apiOptions.userAgent});
+      if (!kIsWeb)
+        multiReq.headers.addAll({"User-Agent": apiOptions.userAgent});
       multiReq
         ..fields.addAll({'payload_json': jsonEncode(payload)})
         ..files.addAll(files);
@@ -640,7 +735,8 @@ class BasicWebhook {
       req.body = jsonEncode({
         ...builder.build(),
         if (threadName != null) 'thread_name': threadName,
-        if (appliedTags != null) 'applied_tags': appliedTags.map((e) => e.toString()),
+        if (appliedTags != null)
+          'applied_tags': appliedTags.map((e) => e.toString()),
         if (username != null) 'username': username,
         if (avatarUrl != null) 'avatar_url': avatarUrl,
       });
@@ -651,7 +747,8 @@ class BasicWebhook {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       if (response.statusCode == 429) throw "Rate Limited";
       try {
-        final jsonBody = jsonDecode(utf8.decode(await response.stream.toBytes()));
+        final jsonBody =
+            jsonDecode(utf8.decode(await response.stream.toBytes()));
         throw "Error json: $jsonBody";
       } on FormatException {
         throw "Error whilst parsing JSON";
@@ -663,7 +760,8 @@ class BasicWebhook {
     }
     final Map<String, Object?> jsonBody;
     try {
-      jsonBody = jsonDecode(utf8.decode(await response.stream.toBytes())) as Map<String, Object?>;
+      jsonBody = jsonDecode(utf8.decode(await response.stream.toBytes()))
+          as Map<String, Object?>;
     } on FormatException {
       throw "Error whilst parsing JSON";
     }
@@ -675,7 +773,8 @@ class BasicWebhook {
     return channelId;
   }
 
-  Future<Snowflake> edit(Snowflake messageID, MessageUpdateBuilder builder, {Snowflake? threadId}) async =>
+  Future<Snowflake> edit(Snowflake messageID, MessageUpdateBuilder builder,
+          {Snowflake? threadId}) async =>
       (await _edit(id, messageID, builder, token: token!, threadId: threadId))!;
 
   /// Edit a webhook messagge.
@@ -688,12 +787,19 @@ class BasicWebhook {
   }) async {
     final apiOptions = RestApiOptions(token: "");
 
-    final queryParameters = {if (threadId != null) 'thread_id': threadId.toString()};
-    final route =
-        Uri.https(apiOptions.host, "${apiOptions.baseUri}/webhooks/$id/$token/messages/$messageId", queryParameters);
+    final queryParameters = {
+      if (threadId != null) 'thread_id': threadId.toString()
+    };
+    final route = Uri.https(
+        apiOptions.host,
+        "${apiOptions.baseUri}/webhooks/$id/$token/messages/$messageId",
+        queryParameters);
     final BaseRequest request;
-    if (builder.attachments != null && builder.attachments! is! List<Never> && builder.attachments!.isNotEmpty) {
-      final attachments = builder.attachments!; // Discord doesn't allow more than 10 attachments, maybe put check here
+    if (builder.attachments != null &&
+        builder.attachments! is! List<Never> &&
+        builder.attachments!.isNotEmpty) {
+      final attachments = builder
+          .attachments!; // Discord doesn't allow more than 10 attachments, maybe put check here
       final payload = builder.build();
 
       final files = <MultipartFile>[];
@@ -710,7 +816,8 @@ class BasicWebhook {
       }
 
       final multiReq = http.MultipartRequest('PATCH', route);
-      if (!kIsWeb) multiReq.headers.addAll({"User-Agent": apiOptions.userAgent});
+      if (!kIsWeb)
+        multiReq.headers.addAll({"User-Agent": apiOptions.userAgent});
 
       multiReq
         ..fields.addAll({'payload_json': jsonEncode(payload)})
@@ -728,7 +835,8 @@ class BasicWebhook {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       if (response.statusCode == 429) throw "Rate Limited";
       try {
-        final jsonBody = jsonDecode(utf8.decode(await response.stream.toBytes()));
+        final jsonBody =
+            jsonDecode(utf8.decode(await response.stream.toBytes()));
         throw ArgumentError("${response.statusCode}: $jsonBody");
       } on FormatException {
         throw const FormatException("Error whilst parsing JSON");
@@ -737,9 +845,11 @@ class BasicWebhook {
 
     final Map<String, Object?> jsonBody;
     try {
-      jsonBody = jsonDecode(utf8.decode(await response.stream.toBytes())) as Map<String, Object?>;
+      jsonBody = jsonDecode(utf8.decode(await response.stream.toBytes()))
+          as Map<String, Object?>;
     } on FormatException {
-      throw const FormatException("Error whilst parsing JSON, but an OK response");
+      throw const FormatException(
+          "Error whilst parsing JSON, but an OK response");
     }
 
     final channelId = Snowflake.parse(jsonBody['id']!);
@@ -752,12 +862,17 @@ class BasicWebhook {
   Future<void> delete(Snowflake messageID, {Snowflake? threadId}) async =>
       await _delete(id, messageID, token: token!, threadId: threadId);
 
-  Future<void> _delete(Snowflake webhookId, Snowflake messageId, {required String token, Snowflake? threadId}) async {
+  Future<void> _delete(Snowflake webhookId, Snowflake messageId,
+      {required String token, Snowflake? threadId}) async {
     final apiOptions = RestApiOptions(token: "");
 
-    final queryParameters = {if (threadId != null) 'thread_id': threadId.toString()};
+    final queryParameters = {
+      if (threadId != null) 'thread_id': threadId.toString()
+    };
     final route = Uri.https(
-        apiOptions.host, "${apiOptions.baseUri}/webhooks/$webhookId/$token/messages/$messageId", queryParameters);
+        apiOptions.host,
+        "${apiOptions.baseUri}/webhooks/$webhookId/$token/messages/$messageId",
+        queryParameters);
     final http.Request req = http.Request('DELETE', route);
     if (!kIsWeb) req.headers.addAll({"User-Agent": apiOptions.userAgent});
     req.headers.addAll({'Content-Type': 'application/json'});

@@ -27,7 +27,7 @@ class ConfirmationToast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => HWMToast(
-        color: Colors.green.shade900.withOpacity(0.8),
+        color: Colors.green.shade900.withValues(alpha: 0.8),
         icon: const Icon(Icons.check),
         text: text,
       );
@@ -42,7 +42,7 @@ class ErrorToast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => HWMToast(
-        color: Colors.redAccent.withOpacity(0.8),
+        color: Colors.redAccent.withValues(alpha: 0.8),
         icon: const Icon(Icons.sms_failed_rounded),
         text: text,
       );

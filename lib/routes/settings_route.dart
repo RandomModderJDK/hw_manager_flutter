@@ -127,7 +127,7 @@ class SettingsRoute extends StatelessWidget {
                 leading: const Icon(Icons.task_alt_rounded),
                 description:
                     Text(context.locals.settingsUntisTestLoginDescription),
-                onPressed: (context) async =>
+                onPressed: (context) =>
                     UntisHelper().loginWithPreferences().then(
                           (success) => success
                               ? untisConfirmation(locals.untisLoginSuccess)
@@ -446,7 +446,7 @@ class _SettingsDropdownMenuState<T> extends State<SettingsDropdownMenu<T>> {
   @override
   void initState() {
     widget.rebuildOnValueChange?.addListener(
-      () => widget.menuEntries().then((entries) async {
+      () => widget.menuEntries().then((entries) {
         if (kDebugMode) {
           print("ENTRIES AFTER NOTIFY: $entries");
         }

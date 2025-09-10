@@ -51,12 +51,13 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
       print("REFRESH IMAGES");
     }
     return FutureBuilder(
-      future: (() async => DBHelper.retrieveHWPages(widget.homework))(),
+      future: DBHelper.retrieveHWPages(widget.homework),
       builder: (_, snap) {
         if (snap.hasData) {
           _images.clear();
           _images.addAll(
-            snap.data!.map((e) => Image.memory(e.data, fit: BoxFit.scaleDown, gaplessPlayback: true)),
+            snap.data!.map((e) => Image.memory(e.data,
+                fit: BoxFit.scaleDown, gaplessPlayback: true)),
           );
           return _images[page];
         } else {
@@ -91,7 +92,8 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
             transformationController: _controller,
             minScale: 0.75,
             maxScale: 50,
-            boundaryMargin: const EdgeInsets.symmetric(vertical: 200, horizontal: 700),
+            boundaryMargin:
+                const EdgeInsets.symmetric(vertical: 200, horizontal: 700),
             clipBehavior: Clip.none,
             child: SizedBox(
               width: MediaQuery.of(context).size.width,
@@ -128,7 +130,8 @@ class _ImageViewerRouteState extends State<ImageViewerRoute> {
             icon: const Icon(Icons.delete_rounded),
           ),
           IconButton(
-            onPressed: () => pickAndAddImage(context, widget.homework).then(_addPage),
+            onPressed: () =>
+                pickAndAddImage(context, widget.homework).then(_addPage),
             tooltip: context.locals.takePhoto,
             icon: const Icon(Icons.add_a_photo_rounded),
           ),

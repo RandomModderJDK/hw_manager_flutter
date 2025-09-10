@@ -27,7 +27,7 @@ Future<bool> pickAndAddImage(BuildContext context, Homework hw) async {
   return true;
 }
 
-Future<ImageSource?> _openChooseSourceBar(BuildContext context) async {
+Future<ImageSource?> _openChooseSourceBar(BuildContext context) {
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -41,8 +41,9 @@ Future<ImageSource?> _openChooseSourceBar(BuildContext context) async {
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 40.00),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero
-                      .copyWith(topLeft: const Radius.circular(30.0), topRight: const Radius.circular(30.0)),
+                  borderRadius: BorderRadius.zero.copyWith(
+                      topLeft: const Radius.circular(30.0),
+                      topRight: const Radius.circular(30.0)),
                 ),
               ),
               child: Row(
@@ -108,8 +109,10 @@ class DBHelper {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
       if (kDebugMode) {
-        final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
-        print("Saving/open database to/on ${join(appDocumentsDir.path, "Homework-Manager", 'hw_database.db')}");
+        final Directory appDocumentsDir =
+            await getApplicationDocumentsDirectory();
+        print(
+            "Saving/open database to/on ${join(appDocumentsDir.path, "Homework-Manager", 'hw_database.db')}");
       }
     }
 
@@ -120,20 +123,29 @@ class DBHelper {
       // constructed for each platform.
       kIsWeb
           ? "hw_database.db"
-          : join((await getApplicationDocumentsDirectory()).path, "Homework-Manager", 'hw_database.db'),
+          : join((await getApplicationDocumentsDirectory()).path,
+              "Homework-Manager", 'hw_database.db'),
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion == 1) {
-          await db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, data BLOB NOT NULL)');
+          await db.execute(
+              'CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, data BLOB NOT NULL)');
         }
         if (oldVersion < 3) {
-          await db.execute('CREATE TABLE discordRelations(channel TEXT PRIMARY KEY, webhook TEXT)');
+          await db.execute(
+              'CREATE TABLE discordRelations(channel TEXT PRIMARY KEY, webhook TEXT)');
         }
-        if (oldVersion < 3) await db.execute("ALTER TABLE subjects ADD COLUMN discordChannel TEXT");
-        if (oldVersion < 4) await db.execute("ALTER TABLE homeworks DROP COLUMN subject_short");
+        if (oldVersion < 3)
+          await db
+              .execute("ALTER TABLE subjects ADD COLUMN discordChannel TEXT");
+        if (oldVersion < 4)
+          await db.execute("ALTER TABLE homeworks DROP COLUMN subject_short");
         if (oldVersion < 5) {
-          await db.execute("ALTER TABLE discordRelations ADD COLUMN channelID TEXT");
-          await db.execute("ALTER TABLE discordRelations RENAME COLUMN channel to channelName");
-          await db.execute("ALTER TABLE discordRelations RENAME TO orig_discordRelations"); // Hold data for later
+          await db.execute(
+              "ALTER TABLE discordRelations ADD COLUMN channelID TEXT");
+          await db.execute(
+              "ALTER TABLE discordRelations RENAME COLUMN channel to channelName");
+          await db.execute(
+              "ALTER TABLE discordRelations RENAME TO orig_discordRelations"); // Hold data for later
           // orig_discordRelations(channelName TEXT PRIMARY KEY, webhook TEXT, channelID TEXT)
           await db.execute(
             'CREATE TABLE discordRelations(channelID TEXT PRIMARY KEY, channelName TEXT NOT NULL, webhook TEXT)',
@@ -141,7 +153,8 @@ class DBHelper {
           await db.execute(
             'INSERT INTO discordRelations SELECT channelID, channelName, webhook FROM orig_discordRelations',
           );
-          await db.execute("ALTER TABLE subjects RENAME COLUMN discordChannel to discordChannelID");
+          await db.execute(
+              "ALTER TABLE subjects RENAME COLUMN discordChannel to discordChannelID");
         }
         if (oldVersion < 6) {
           await db.execute("ALTER TABLE homeworks ADD COLUMN messageID TEXT");
@@ -151,9 +164,12 @@ class DBHelper {
         await db.execute(
           'CREATE TABLE discordRelations(channelID TEXT PRIMARY KEY, channelName TEXT NOT NULL, webhook TEXT)',
         );
-        await db.execute('CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, data BLOB NOT NULL)');
-        await db.execute('CREATE TABLE subjects(name TEXT PRIMARY KEY, shortName TEXT, discordChannelID TEXT)');
-        return db.execute("CREATE TABLE homeworks(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        await db.execute(
+            'CREATE TABLE imageBlobs(id TEXT PRIMARY KEY, data BLOB NOT NULL)');
+        await db.execute(
+            'CREATE TABLE subjects(name TEXT PRIMARY KEY, shortName TEXT, discordChannelID TEXT)');
+        return db.execute(
+            "CREATE TABLE homeworks(id INTEGER PRIMARY KEY AUTOINCREMENT, "
             'subject TEXT NOT NULL, '
             'overdueDate TEXT NOT NULL, '
             'content TEXT NOT NULL, '
@@ -172,95 +188,131 @@ class DBHelper {
   }
 
   /// Inserts or edits subject supplied into database
-  static Future<int> insertSubject(Subject subject) async {
-    return DBHelper().db.insert('subjects', subject.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+  static Future<int> insertSubject(Subject subject) {
+    return DBHelper().db.insert('subjects', subject.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   static Future<Subject?> getSubject(String name) async {
-    final Map<String, Object?>? queryResult =
-        (await DBHelper().db.query('subjects', where: "name = ?", whereArgs: [name])).firstOrNull;
+    final Map<String, Object?>? queryResult = (await DBHelper()
+            .db
+            .query('subjects', where: "name = ?", whereArgs: [name]))
+        .firstOrNull;
     return queryResult != null
-        ? Subject.fromMap(queryResult.map((key, value) => MapEntry(key, value.toString())))
+        ? Subject.fromMap(
+            queryResult.map((key, value) => MapEntry(key, value.toString())))
         : null;
   }
 
   static Future<List<Subject>> retrieveSubjects() async {
-    final List<Map<String, Object?>> queryResult = await DBHelper().db.query('subjects', orderBy: "name");
-    return Future.wait(queryResult.map((e) => Subject.fromMap(e.map((key, value) => MapEntry(key, value.toString())))));
+    final List<Map<String, Object?>> queryResult =
+        await DBHelper().db.query('subjects', orderBy: "name");
+    return Future.wait(queryResult.map((e) => Subject.fromMap(
+        e.map((key, value) => MapEntry(key, value.toString())))));
   }
 
   static Future<List<Subject>> retrieveSubjectsIn(String channelID) async {
-    final List<Map<String, Object?>> queryResult =
-        await DBHelper().db.query('subjects', where: "discordChannelID = ?", whereArgs: [channelID]);
-    return Future.wait(queryResult.map((e) => Subject.fromMap(e.map((key, value) => MapEntry(key, value.toString())))));
+    final List<Map<String, Object?>> queryResult = await DBHelper().db.query(
+        'subjects',
+        where: "discordChannelID = ?",
+        whereArgs: [channelID]);
+    return Future.wait(queryResult.map((e) => Subject.fromMap(
+        e.map((key, value) => MapEntry(key, value.toString())))));
   }
 
   static Future<void> deleteSubject(String name) async {
-    await DBHelper().db.delete('subjects', where: "name = ?", whereArgs: [name]);
+    await DBHelper()
+        .db
+        .delete('subjects', where: "name = ?", whereArgs: [name]);
   }
 
   /// Inserts or replaces discord relation supplied into database
-  static Future<int> insertDiscordRelation(DiscordRelation dr) async {
-    return DBHelper().db.insert('discordRelations', dr.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+  static Future<int> insertDiscordRelation(DiscordRelation dr) {
+    return DBHelper().db.insert('discordRelations', dr.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   static Future<DiscordRelation?> getDiscordRelation(String channelID) async {
-    final Map<String, Object?>? queryResult =
-        (await DBHelper().db.query('discordRelations', where: "channelID = ?", whereArgs: [channelID])).firstOrNull;
-    return queryResult != null ? DiscordRelation.fromMap(queryResult.map((k, v) => MapEntry(k, v.toString()))) : null;
+    final Map<String, Object?>? queryResult = (await DBHelper().db.query(
+            'discordRelations',
+            where: "channelID = ?",
+            whereArgs: [channelID]))
+        .firstOrNull;
+    return queryResult != null
+        ? DiscordRelation.fromMap(
+            queryResult.map((k, v) => MapEntry(k, v.toString())))
+        : null;
   }
 
-  static Future<DiscordRelation?> getDiscordRelationByWHID(String webhookID) async {
-    final Map<String, Object?>? queryResult =
-        (await DBHelper().db.query('discordRelations', where: "channelID LIKE '%?%'", whereArgs: [webhookID]))
-            .firstOrNull;
-    return queryResult != null ? DiscordRelation.fromMap(queryResult.map((k, v) => MapEntry(k, v.toString()))) : null;
+  static Future<DiscordRelation?> getDiscordRelationByWHID(
+      String webhookID) async {
+    final Map<String, Object?>? queryResult = (await DBHelper().db.query(
+            'discordRelations',
+            where: "channelID LIKE '%?%'",
+            whereArgs: [webhookID]))
+        .firstOrNull;
+    return queryResult != null
+        ? DiscordRelation.fromMap(
+            queryResult.map((k, v) => MapEntry(k, v.toString())))
+        : null;
   }
 
   static Future<List<DiscordRelation>> retrieveDiscordRelations() async {
     final List<Map<String, Object?>> queryResult =
         await DBHelper().db.query('discordRelations', orderBy: "channelName");
-    return queryResult.map((e) => DiscordRelation.fromMap(e.map((k, v) => MapEntry(k, v.toString())))).toList();
+    return queryResult
+        .map((e) =>
+            DiscordRelation.fromMap(e.map((k, v) => MapEntry(k, v.toString()))))
+        .toList();
   }
 
   static Future<void> deleteDiscordRelation(String channelID) async {
-    await DBHelper()
-        .db
-        .update('subjects', {"discordChannelID": ""}, where: "discordChannelID = ?", whereArgs: [channelID]);
-    await DBHelper().db.delete('discordRelations', where: "channelID = ?", whereArgs: [channelID]);
+    await DBHelper().db.update('subjects', {"discordChannelID": ""},
+        where: "discordChannelID = ?", whereArgs: [channelID]);
+    await DBHelper().db.delete('discordRelations',
+        where: "channelID = ?", whereArgs: [channelID]);
   }
 
   static Future<void> renameDiscordRelation(String oldID, String newID) async {
-    await DBHelper()
-        .db
-        .update('subjects', {"discordChannelID": newID}, where: "discordChannelID = ?", whereArgs: [oldID]);
-    await DBHelper().db.update('discordRelations', {"channelID": newID}, where: "channelID = ?", whereArgs: [oldID]);
+    await DBHelper().db.update('subjects', {"discordChannelID": newID},
+        where: "discordChannelID = ?", whereArgs: [oldID]);
+    await DBHelper().db.update('discordRelations', {"channelID": newID},
+        where: "channelID = ?", whereArgs: [oldID]);
   }
 
   /// Inserts or updates homework supplied into database
   /// Returns the id of the homework
-  static Future<int> insertHomework(Homework hw) async {
-    return DBHelper().db.insert('homeworks', hw.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+  static Future<int> insertHomework(Homework hw) {
+    return DBHelper().db.insert('homeworks', hw.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
 // Maybe Add search function/do not return the whole list of homeworks
   static Future<List<Homework>> retrieveHomeworks() async {
-    final List<Map<String, Object?>> queryResult = await DBHelper().db.query('homeworks', orderBy: "overdueDate");
+    final List<Map<String, Object?>> queryResult =
+        await DBHelper().db.query('homeworks', orderBy: "overdueDate");
     final List<Homework> hws = await Future.wait(
-      queryResult.map((e) => Homework.fromMap(e.map((key, value) => MapEntry(key, value.toString())))),
+      queryResult.map((e) => Homework.fromMap(
+          e.map((key, value) => MapEntry(key, value.toString())))),
     );
     return hws;
   }
 
   static Future<Homework?> getHomeworkByMessageID(String messageID) async {
-    final Map<String, Object?>? queryResult =
-        (await DBHelper().db.query('homeworks', where: "messageID = ?", whereArgs: [messageID])).firstOrNull;
-    return queryResult != null ? await Homework.fromMap(queryResult.map((k, v) => MapEntry(k, v.toString()))) : null;
+    final Map<String, Object?>? queryResult = (await DBHelper()
+            .db
+            .query('homeworks', where: "messageID = ?", whereArgs: [messageID]))
+        .firstOrNull;
+    return queryResult != null
+        ? await Homework.fromMap(
+            queryResult.map((k, v) => MapEntry(k, v.toString())))
+        : null;
   }
 
   // Deletes homework from database. If homework does not have id, nothing will be deleted
-  static Future<List<void>> deleteHomework(Homework hw) async {
-    return Future.wait([deleteHomeworkById(hw.id ?? -1), deleteHWPagesByHW(hw)]);
+  static Future<List<void>> deleteHomework(Homework hw) {
+    return Future.wait(
+        [deleteHomeworkById(hw.id ?? -1), deleteHWPagesByHW(hw)]);
   }
 
   static Future<void> deleteHomeworkById(int id) async {
@@ -276,30 +328,38 @@ class DBHelper {
     if (kDebugMode) {
       print("INSERT AFTER REORDER: ${page.order}");
     }
-    return DBHelper().db.insert('imageBlobs', await page.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    return DBHelper().db.insert('imageBlobs', await page.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  static Future<List<int>> insertHWPages(List<HWPage> pages) async {
+  static Future<List<int>> insertHWPages(List<HWPage> pages) {
     return Future.wait([for (final HWPage page in pages) insertHWPage(page)]);
   }
 
   static Future<int> countHWPages(int hwId) async {
-    final List<Map<String, Object?>> queryResult =
-        await DBHelper().db.query("imageBlobs", columns: ["COUNT(id)"], where: 'id LIKE ?', whereArgs: ["$hwId+%"]);
+    final List<Map<String, Object?>> queryResult = await DBHelper().db.query(
+        "imageBlobs",
+        columns: ["COUNT(id)"],
+        where: 'id LIKE ?',
+        whereArgs: ["$hwId+%"]);
     if (queryResult[0]["COUNT(id)"] == null) return 0;
     return queryResult[0]["COUNT(id)"]! as int;
   }
 
   static Future<HWPage?> retrieveHWPage(Homework hw, int order) async {
-    final List<Map<String, Object?>> queryResult =
-        await DBHelper().db.query('imageBlobs', where: 'id = ?', whereArgs: ["${hw.id ?? "NULL"}+$order"]);
+    final List<Map<String, Object?>> queryResult = await DBHelper().db.query(
+        'imageBlobs',
+        where: 'id = ?',
+        whereArgs: ["${hw.id ?? "NULL"}+$order"]);
     if (queryResult.isEmpty) return null;
     return queryResult.map((e) => HWPage.fromMap(e)).toList()[0];
   }
 
   static Future<List<HWPage>> retrieveHWPages(Homework hw) async {
-    final List<Map<String, Object?>> queryResult =
-        await DBHelper().db.query('imageBlobs', where: 'id LIKE ?', whereArgs: ["${hw.id ?? "NULL"}+%"]);
+    final List<Map<String, Object?>> queryResult = await DBHelper().db.query(
+        'imageBlobs',
+        where: 'id LIKE ?',
+        whereArgs: ["${hw.id ?? "NULL"}+%"]);
     if (queryResult.isEmpty) return [];
     final result = queryResult.map((e) => HWPage.fromMap(e)).toList();
     result.sort((a, b) => a.order - b.order);
@@ -307,20 +367,25 @@ class DBHelper {
   }
 
   /// Deletes HWPage from database. If HWPage does not have id, nothing will be deleted
-  static Future<int> deleteHWPage(HWPage page) async {
+  static Future<int> deleteHWPage(HWPage page) {
     return deleteHWPageByFullId("${page.hwId}+${page.order}");
   }
 
-  static Future<int> deleteHWPagesByHW(Homework hw) async {
-    return DBHelper().db.delete('imageBlobs', where: "id LIKE ?", whereArgs: ["${hw.id}+%"]);
+  static Future<int> deleteHWPagesByHW(Homework hw) {
+    return DBHelper()
+        .db
+        .delete('imageBlobs', where: "id LIKE ?", whereArgs: ["${hw.id}+%"]);
   }
 
-  static Future<List<void>> deleteHWPagesByHWOrder(Homework hw, List<int> order) async {
+  static Future<List<void>> deleteHWPagesByHWOrder(
+      Homework hw, List<int> order) async {
     for (final int p in order) {
       if (kDebugMode) {
         print("DELET ${hw.id ?? -1}+$p");
       }
-      await DBHelper().db.delete('imageBlobs', where: "id = ?", whereArgs: ["${hw.id}+$p"]);
+      await DBHelper()
+          .db
+          .delete('imageBlobs', where: "id = ?", whereArgs: ["${hw.id}+$p"]);
     }
     return reorderHWPages(hw);
   }
@@ -329,7 +394,8 @@ class DBHelper {
     final List<HWPage> pages = await retrieveHWPages(hw);
     pages.sort((a, b) => a.order.compareTo(b.order));
     if (kDebugMode) {
-      print("These are the currently existing pages: ${pages.map((e) => e.order)}");
+      print(
+          "These are the currently existing pages: ${pages.map((e) => e.order)}");
     }
     return Future.wait([
       for (int i = 0; i < pages.length; i++)
@@ -342,13 +408,15 @@ class DBHelper {
     ]);
   }
 
-  static Future<int> deleteHWPageByHWOrder(Homework hw, int order) async {
-    return DBHelper().db.delete('imageBlobs', where: "id = ?+?", whereArgs: [hw.id, order]);
+  static Future<int> deleteHWPageByHWOrder(Homework hw, int order) {
+    return DBHelper()
+        .db
+        .delete('imageBlobs', where: "id = ?+?", whereArgs: [hw.id, order]);
   }
 
-  static Future<int> deleteAllHWPages() async => DBHelper().db.delete('imageBlobs');
+  static Future<int> deleteAllHWPages() => DBHelper().db.delete('imageBlobs');
 
-  static Future<int> deleteHWPageByFullId(String id) async =>
+  static Future<int> deleteHWPageByFullId(String id) =>
       DBHelper().db.delete('imageBlobs', where: "id = ?", whereArgs: [id]);
 }
 
@@ -378,7 +446,8 @@ class Homework {
   static Future<Homework> fromMap(Map<String, String?> map) async {
     final Homework hw = Homework(
       id: int.parse(map["id"]!),
-      subject: await DBHelper.getSubject(map["subject"]!) ?? Subject(name: map["subject"]!),
+      subject: await DBHelper.getSubject(map["subject"]!) ??
+          Subject(name: map["subject"]!),
       overdueTimestamp: DateTime.parse(map["overdueDate"]!),
       creationTimestamp: DateTime.parse(map["overdueDate"]!),
       content: map["content"]!,
@@ -444,7 +513,10 @@ class Subject {
 
   @override
   bool operator ==(Object b) =>
-      b is Subject && name == b.name && shortName == b.shortName && discordChannel == b.discordChannel;
+      b is Subject &&
+      name == b.name &&
+      shortName == b.shortName &&
+      discordChannel == b.discordChannel;
 
   @override
   int get hashCode => Object.hash(name, shortName, discordChannel);
@@ -455,7 +527,8 @@ class DiscordRelation {
   final String channelID;
   final String? webhookUrl;
 
-  const DiscordRelation({required this.channelID, required this.channelName, this.webhookUrl});
+  const DiscordRelation(
+      {required this.channelID, required this.channelName, this.webhookUrl});
 
   /// Convert a DiscordRelation into a Map.https://discord.com/api/webhooks/1160945067184377996/E0dFr2laboRG2XO8ExVS0PYO7y7hhK5DWTsPf5wj52FOG3nyga6gS9fQ0l7TrxH6TwOW
   DiscordRelation.fromMap(Map<String, String?> map)

@@ -32,7 +32,7 @@ class HomeRouteState extends State<HomeRoute> {
             itemCount: snapshot.data!.length,
             child: (position) => HWListItem(
               homework: snapshot.data![position],
-              onEdit: () async => showDialog(
+              onEdit: () => showDialog(
                 context: context,
                 builder: (context) => HomeworkFormDialog(
                   homework: snapshot.data![position],
@@ -130,9 +130,7 @@ class HomeRouteState extends State<HomeRoute> {
             tooltip: locals.discordHomeworkFetchTitle,
             onPressed: !DiscordHelper().isLoggedIn
                 ? null
-                : () => DiscordHelper().fetchHomework().then((map) async {
-              /*void Function(String text) discordError =
-                      (String text) => HWMToast(text: text, color: Colors.red, icon: const Icon(Icons.cloud_sync_outlined)).show();*/
+                : () => DiscordHelper().fetchHomework().then((map) {
               void fetchConfirmation(String text) =>
                   HWMToast(text: text, color: Colors.green.shade900, icon: const Icon(Icons.cloud_sync_outlined)).show();
               void fetchStatusUpdate(String text) =>
@@ -162,6 +160,9 @@ class HomeRouteState extends State<HomeRoute> {
                 DBHelper.insertHWPages(pages.toList());
                 setState(() {});
               });
+            }).catchError((e,s) {
+              // TODO: handle misconfiguration of permissions properly!
+              discordError(e.toString()); return null;
             }),
           ),
           IconButton(
@@ -176,7 +177,7 @@ class HomeRouteState extends State<HomeRoute> {
       ),
       body: hwListWidget(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async => showDialog(
+        onPressed: () => showDialog(
           context: context,
           builder: (context) => HomeworkFormDialog(
             title: context.locals.dialogHWAddTitle,

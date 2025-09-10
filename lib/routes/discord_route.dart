@@ -22,7 +22,7 @@ class _DiscordRouteState extends State<DiscordRoute> {
             itemCount: snapshot.data!.length,
             child: (position) => DiscordRelationListItem(
               dr: snapshot.data![position],
-              onEdit: () async => showDialog<bool>(
+              onEdit: () => showDialog<bool>(
                 context: context,
                 builder: (context) => DiscordRelationFormDialog(
                   dr: snapshot.data![position],
@@ -48,7 +48,8 @@ class _DiscordRouteState extends State<DiscordRoute> {
                       ),
                       action: SnackBarAction(
                         label: context.locals.deleteDiscordRelationToastUndo,
-                        onPressed: () => DBHelper.insertDiscordRelation(dr).then((value) => setState(() {})),
+                        onPressed: () => DBHelper.insertDiscordRelation(dr)
+                            .then((value) => setState(() {})),
                       ),
                     ),
                   );
@@ -80,7 +81,7 @@ class _DiscordRouteState extends State<DiscordRoute> {
       ),
       body: discordRelationList(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async => showDialog<bool>(
+        onPressed: () => showDialog<bool>(
           context: context,
           builder: (context) => DiscordRelationFormDialog(
             title: context.locals.dialogDiscordRelationAddTitle,

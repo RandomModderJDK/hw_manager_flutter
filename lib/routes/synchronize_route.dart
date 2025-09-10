@@ -22,7 +22,7 @@ class _SynchronizeRouteState extends State<SynchronizeRoute> {
             itemCount: snapshot.data!.length,
             child: (position) => SubjectListItem(
               subject: snapshot.data![position],
-              onEdit: () async => showDialog<bool>(
+              onEdit: () => showDialog<bool>(
                 context: context,
                 builder: (context) => SubjectFormDialog(
                   subject: snapshot.data![position],
@@ -81,7 +81,7 @@ class _SynchronizeRouteState extends State<SynchronizeRoute> {
       ),
       body: subjectList(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async => showDialog<bool>(
+        onPressed: () => showDialog<bool>(
           context: context,
           builder: (context) => SubjectFormDialog(
             title: context.locals.dialogSubjectAddTitle,

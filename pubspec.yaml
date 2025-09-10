@@ -67,7 +67,10 @@ dependencies:
   nyxx:
     git: https://github.com/RandomModderJDK/nyxx.git
   http: ^1.2.1
-  native_flutter_proxy: ^0.2.3
+  native_flutter_proxy:
+    git:
+      url: https://github.com/RandomModderJDK/native_flutter_proxy.git
+      ref: automatic-script-and-event
   logger: ^2.6.1
 
 dev_dependencies:

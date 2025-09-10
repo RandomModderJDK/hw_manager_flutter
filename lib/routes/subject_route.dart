@@ -23,7 +23,7 @@ class _SubjectRouteState extends State<SubjectRoute> {
             itemCount: snapshot.data!.length,
             child: (position) => SubjectListItem(
               subject: snapshot.data![position],
-              onEdit: () async => showDialog<bool>(
+              onEdit: () => showDialog<bool>(
                 context: context,
                 builder: (context) => SubjectFormDialog(
                   subject: snapshot.data![position],
@@ -49,7 +49,8 @@ class _SubjectRouteState extends State<SubjectRoute> {
                       ),
                       action: SnackBarAction(
                         label: context.locals.deleteSubjectToastUndo,
-                        onPressed: () => DBHelper.insertSubject(subject).then((value) => setState(() {})),
+                        onPressed: () => DBHelper.insertSubject(subject)
+                            .then((value) => setState(() {})),
                       ),
                     ),
                   );
@@ -81,7 +82,7 @@ class _SubjectRouteState extends State<SubjectRoute> {
       ),
       body: subjectList(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async => showDialog<bool>(
+        onPressed: () => showDialog<bool>(
           context: context,
           builder: (context) => SubjectFormDialog(
             title: context.locals.dialogSubjectAddTitle,

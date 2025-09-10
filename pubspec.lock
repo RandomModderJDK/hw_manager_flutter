@@ -471,10 +471,11 @@ packages:
   native_flutter_proxy:
     dependency: "direct main"
     description:
-      name: native_flutter_proxy
-      sha256: "7ef24d6e6b7500ce58a1e91d93c57d161719d06ad419225a4090869930097416"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: automatic-script-and-event
+      resolved-ref: a1e3994feeda1057615d859ffe1d6d110f77c8e3
+      url: "https://github.com/RandomModderJDK/native_flutter_proxy.git"
+    source: git
     version: "0.2.3"
   nyxx:
     dependency: "direct main"
